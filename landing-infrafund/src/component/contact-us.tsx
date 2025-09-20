@@ -2,7 +2,7 @@ import React from "react";
 
 export default function ContactUs() {
   return (
-    <div className="w-full h-fit flex flex-col justify-center items-center text-white gap-12">
+    <div className="w-full h-fit flex flex-col justify-center items-center text-white gap-12 mb-20">
       <h2 className="text-5xl font-bold">
         Let&apos;s Build the Green Future Together
       </h2>
