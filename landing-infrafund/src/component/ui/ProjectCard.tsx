@@ -14,7 +14,7 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
       className="
         group relative w-[403px] h-[577px] flex-shrink-0 rounded-[50px] 
         overflow-hidden shadow-lg mr-6
-        cursor-pointer
+        cursor-pointer transition-transform duration-500
       "
     >
       <Image
@@ -22,7 +22,7 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
         alt={project.title}
         className="
           w-full h-full object-cover absolute top-0 left-0
-          transition-transform duration-500 ease-in-out
+          transition-transform duration-700 ease-in-out
           group-hover:scale-105
         "
       />
@@ -33,7 +33,7 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
           p-6 
           h-[230px] 
           transition-all duration-500 ease-in-out
-          group-hover:h-[245px]
+          group-hover:h-[245px] group-hover:backdrop-blur-lg
         "
       >
         <h3 className="text-xl font-semibold text-white mb-4">
@@ -53,14 +53,15 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
 
           <div className="flex justify-center text-gray-300 gap-1 w-full items-center">
             <span className="text-base font-normal">Funding Status:</span>
-            <div className="w-full bg-white rounded-full h-2">
+            <div className="w-full bg-white rounded-full h-2 overflow-hidden">
               <div
-                className="bg-emerald-500 h-2 rounded-full transition-all duration-300"
+                className="bg-emerald-500 h-2 rounded-full transition-all duration-500 ease-in-out"
                 style={{ width: `${project.fundingStatus}%` }}
               />
             </div>
             <span className="text-white font-medium">{project.fundingStatus}%</span>
           </div>
+
           <button
             className="
               opacity-0 translate-y-4

@@ -3,6 +3,7 @@ import { ChevronRight, X } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import InfraFund from "@/../public/svg/infrafund.svg";
+import Link from "next/link";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -18,7 +19,7 @@ export default function Header() {
   }, []);
 
   const Navigation = [
-    { name: "Projects", route: "" },
+    { name: "Projects", route: "/project" },
     { name: "Investors", route: "" },
     { name: "Builders", route: "" },
     { name: "Learn", route: "" },
@@ -27,11 +28,13 @@ export default function Header() {
 
   return (
     <header
-      className={`w-full h-fit px-[90px] flex flex-col gap-4 text-sm font-medium fixed top-0 left-0 z-50 ${scrolled
-        ? "backdrop-blur-md bg-black/40 shadow-md"
-        : "bg-transparent"
-        }`}
+      className={`w-full h-fit px-[90px] flex flex-col gap-4 text-sm font-medium fixed top-0 left-0 z-50 
+    ${scrolled
+          ? "backdrop-blur-md bg-black/40 shadow-md"
+          : "bg-transparent"
+        } transition-all duration-500 ease-in-out`}
     >
+
       {showBanner && (
         <div className="relative w-full h-11 bg-[#00000080] rounded-b-lg text-white flex justify-center items-center gap-1.5">
           InfraFund&apos;s $INF token is launching soon. Join the
@@ -52,12 +55,13 @@ export default function Header() {
           <Image src={InfraFund} alt="InfraFund" />
           <div className="flex justify-center items-center gap-4">
             {Navigation.map((item, index) => (
-              <span
+              <Link
+                href={item.route}
                 className="text-white hover:transition-colors hover:text-[#24FF8E]"
                 key={index}
               >
                 {item.name}
-              </span>
+              </Link>
             ))}
           </div>
         </div>

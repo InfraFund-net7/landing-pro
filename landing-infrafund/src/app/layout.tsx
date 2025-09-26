@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Footer from "@/component/footer";
+import PathnameWrapper from "./PathnameWrapper";
 
 export const metadata: Metadata = {
   title: "InfraFund",
@@ -12,8 +13,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className="antialiased">{children}</body>
-      <Footer/>
+      <body className="antialiased">
+        <PathnameWrapper>{children}</PathnameWrapper>
+        <Footer />
+      </body>
     </html>
   );
 }

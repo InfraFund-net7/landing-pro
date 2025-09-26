@@ -35,7 +35,7 @@ const projects: Project[] = [
 
 export default function InvestmentPlatform() {
     return (
-        <div className="min-h-screen bg-slate-900 overflow-hidden">
+        <div className="min-h-screen overflow-hidden mt-10">
             <div className="z-10 flex flex-col items-center justify-center min-h-screen px-4 py-12">
                 <h2 className="text-[42px] lg:text-6xl font-bold text-white text-center mb-16 max-w-4xl">
                     Invest in the Future, Today
