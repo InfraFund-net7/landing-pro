@@ -14,7 +14,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0C0E13;
+    --background: #0c0e13;
     --foreground: #ededed;
   }
 }
@@ -72,4 +72,16 @@ body {
 
 .animate-slide-infinite:hover {
   animation-play-state: paused;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.7s ease-in-out;
 }
