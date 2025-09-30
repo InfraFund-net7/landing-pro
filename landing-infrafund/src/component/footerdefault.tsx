@@ -63,7 +63,7 @@ export default function FooterDefault() {
 
     return (
         <div className='w-full h-[656px] flex flex-col justify-center items-center gap-8 relative  px-[90px]'>
-            <div className='w-full  justify-between items-center flex '>
+            <div className='w-full  justify-between items-center flex'>
                 <div className='flex flex-col gap-6'>
                     <div className="w-[265px] h-fit flex flex-col gap-4 text-base font-normal text-[#D6D6D6]">
                         <Image src={infrafund} width={261} height={63} alt="InfraFund" />
@@ -111,9 +111,11 @@ export default function FooterDefault() {
                     ))}
                 </div>
             </div>
-            <p>
-                nfraNetZero LTD is authorised and regulated by the Financial Conduct Authority in the UK. Please be aware that investing in tokenized renewable energy assets through our platform <br /> (www.InfraFund.net) is a high-risk activity where your capital is at risk, and you may lose your entire investment. These investments are not covered by the Financial Services <br /> Compensation Scheme (FSCS). By creating an account, you accept our Terms of Service and Privacy Policy. We do not provide any investment <br />, tax, or legal advice; any investment decisions are solely your responsibility. All personal data is handled in strict compliance with UK GDPR. We strongly advise you to consult with independent professional advisors <br /> before making any investment.
-            </p>
+            <div className='w-full h-fit flex justify-start items-center '>
+                <p>
+                    InfraNetZero LTD is authorised and regulated by the Financial Conduct Authority in the UK. Please be aware that investing in tokenized renewable energy assets through our platform <br /> (www.InfraFund.net) is a high-risk activity where your capital is at risk, and you may lose your entire investment. These investments are not covered by the Financial Services <br /> Compensation Scheme (FSCS). By creating an account, you accept our Terms of Service and Privacy Policy. We do not provide any investment <br />, tax, or legal advice; any investment decisions are solely your responsibility. All personal data is handled in strict compliance with UK GDPR. We strongly advise you to consult with independent professional advisors <br /> before making any investment.
+                </p>
+            </div>
             <div className='absolute z-10 w-full h-[101px] text-center bottom-0 border-t-[1px] border-[#FFFFFF1A] flex justify-center items-center'>
                 <span className='text-base font-normal text-[#C1C7CB]'>© 2025 InfraNetZero LTD | All rights <br /> reserved.</span>
             </div>
