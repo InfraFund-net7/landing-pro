@@ -5,7 +5,8 @@ services:
     build: .
     container_name: app
     ports:
-      - "3000:3000"
+      - "${PORT:-80}:80" # Dynamic port for previews
     environment:
-      NODE_ENV: production
-    restart: always
+      - PORT=${PORT:-80}
+      - NODE_ENV: production
+    restart: unless-stopped
