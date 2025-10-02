@@ -1,0 +1,40 @@
+{
+  "name": "landing-infrafund",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "format": "npm run format:lint && npm run format:prettier && npm run format:cspell",
+    "format:lint": "eslint",
+    "format:prettier": "prettier .",
+    "format:cspell": "cspell **/*",
+    "fix:prettier": "prettier --write .",
+    "fix:lint": "eslint --fix ."
+  },
+  "dependencies": {
+    "lucide-react": "^0.542.0",
+    "next": "15.5.2",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@typescript-eslint/eslint-plugin": "^8.45.0",
+    "@typescript-eslint/parser": "^8.45.0",
+    "cspell": "^9.2.1",
+    "eslint": "^9.36.0",
+    "eslint-config-next": "^15.5.2",
+    "husky": "^9.1.7",
+    "prettier": "^3.6.2",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
