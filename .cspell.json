@@ -1,7 +1,7 @@
 {
-    "version": "0.2",
-    "language": "en",
-    "words": ["infrafund", "nextjs"],
-    "ignorePaths": ["node_modules", "build", ".next"],
-    "files": ["**/*.{js,jsx,ts,tsx,md}"]
-  }
+  "version": "0.2",
+  "language": "en",
+  "words": ["infrafund", "nextjs"],
+  "ignorePaths": ["node_modules", "build", ".next"],
+  "files": ["**/*.{js,jsx,ts,tsx,md}"]
+}
