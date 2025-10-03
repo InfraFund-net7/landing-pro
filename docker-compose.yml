@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    container_name: app
+    ports:
+      - "${PORT:-80}:80" # Dynamic port for previews
+    environment:
+      - PORT=${PORT:-80}
+      - NODE_ENV: production
+    restart: unless-stopped
