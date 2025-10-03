@@ -14,11 +14,10 @@ export function Accordion({ children }: AccordionProps) {
 }
 
 interface AccordionItemProps {
-    value: string
     children: React.ReactNode
 }
 
-export function AccordionItem({ value, children }: AccordionItemProps) {
+export function AccordionItem({ children }: AccordionItemProps) {
     return <div className="border-b last:border-b-0">{children}</div>
 }
 

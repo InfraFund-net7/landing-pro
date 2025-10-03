@@ -1,10 +1,10 @@
 "use client"
-import React, { Component, useState } from 'react'
+import React, { useState } from 'react'
 import radicaltransparency from "@/../public/svg/radical-transparency.svg"
 import futureliquidity from "@/../public/svg/future-liquidity.svg"
 import directimpact from "@/../public/svg/direct-impact.svg"
 import Image from 'next/image'
-import { ChartNoAxesCombined, ChevronDown, SearchCheck, Wallet } from 'lucide-react'
+import { ChartNoAxesCombined, SearchCheck, Wallet } from 'lucide-react'
 import InvestmentPlatform from './projects'
 import AnimatedChevrons from './ui/animated-chevrons'
 export default function Investors() {
