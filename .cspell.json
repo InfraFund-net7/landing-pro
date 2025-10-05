@@ -70,7 +70,9 @@
     "aliquam",
     "bibendum",
     "sodales",
-    "vestibulum"
+    "vestibulum",
+    "Homayoun",
+    "Heidarzadeh"
   ],
   "ignorePaths": ["node_modules", "build", ".next"],
   "files": ["**/*.{js,jsx,ts,tsx,md}"]
