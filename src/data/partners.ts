@@ -14,7 +14,7 @@ import ScalingEdge from "@/../public/svg/collaborate/InfraFund-Scaling-the-Edge.
 import SETSquared from "@/../public/svg/collaborate/InfraFund-SETsquared.svg";
 import TechSouthWest from "@/../public/svg/collaborate/InfraFund-TechSouthWest.svg";
 import HelixWay from "@/../public/svg/collaborate/InfraFund-the-helix-way.svg";
-import ExeterUiniversity from "@/../public/svg/collaborate/InfraFund-Uinversity-of-Exeter.svg";
+import ExeterUniversity from "@/../public/svg/collaborate/InfraFund-University-of-Exeter.svg";
 import UniswapHook from "@/../public/svg/collaborate/InfraFund-Uniswap-Hook-Incubator.svg";
 import Uniswap from "@/../public/svg/collaborate/InfraFund-Uniswap.svg";
 import Soonami from "@/../public/svg/collaborate/InfraFund-Soonami.io.svg"
@@ -35,7 +35,7 @@ export const partners = [
   { name: "SETSquared", logo: SETSquared, alt: "InfraFund-SETsquared" },
   { name: "TechSouthWest", logo: TechSouthWest, alt: "InfraFund-TechSouthWest" },
   { name: "HelixWay", logo: HelixWay, alt: "InfraFund-the-helix-way" },
-  { name: "ExeterUiniversity", logo: ExeterUiniversity, alt: "InfraFund-Uiniversity-of-Exeter" },
+  { name: "ExeterUniversity", logo: ExeterUniversity, alt: "InfraFund-University-of-Exeter" },
   { name: "UniswapHook", logo: UniswapHook, alt: "InfraFund-Uniswap-Hook-Incubator" },
   { name: "Uniswap", logo: Uniswap, alt: "InfraFund-Uniswap" },
   { name: "Soonami", logo: Soonami, alt: "InfraFund-Soonami" },
