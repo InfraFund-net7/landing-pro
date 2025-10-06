@@ -6,6 +6,9 @@ on:
     branches:
       - main
 
+permissions:
+  issues: write  # Required to create comments on pull requests
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
