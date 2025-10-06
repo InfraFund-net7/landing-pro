@@ -4,10 +4,12 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import InfraFund from "@/../public/svg/infrafund.svg";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,7 +22,7 @@ export default function Header() {
 
   const Navigation = [
     { name: "Projects", route: "/project" },
-    { name: "Investors", route: "" },
+    { name: "Investors", route: "/Investors" },
     { name: "Builders", route: "" },
     { name: "Learn", route: "" },
     { name: "About Us", route: "" },
@@ -52,7 +54,12 @@ export default function Header() {
       )}
       <div className="w-full h-fit flex justify-between items-center py-2 transition-all duration-500">
         <div className="gap-8 w-fit h-fit flex justify-center items-center">
-          <Image src={InfraFund} alt="InfraFund" />
+          <Image
+            src={InfraFund}
+            alt="InfraFund"
+            className="cursor-pointer"
+            onClick={() => router.push("/")}
+          />
           <div className="flex justify-center items-center gap-4">
             {Navigation.map((item, index) => (
               <Link

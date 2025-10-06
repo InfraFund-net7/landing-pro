@@ -59,7 +59,7 @@ function CounterItem({ data, index, shouldAnimate }: { data: CounterData; index:
   const animatedValue = useAnimatedCounter(data.value, shouldAnimate, 2000 + index * 200)
 
   return (
-    <div className="text-left w-full h-fit gap20">
+    <div className="text-left w-full h-fit gap-20">
       <div className="text-4xl md:text-[72px] font-medium text-white mb-2">
         {data.prefix || ""}
         {animatedValue.toLocaleString()}
