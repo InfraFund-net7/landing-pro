@@ -7,7 +7,8 @@ on:
       - main
 
 permissions:
-  issues: write  # Required to create comments on pull requests
+  contents: read  # Required for checkout and code access
+  issues: write   # Required for creating PR comments
 
 jobs:
   deploy:
