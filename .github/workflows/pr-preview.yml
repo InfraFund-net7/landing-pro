@@ -17,17 +17,17 @@ jobs:
         id: vars
         run: |
           echo "APP_NAME=pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-          echo "APP_PATH=${{ secrets.VPS_PROJECT_PATH }}/pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          echo "APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
 
       - name: Prepare VPS Deployment
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           script: |
             APP_NAME=pr-${{ github.event.pull_request.number }}
-            APP_PATH=${{ secrets.VPS_PROJECT_PATH }}/$APP_NAME
+            APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/$APP_NAME
             mkdir -p $APP_PATH
             cd $APP_PATH
             docker-compose down
@@ -40,7 +40,7 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           source: "./"
           target: ${{ env.APP_PATH }}
 
@@ -49,10 +49,10 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           script: |
             APP_NAME=pr-${{ github.event.pull_request.number }}
-            APP_PATH=${{ secrets.VPS_PROJECT_PATH }}/$APP_NAME
+            APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/$APP_NAME
             cd $APP_PATH
             echo "APP_NAME=$APP_NAME" > .env
             docker-compose up -d --remove-orphans
@@ -77,10 +77,10 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           script: |
             APP_NAME=pr-${{ github.event.pull_request.number }}
-            APP_PATH=${{ secrets.VPS_PROJECT_PATH }}/$APP_NAME
+            APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/$APP_NAME
             cd $APP_PATH
             docker-compose down
             cd ..
