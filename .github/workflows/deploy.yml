@@ -12,12 +12,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Create App Name and Path
-        id: vars
-        run: |
-          echo "APP_NAME=main" >> $GITHUB_ENV
-          echo "APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/main" >> $GITHUB_ENV
-
       - name: Prepare VPS Deployment
         uses: appleboy/ssh-action@v1
         with:

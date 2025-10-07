@@ -13,12 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Create app name from pr number
-        id: vars
-        run: |
-          echo "APP_NAME=pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-          echo "APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-
       - name: Prepare VPS Deployment
         uses: appleboy/ssh-action@v1
         with:
@@ -59,7 +53,7 @@ jobs:
             docker image prune -f
 
       - name: Comment PR with Preview URL
-        if: github.event_name == 'pull_request' && github.event.action != 'closed'
+        if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened')
         uses: actions/github-script@v7
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
