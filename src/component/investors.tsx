@@ -142,7 +142,7 @@ export default function Investors() {
             {/* Projects */}
             <InvestmentPlatform />
             {/* FAQ */}
-            <div className='py-24 flex flex-col justify-center items-center'>
+            <div className='py-24 flex flex-col justify-center items-center gap-12'>
                 <h2 className='text-[42px] text-white font-bold'>Investor FAQ</h2>
                 <div className="space-y-4 w-[834px]">
                     {faqs.map((faq) => {

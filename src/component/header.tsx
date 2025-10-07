@@ -23,7 +23,7 @@ export default function Header() {
   const Navigation = [
     { name: "Projects", route: "/project" },
     { name: "Investors", route: "/Investors" },
-    { name: "Builders", route: "" },
+    { name: "Builders", route: "/builders" },
     { name: "Learn", route: "" },
     { name: "About Us", route: "/about-us" },
   ];

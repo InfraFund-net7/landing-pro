@@ -72,7 +72,11 @@
     "sodales",
     "vestibulum",
     "Homayoun",
-    "Heidarzadeh"
+    "Heidarzadeh",
+    "firstlevel",
+    "secondlevel",
+    "thirdlevel",
+    "tokenisation"
   ],
   "ignorePaths": ["node_modules", "build", ".next"],
   "files": ["**/*.{js,jsx,ts,tsx,md}"]
