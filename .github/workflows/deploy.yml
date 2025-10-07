@@ -16,19 +16,19 @@ jobs:
         id: vars
         run: |
           echo "APP_NAME=main" >> $GITHUB_ENV
-          echo "APP_PATH=${{ secrets.VPS_PROJECT_PATH }}/main" >> $GITHUB_ENV
+          echo "APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/main" >> $GITHUB_ENV
 
       - name: Prepare VPS Deployment
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           script: |
-            APP_PATH=${{ secrets.VPS_PROJECT_PATH }}/main
+            APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/main
             mkdir -p $APP_PATH
             cd $APP_PATH
-            docker-compose -f docker-compose-traefik.yml down
+            docker-compose -f docker-compose-traefik.yml down || true
             docker image prune -f
 
       - name: Update the VPS deployment files
@@ -36,18 +36,18 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           source: "./"
-          target: "${{ secrets.VPS_PROJECT_PATH }}/main"
+          target: "${{ secrets.VPS_PROJECT_ROOT }}/main"
 
       - name: Deploy on VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           script: |
-            APP_PATH=${{ secrets.VPS_PROJECT_PATH }}/main
+            APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/main
             cd $APP_PATH
             echo "APP_NAME=main" > .env
             docker-compose -f docker-compose-traefik.yml up -d --build --remove-orphans

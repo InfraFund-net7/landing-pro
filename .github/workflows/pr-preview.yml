@@ -34,7 +34,7 @@ jobs:
             APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/$APP_NAME
             mkdir -p $APP_PATH
             cd $APP_PATH
-            docker-compose -f docker-compose-traefik.yml down
+            docker-compose -f docker-compose-traefik.yml down || true
             cd ..
             sudo rm -rf $APP_PATH/*
             docker image prune -f
@@ -87,7 +87,7 @@ jobs:
             APP_NAME=pr-${{ github.event.pull_request.number }}
             APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/$APP_NAME
             cd $APP_PATH
-            docker-compose -f docker-compose-traefik.yml down
+            docker-compose -f docker-compose-traefik.yml down || true
             cd ..
             sudo rm -rf $APP_PATH
             docker image prune -f
