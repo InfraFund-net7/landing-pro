@@ -70,19 +70,6 @@ jobs:
           body: |
             Preview URL: http://pr-${{ github.event.pull_request.number }}.${{ secrets.VPS_DOMAIN }}
                     
-      - name: Comment PR with Preview URL
-        if: github.event_name == 'pull_request' && github.event.action != 'closed'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const previewUrl = `http://pr-${{ github.event.pull_request.number }}.${{ secrets.VPS_DOMAIN }}`;
-            github.rest.issues.createComment({
-              issue_number: ${{ github.event.pull_request.number }},
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `Preview URL: ${previewUrl}`
-            });
-
       - name: Cleanup VPS Deployment
         if: github.event_name == 'pull_request' && github.event.action == 'closed'
         uses: appleboy/ssh-action@v1.0.3
