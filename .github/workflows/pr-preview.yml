@@ -58,7 +58,7 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const previewUrl = `http://pr-${{ github.event.pull_request.number }}.${{ secrets.VPS_DOMAIN }}`;
+            const previewUrl = `https://pr-${{ github.event.pull_request.number }}.${{ secrets.VPS_DOMAIN }}`;
             github.rest.issues.createComment({
               issue_number: ${{ github.event.pull_request.number }},
               owner: context.repo.owner,
@@ -79,5 +79,10 @@ jobs:
             cd $APP_PATH
             docker-compose -f docker-compose-traefik.yml down || true
             cd ..
-            sudo rm -rf $APP_PATH
+            # Safety check: ensure APP_PATH is not empty and starts with the project root
+            if [ -z "$APP_PATH" ] || [[ "$APP_PATH" != "${{ secrets.VPS_PROJECT_ROOT }}"* ]]; then
+              echo "Error: APP_PATH is not set correctly. Aborting rm command."
+              exit 1
+            fi
+            sudo rm -rf "$APP_PATH"
             docker image prune -f
