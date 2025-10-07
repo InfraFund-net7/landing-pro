@@ -34,7 +34,7 @@ jobs:
             APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/$APP_NAME
             mkdir -p $APP_PATH
             cd $APP_PATH
-            docker-compose down
+            docker-compose -f docker-compose-traefik.yml down
             cd ..
             sudo rm -rf $APP_PATH/*
             docker image prune -f
@@ -64,12 +64,18 @@ jobs:
 
       - name: Comment PR with Preview URL
         if: github.event_name == 'pull_request' && github.event.action != 'closed'
-        uses: peter-evans/create-or-update-comment@v4
+        uses: actions/github-script@v7
         with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            Preview URL: http://pr-${{ github.event.pull_request.number }}.${{ secrets.VPS_DOMAIN }}
-                    
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const previewUrl = `http://pr-${{ github.event.pull_request.number }}.${{ secrets.VPS_DOMAIN }}`;
+            github.rest.issues.createComment({
+              issue_number: ${{ github.event.pull_request.number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Preview URL: ${previewUrl}`
+            });
+         
       - name: Cleanup VPS Deployment
         if: github.event_name == 'pull_request' && github.event.action == 'closed'
         uses: appleboy/ssh-action@v1.0.3
@@ -81,7 +87,7 @@ jobs:
             APP_NAME=pr-${{ github.event.pull_request.number }}
             APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/$APP_NAME
             cd $APP_PATH
-            docker-compose down
+            docker-compose -f docker-compose-traefik.yml down
             cd ..
             sudo rm -rf $APP_PATH
             docker image prune -f

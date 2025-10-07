@@ -50,6 +50,5 @@ jobs:
             APP_PATH=${{ secrets.VPS_PROJECT_PATH }}/main
             cd $APP_PATH
             echo "APP_NAME=main" > .env
-            docker-compose -f docker-compose-traefik.yml down
             docker-compose -f docker-compose-traefik.yml up -d --build --remove-orphans
             docker image prune -f
