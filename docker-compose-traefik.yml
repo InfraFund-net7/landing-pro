@@ -15,7 +15,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.${APP_NAME}.rule=Host(`${APP_NAME}.app.dev.infrafund.net`)"
-      - "traefik.http.routers.${APP_NAME}.entrypoints=web"
+      - "traefik.http.routers.${APP_NAME}.entrypoints=websecure"
       - "traefik.http.services.${APP_NAME}.loadbalancer.server.port=8080"
       - "traefik.http.routers.${APP_NAME}.tls=true"
       - "traefik.http.routers.${APP_NAME}.tls.certresolver=letsencrypt"
