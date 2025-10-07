@@ -19,7 +19,7 @@ jobs:
           echo "APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/main" >> $GITHUB_ENV
 
       - name: Prepare VPS Deployment
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
@@ -32,7 +32,7 @@ jobs:
             docker image prune -f
 
       - name: Update the VPS deployment files
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
@@ -41,7 +41,7 @@ jobs:
           target: "${{ secrets.VPS_PROJECT_ROOT }}/main"
 
       - name: Deploy on VPS via SSH
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}

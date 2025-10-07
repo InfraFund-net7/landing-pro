@@ -6,10 +6,6 @@ on:
     branches:
       - main
 
-permissions:
-  contents: read  # Required for checkout and code access
-  issues: write   # Required for creating PR comments
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -24,7 +20,7 @@ jobs:
           echo "APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
 
       - name: Prepare VPS Deployment
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
@@ -40,7 +36,7 @@ jobs:
             docker image prune -f
         
       - name: Copy files to VPS
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
@@ -49,7 +45,7 @@ jobs:
           target: ${{ env.APP_PATH }}
 
       - name: Deploy on VPS via SSH
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
@@ -78,7 +74,7 @@ jobs:
          
       - name: Cleanup VPS Deployment
         if: github.event_name == 'pull_request' && github.event.action == 'closed'
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
