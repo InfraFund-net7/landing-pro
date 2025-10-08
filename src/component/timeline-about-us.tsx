@@ -3,6 +3,7 @@
 import { partners } from "@/data/partners"
 import Image from "next/image"
 import { useEffect, useState, useRef } from "react"
+
 type TimelineItem = {
     quarter: string
     description: string
@@ -20,7 +21,7 @@ export default function Timeline() {
         {
             quarter: "Q2 2024",
             description:
-                "Building with World-Class Partners Momentum grew quickly. By April 2024, we were accepted into the Innovate UK ICURe programme, securing £3,700 in funding to deeply explore the market and validate our assumptions with renewable energy developers. We also secured a significant boost from the Microsoft for Startups program, receiving $150,000 in credits to build our platform on a world-class infrastructure. This support was critical in turning our vision into a technical reality.",
+                "Building with World-Class Partners Momentum grew quickly. By April 2024, we were accepted into the Innovate UK ICURe programme, securing £3,700 in funding to deeply explore the market and validate our assumptions with renewable energy developers. We also secured a significant boost from the Microsoft for Startups program, receiving $150,000 in credits to build our platform on a world-class infrastructure.",
             logos: ["ICURe", "Microsoft", "MicrosoftStartup", "InnovateUK"],
         },
         {
@@ -32,13 +33,13 @@ export default function Timeline() {
         {
             quarter: "Q4 2024",
             description:
-                "We were also accepted into the Innovate UK Scaling the Edge NetZero program, securing £10,000 in funding to further our market validation. We were named a FinTech Award Finalist by Tech South West , a Sustainability Award Finalist in Exeter , and joined the Barclays Eagle Labs-funded Forge Accelerator for ClimateTech, solidifying our position as a leader in the space.",
+                "We were also accepted into the Innovate UK Scaling the Edge NetZero program, securing £10,000 in funding to further our market validation.",
             logos: ["InnovateUK", "ScalingEdge", "ExeterSustainability", "HelixWay"],
         },
         {
             quarter: "Q1 2025",
             description:
-                "Deepening our Web3 Credentials Entering 2025, we validated our cutting-edge blockchain technology on a global stage. We secured a place in the Soonami.io web3 Accelerator (with $20,000 in funding commitment) ",
+                "Deepening our Web3 Credentials Entering 2025, we validated our cutting-edge blockchain technology on a global stage.",
             logos: ["Soonami"],
         },
         {
@@ -60,17 +61,27 @@ export default function Timeline() {
     ]
 
     const [nodeStates, setNodeStates] = useState<number[]>(() => {
-        const arr = new Array(timelineData.length).fill(0);
-        arr[0] = 1;
-        return arr;
+        const arr = new Array(timelineData.length).fill(0)
+        arr[0] = 1
+        return arr
     })
     const [lineProgress, setLineProgress] = useState<number[]>(() => new Array(timelineData.length - 1).fill(0))
+
     const nodeRefs = useRef<(HTMLDivElement | null)[]>([])
+    const nodeStatesRef = useRef(nodeStates)
+    const lineProgressRef = useRef(lineProgress)
 
     useEffect(() => {
+        nodeStatesRef.current = nodeStates
+    }, [nodeStates])
+
+    useEffect(() => {
+        lineProgressRef.current = lineProgress
+    }, [lineProgress])
+    useEffect(() => {
         const handleScroll = () => {
-            const newNodeStates = [...nodeStates]
-            const newLineProgress = [...lineProgress]
+            const newNodeStates = [...nodeStatesRef.current]
+            const newLineProgress = [...lineProgressRef.current]
 
             nodeRefs.current.forEach((node, index) => {
                 if (!node) return
@@ -78,7 +89,12 @@ export default function Timeline() {
                 const rect = node.getBoundingClientRect()
                 const windowHeight = window.innerHeight
                 const triggerPoint = windowHeight / 2
-
+                if (rect.top < triggerPoint && rect.bottom > triggerPoint) {
+                    newNodeStates[index] = 1
+                } else {
+                    if (rect.bottom < triggerPoint) newNodeStates[index] = 1
+                    else newNodeStates[index] = 0
+                }
                 if (index > 0) {
                     const prevNode = nodeRefs.current[index - 1]
                     if (prevNode) {
@@ -86,12 +102,7 @@ export default function Timeline() {
                         const segmentHeight = rect.top - prevRect.top
                         const scrolledPast = triggerPoint - prevRect.top
                         const progress = Math.max(0, Math.min(100, (scrolledPast / segmentHeight) * 100))
-
                         newLineProgress[index - 1] = progress
-
-                        if (progress >= 100) {
-                            newNodeStates[index] = 1
-                        }
                     }
                 }
             })
@@ -105,10 +116,10 @@ export default function Timeline() {
         return () => window.removeEventListener("scroll", handleScroll)
     }, [])
 
-    const isQuarterLeft = (index: number) => index % 2 === 0;
+    const isQuarterLeft = (index: number) => index % 2 === 0
 
     return (
-        <div className="min-h-screen w-full  py-20 px-4">
+        <div className="min-h-screen w-full py-20 px-4">
             <div className="max-w-6xl mx-auto">
                 <div className="relative">
                     {timelineData.map((_, index) => {
@@ -122,12 +133,11 @@ export default function Timeline() {
                                     top: `${(index * 100) / (timelineData.length - 1)}%`,
                                     height: `${100 / (timelineData.length - 1)}%`,
                                     background: `linear-gradient(to bottom, rgb(34, 197, 94) ${progress}%, rgb(209, 213, 219) ${progress}%)`,
-                                    transition: "background 0.1s linear",
+                                    transition: "background 0.2s linear",
                                 }}
                             />
                         )
                     })}
-
                     {timelineData.map((item, index) => {
                         const isGreen = nodeStates[index] === 1
                         const quarterLeft = isQuarterLeft(index)
@@ -144,6 +154,7 @@ export default function Timeline() {
                                         transition: "all 0.3s ease",
                                     }}
                                 />
+
                                 <div className="flex flex-row items-start gap-8">
                                     <div className="flex-1 pr-8">
                                         {quarterLeft ? (
@@ -159,7 +170,8 @@ export default function Timeline() {
                                                     return (
                                                         <div
                                                             key={`${item.quarter}-${logoIndex}`}
-                                                            className="flex justify-center items-center w-fit h-fit p-4">
+                                                            className="flex justify-center items-center w-fit h-fit p-4"
+                                                        >
                                                             <Image
                                                                 src={partner.logo.src}
                                                                 alt={partner.alt}
@@ -188,7 +200,8 @@ export default function Timeline() {
                                                     return (
                                                         <div
                                                             key={`${item.quarter}-${logoIndex}`}
-                                                            className="flex justify-center items-center w-fit h-fit p-4">
+                                                            className="flex justify-center items-center w-fit h-fit p-4"
+                                                        >
                                                             <Image
                                                                 src={partner.logo.src}
                                                                 alt={partner.alt}
