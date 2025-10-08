@@ -6,7 +6,7 @@ import { Instagram, Linkedin } from "lucide-react";
 import telegram from "@/../public/svg/Telegram.svg";
 import X from "@/../public/svg/X.svg";
 import Link from "next/link";
-
+import Uk from "@/../public/svg/englandflag.svg"
 export default function FooterHome() {
   const socials = [
     {
@@ -66,8 +66,8 @@ export default function FooterHome() {
   return (
     <div className="w-full h-[600px] px-[90px] flex justify-between items-center relative">
       <div className="absolute bottom-6 right-5 -z-10">
-      <Image src={world} alt="world-footer" className=""/>
-      {/* <Image src={}/> */}
+        <Image src={world} alt="world-footer" />
+        <Image src={Uk} className="absolute right-[37%] top-[38%]" alt="Uk" />
       </div>
       <div className="w-[749px] h-fit flex flex-col gap-4 text-base font-normal text-[#D6D6D6]">
         <Image src={infrafund} width={261} height={63} alt="InfraFund" />

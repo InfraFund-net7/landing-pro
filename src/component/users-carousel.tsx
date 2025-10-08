@@ -2,8 +2,9 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import UserTest from "@/../public/image/user-test.jpg";
+
 const testimonials = [
   {
     id: 1,
@@ -29,82 +30,95 @@ const testimonials = [
     title: "Innovation Director at Microsoft for Startups",
     image: UserTest,
   },
+  {
+    id: 4,
+    quote:
+      "The platform brings transparency and innovation to green investment like never before.",
+    name: "Michael Brown",
+    title: "Sustainability Expert at GreenTech",
+    image: UserTest,
+  },
+  {
+    id: 5,
+    quote:
+      "A powerful way to support renewable projects while earning tangible returns.",
+    name: "Laura Green",
+    title: "Impact Investor",
+    image: UserTest,
+  },
+  {
+    id: 6,
+    quote:
+      "IntraFund connects visionaries with resources in an elegant, efficient way.",
+    name: "Daniel Cooper",
+    title: "Startup Mentor",
+    image: UserTest,
+  },
 ];
 
 export default function UserCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const itemsPerSlide = 3;
 
   const nextSlide = () => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setCurrentIndex((prevIndex) =>
-      prevIndex === testimonials.length - 1 ? 0 : prevIndex + 1
+    setCurrentIndex((prev) =>
+      prev + itemsPerSlide >= testimonials.length ? 0 : prev + itemsPerSlide
     );
   };
 
   const prevSlide = () => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? testimonials.length - 1 : prevIndex - 1
+    setCurrentIndex((prev) =>
+      prev - itemsPerSlide < 0
+        ? Math.max(testimonials.length - itemsPerSlide, 0)
+        : prev - itemsPerSlide
     );
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsTransitioning(false);
-    }, 600);
-    return () => clearTimeout(timer);
-  }, [currentIndex]);
-
-  const getExtendedTestimonials = () => {
-    return [...testimonials, ...testimonials, ...testimonials];
-  };
+  const visibleTestimonials = testimonials.slice(
+    currentIndex,
+    currentIndex + itemsPerSlide
+  );
 
   return (
-    <div className="relative w-full px-7">
-      <div className="flex items-center justify-center gap-6">
-        <ChevronLeft size={24} onClick={prevSlide} className="cursor-pointer" />
-        <div className="relative w-full overflow-hidden">
-          <div
-            className="flex gap-6 transition-transform duration-600 ease-in-out"
-            style={{
-              transform: `translateX(-${
-                (currentIndex + testimonials.length) * 320
-              }px)`,
-              width: `${getExtendedTestimonials().length * 320}px`,
-            }}
-          >
-            {getExtendedTestimonials().map((testimonial, index) => (
-              <div
-                key={`${testimonial.id}-${index}`}
-                className="flex w-[403px] h-[172px] bg-[#191C2980] rounded-2xl border border-gray-600 p-4 justify-between gap-4 hover:bg-gray-700 hover:border-blue-400 transition-all duration-300"
-              >
-                <Image
-                  src={testimonial.image || "/placeholder.svg"}
-                  alt={testimonial.name}
-                  className="rounded-full w-12 h-12"
-                />
-                <div className="flex flex-col gap-2 ">
-                  <p className="text-gray-200 text-sm leading-relaxed font-normal">
-                    &quot;{testimonial.quote}&quot;
-                  </p>
-                  <div>
-                    <h4 className="text-white font-medium text-xs">
-                      {testimonial.name}
-                    </h4>
-                    <p className="text-gray-400 text-[10px]">{testimonial.title}</p>
-                  </div>
+    <div className="w-full flex flex-col items-center gap-6">
+      <div className="flex items-center justify-center gap-4 w-full">
+        {/* دکمه قبلی */}
+        <ChevronLeft
+          size={32}
+          onClick={prevSlide}
+          className="cursor-pointer text-gray-400 hover:text-white transition"
+        />
+
+        {/* کارت‌ها */}
+        <div className="flex justify-center items-stretch gap-6 w-full max-w-6xl">
+          {visibleTestimonials.map((t) => (
+            <div
+              key={t.id}
+              className="flex w-1/3 bg-[#191C2980] border border-gray-600 rounded-2xl p-5 gap-4 hover:bg-gray-700 hover:border-blue-400 transition-all duration-300"
+            >
+              <Image
+                src={t.image}
+                alt={t.name}
+                width={50}
+                height={50}
+                className="rounded-full object-cover"
+              />
+              <div className="flex flex-col gap-2">
+                <p className="text-gray-200 text-sm leading-relaxed font-normal">
+                  “{t.quote}”
+                </p>
+                <div>
+                  <h4 className="text-white font-medium text-sm">{t.name}</h4>
+                  <p className="text-gray-400 text-xs">{t.title}</p>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
         <ChevronRight
-          size={24}
+          size={32}
           onClick={nextSlide}
-          className="cursor-pointer"
+          className="cursor-pointer text-gray-400 hover:text-white transition"
         />
       </div>
     </div>

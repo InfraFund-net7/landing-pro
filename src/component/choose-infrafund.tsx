@@ -4,7 +4,7 @@ import FinanceSpeed from "@/../public/svg/finance.svg";
 import InvestConfidence from "@/../public/svg/invest.svg";
 import ShapeFuture from "@/../public/svg/shape-future.svg";
 import Image from "next/image";
-
+import stars from "@/../public/image/stars.png";
 export default function ChooseInfraFund() {
   const chosenItems = [
     {
@@ -36,11 +36,18 @@ export default function ChooseInfraFund() {
   ];
 
   return (
-    <div className="w-full h-fit px-20 flex flex-col justify-center items-center gap-20 mb-28 ">
+    <div className="w-full h-fit px-20 flex flex-col justify-center items-center gap-20 mb-28  relative">
       <h2 className="text-[42px] text-white font-bold">
         Why Choose InfraFund?
       </h2>
-      <div className="w-full h-fit px-[88px] grid grid-cols-2 justify-center items-center">
+      <div className="w-[1000px] h-[600px] absolute z-0 right-0">
+        <Image src={stars} width={588} height={588} alt="stars" className="absolute z-20 top-[5%] right-[10%]" />
+        <div className="w-[1000px] h-[588px] rounded-full absolute z-10" style={{
+          background: "radial-gradient(50% 50% at 50% 50%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)",
+          filter: "blur(400px)",
+        }} />
+      </div>
+      <div className="w-full h-fit px-[88px] grid grid-cols-2 justify-center items-center relative z-10">
         {chosenItems.map((item, index) => (
           <div
             key={index}

@@ -40,7 +40,7 @@ export default function FundingSection() {
       <h2 className="text-white font-bold text-5xl">
         Flexible Funding for a Diverse Market
       </h2>
-      <div className="w-full h-[720px] bg-green-500 flex">
+      <div className="w-full h-[720px]  flex">
         {fundingitems.map((item, index) => (
           <div
             key={index}
@@ -55,7 +55,8 @@ export default function FundingSection() {
             style={{
               backgroundImage: `url(${item.background.src})`,
               backgroundSize: "cover",
-              backgroundPosition: "center",
+              backgroundPosition:
+                item.title === "Loan-Based" ? "right" : "center",
             }}
           >
             <div

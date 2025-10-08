@@ -11,8 +11,8 @@ export default function Home() {
     <main className="w-full min-h-screen flex flex-col">
       <AnimatedCounter />
       <ChooseInfraFund />
-      <FundingSection />
       <InvestmentPlatform />
+      <FundingSection />
       {/* <Tokenization /> */}
       <TrustedSection />
       <ContactUs />
