@@ -1,65 +1,11 @@
 "use client"
 
+import { timelineData } from "@/constants/TimelineData"
 import { partners } from "@/data/partners"
 import Image from "next/image"
 import { useEffect, useState, useRef } from "react"
 
-type TimelineItem = {
-    quarter: string
-    description: string
-    logos?: string[]
-}
-
 export default function Timeline() {
-    const timelineData: TimelineItem[] = [
-        {
-            quarter: "Q1 2024",
-            description:
-                "The Spark of Innovation Our journey began when InfraFund was incubated and accelerated by the prestigious SETsquared Partnership, delivered by the University of Exeter.",
-            logos: ["SETSquared", "ExeterStudent", "ExeterSustainability"],
-        },
-        {
-            quarter: "Q2 2024",
-            description:
-                "Building with World-Class Partners Momentum grew quickly. By April 2024, we were accepted into the Innovate UK ICURe programme, securing £3,700 in funding to deeply explore the market and validate our assumptions with renewable energy developers. We also secured a significant boost from the Microsoft for Startups program, receiving $150,000 in credits to build our platform on a world-class infrastructure.",
-            logos: ["ICURe", "Microsoft", "MicrosoftStartup", "InnovateUK"],
-        },
-        {
-            quarter: "Q3 2024",
-            description:
-                "Gaining Industry-Wide Recognition By September, our innovative approach was recognized across the industry. We were honored with the Autodesk Technology Impact award, securing $53,400 in software donation to develop our AI-driven digital twins for a more transparent investment platform.",
-            logos: ["Autodesk"],
-        },
-        {
-            quarter: "Q4 2024",
-            description:
-                "We were also accepted into the Innovate UK Scaling the Edge NetZero program, securing £10,000 in funding to further our market validation.",
-            logos: ["InnovateUK", "ScalingEdge", "ExeterSustainability", "HelixWay"],
-        },
-        {
-            quarter: "Q1 2025",
-            description:
-                "Deepening our Web3 Credentials Entering 2025, we validated our cutting-edge blockchain technology on a global stage.",
-            logos: ["Soonami"],
-        },
-        {
-            quarter: "Q2 2025",
-            description:
-                "Also were selected for the Uniswap Hook Incubator, placing us at the forefront of decentralized finance innovation.",
-            logos: ["Uniswap", "UniswapHook", "TechSouthWest", "Growth"],
-        },
-        {
-            quarter: "Q3 2025",
-            description:
-                "Poised for Impact With the backing of over a dozen leading innovation ecosystems and more than 16 expressions of interest from renewable energy developers, InfraFund is poised to redefine the future of sustainable energy finance.",
-        },
-        {
-            quarter: "Today",
-            description:
-                "Poised for Impact With the backing of over a dozen leading innovation ecosystems and more than 16 expressions of interest from renewable energy developers, InfraFund is poised to redefine the future of sustainable energy finance.",
-        },
-    ]
-
     const [nodeStates, setNodeStates] = useState<number[]>(() => {
         const arr = new Array(timelineData.length).fill(0)
         arr[0] = 1
@@ -88,7 +34,8 @@ export default function Timeline() {
 
                 const rect = node.getBoundingClientRect()
                 const windowHeight = window.innerHeight
-                const triggerPoint = windowHeight / 2
+                const triggerPoint = windowHeight * 0.2
+
                 if (rect.top < triggerPoint && rect.bottom > triggerPoint) {
                     newNodeStates[index] = 1
                 } else {
@@ -122,8 +69,10 @@ export default function Timeline() {
         <div className="min-h-screen w-full py-20 px-4">
             <div className="max-w-6xl mx-auto">
                 <div className="relative">
-                    {timelineData.map((_, index) => {
-                        if (index === timelineData.length - 1) return null
+                    {timelineData.map((item, index) => {
+                        if (item.quarter === "Today") return null
+                        if (timelineData[index + 1]?.quarter === "Today") return null
+
                         const progress = lineProgress[index] || 0
                         return (
                             <div
@@ -131,13 +80,14 @@ export default function Timeline() {
                                 className="absolute left-1/2 w-0.5 -translate-x-1/2"
                                 style={{
                                     top: `${(index * 100) / (timelineData.length - 1)}%`,
-                                    height: `${100 / (timelineData.length - 1)}%`,
+                                    height: `${100 / (timelineData.length - 3.7)}%`,
                                     background: `linear-gradient(to bottom, rgb(34, 197, 94) ${progress}%, rgb(209, 213, 219) ${progress}%)`,
                                     transition: "background 0.2s linear",
                                 }}
                             />
                         )
                     })}
+
                     {timelineData.map((item, index) => {
                         const isGreen = nodeStates[index] === 1
                         const quarterLeft = isQuarterLeft(index)
@@ -147,14 +97,20 @@ export default function Timeline() {
                                     ref={(el) => {
                                         nodeRefs.current[index] = el
                                     }}
-                                    className="absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full border-4 z-10"
+                                    className="absolute left-1/2 -translate-x-1/2 w-8 h-8 rounded-full flex items-center justify-center border-2 z-20 bg-[#0f172a]"
                                     style={{
-                                        backgroundColor: isGreen ? "rgb(34, 197, 94)" : "rgb(255, 255, 255)",
                                         borderColor: isGreen ? "rgb(34, 197, 94)" : "rgb(209, 213, 219)",
                                         transition: "all 0.3s ease",
                                     }}
-                                />
-
+                                >
+                                    <div
+                                        className="w-4 h-4 rounded-full"
+                                        style={{
+                                            backgroundColor: isGreen ? "rgb(34, 197, 94)" : "rgb(255, 255, 255)",
+                                            transition: "all 0.3s ease",
+                                        }}
+                                    />
+                                </div>
                                 <div className="flex flex-row items-start gap-8">
                                     <div className="flex-1 pr-8">
                                         {quarterLeft ? (
@@ -173,7 +129,7 @@ export default function Timeline() {
                                                             className="flex justify-center items-center w-fit h-fit p-4"
                                                         >
                                                             <Image
-                                                                src={partner.logo.src}
+                                                                src={partner.logo.src || "/placeholder.svg"}
                                                                 alt={partner.alt}
                                                                 width={0}
                                                                 height={0}
@@ -203,7 +159,7 @@ export default function Timeline() {
                                                             className="flex justify-center items-center w-fit h-fit p-4"
                                                         >
                                                             <Image
-                                                                src={partner.logo.src}
+                                                                src={partner.logo.src || "/placeholder.svg"}
                                                                 alt={partner.alt}
                                                                 width={0}
                                                                 height={0}

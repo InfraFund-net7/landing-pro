@@ -27,7 +27,7 @@ export default function AboutUs() {
   ]
   return (
     <div className='w-full h-fit px-[90px]  flex flex-col justify-center items-center space-y-16'>
-      <div className='w-full h-fit flex justify-between items-center mt-[10%]'>
+      <div className='w-full h-fit flex justify-between items-center mt-[10%] '>
         <div className='flex flex-col gap-6 text-white'>
           <h1 className='text-6xl font-medium'>Building the Future of <br /> Sustainable Energy, Today</h1>
           <h3 className='text-2xl font-normal'>At InfraFund, we leverage the power of technology to make investing <br /> in renewable energy projects accessible, transparent, and rewarding <br /> for everyone, everywhere. We are pushing the boundaries of <br /> traditional finance to enable you to directly invest in a greener future.</h3>
@@ -45,7 +45,11 @@ export default function AboutUs() {
           </div>
         ))}
       </div>
-      <div className='w-full h-fit flex flex-col gap-16 justify-center items-center'>
+      <div className='w-full h-fit flex flex-col gap-16 justify-center items-center relative'>
+        <div className="w-[1000px] h-[400px] rounded-full absolute z-0 bottom-[5%]" style={{
+          background: "radial-gradient(50% 50% at 50% 50%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)",
+          filter: "blur(400px)",
+        }} />
         <div className='flex flex-col justify-center items-center gap-6 text-white'>
           <h2 className='text-[42px] font-bold'>InfraFund Contributors</h2>
           <h3 className='text-2xl font-normal'>A world-class team built to bridge the worlds of traditional infrastructure and decentralized finance</h3>
@@ -78,7 +82,12 @@ export default function AboutUs() {
           ))}
         </div>
       </div>
-      <div className='w-full h-[549px] flex justify-center items-center gap-6'>
+      <div className='w-full h-[549px] flex justify-center items-center gap-6 relative'>
+        <div className="w-[500px] h-[500px] rounded-full absolute left-2 -bottom-[15%]" style={{
+          background:
+            "radial-gradient(50% 50% at 50% 50%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)",
+          filter: "blur(400px)",
+        }} />
         <div className='w-1/2 h-full flex flex-col justify-evenly items-start text-white px-16'>
           <h2 className='text-[100px]'>Our Story</h2>
           <p className='text-base font-normal w-[533px]'>Our story stems from research conducted by our founder, Iman Alibeigi, and his master&apos;s thesis on blockchain-based project finance. With the support of the University of Exeter, the UK&apos;s first Climate Action Impact University, this academic research was transformed into a real-world venture. The concept was then incubated and accelerated by the SETsquared Partnership—the first-rank University Incubator in Europe where InfraFund was officially born. We immediately made our mark by winning the Environmental Impact Award, a testament to our mission-driven approach from day one.</p>
@@ -94,7 +103,7 @@ export default function AboutUs() {
         </div>
       </div>
       <Timeline />
-      <div className='w-full h-fit flex flex-col gap-12 justify-center items-center text-white text-center'>
+      <div className='w-full h-fit flex flex-col gap-12 justify-center items-center text-white text-center relative'>
         <h2 className='text-5xl font-bold'>Let&apos;s Build the Green Future Together</h2>
         <h3 className='text-2xl font-normal w-[937px]'>Whether you&apos;re an investor ready to make an impact or a builder with a vision, we&apos;re
           here to help. Reach out to our team to get started.
@@ -102,6 +111,10 @@ export default function AboutUs() {
         <button className='w-[184px] h-12 flex justify-center items-center bg-[#24FF8E] text-black rounded-sm'>
           Contact Us
         </button>
+        <div className="w-[1300px] h-[400px] rounded-full absolute z-0" style={{
+          background: "radial-gradient(50% 50% at 50% 50%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)",
+          filter: "blur(400px)",
+        }} />
       </div>
     </div>
   )
