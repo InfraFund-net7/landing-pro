@@ -2,7 +2,8 @@
 import { Project } from "@/types/types"
 import ProjectsSlider from "./ProjectsSlider"
 import solarpanel from "@/../public/image/solarpanel.jpg"
-
+import Image from "next/image"
+import projectbg from "@/../public/svg/project-bg.svg"
 const projects: Project[] = [
     {
         id: 1,
@@ -62,7 +63,8 @@ const projects: Project[] = [
 
 export default function InvestmentPlatform() {
     return (
-        <div className="min-h-screen overflow-hidden mt-10">
+        <div className="min-h-screen overflow-hidden mt-10 relative">
+            <Image src={projectbg} alt="project-bg" className=" absolute left-0 top-0 bottom-0 -z-10"/>
             <div className="z-10 flex flex-col items-center justify-center min-h-screen px-4 py-12">
                 <h2 className="text-[42px] lg:text-6xl font-bold text-white text-center mb-16 max-w-4xl">
                     Invest in the Future, Today

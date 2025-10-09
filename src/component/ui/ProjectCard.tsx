@@ -17,6 +17,13 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
         cursor-pointer transition-transform duration-500
       "
     >
+      <div
+        className="w-[109px] h-[35px] rounded-[84px] bg-white/50 backdrop-blur-[6px] absolute top-6 left-6 z-50 flex justify-center items-center"
+      >
+        <h3 className="text-sm text-black font-bold">
+          {project.category}
+        </h3>
+      </div>
       <Image
         src={project.image}
         alt={project.title}
@@ -52,7 +59,7 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
           </div>
 
           <div className="flex justify-center text-gray-300 gap-1 w-full items-center">
-            <span className="text-base font-normal">Funding Status:</span>
+            <span className="text-sm font-normal">Funding Status:</span>
             <div className="w-full bg-white rounded-full h-2 overflow-hidden">
               <div
                 className="bg-emerald-500 h-2 rounded-full transition-all duration-500 ease-in-out"

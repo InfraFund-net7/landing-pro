@@ -89,19 +89,19 @@ export default function UserCarousel() {
           className="cursor-pointer text-gray-400 hover:text-white transition"
         />
 
-        {/* کارت‌ها */}
         <div className="flex justify-center items-stretch gap-6 w-full max-w-6xl">
           {visibleTestimonials.map((t) => (
             <div
               key={t.id}
-              className="flex w-1/3 bg-[#191C2980] border border-gray-600 rounded-2xl p-5 gap-4 hover:bg-gray-700 hover:border-blue-400 transition-all duration-300"
+              className="flex w-1/3 bg-[#191C2980] border border-gray-600 rounded-2xl p-4 gap-4 hover:bg-gray-700 hover:border-[#24FF8E] transition-all duration-300"
             >
+              <div className="flex justify-evenly items-center gap-4 w-full h-full">
               <Image
                 src={t.image}
                 alt={t.name}
-                width={50}
-                height={50}
-                className="rounded-full object-cover"
+                width={60}
+                height={60}
+                className="rounded-full -mt-10"
               />
               <div className="flex flex-col gap-2">
                 <p className="text-gray-200 text-sm leading-relaxed font-normal">
@@ -111,6 +111,7 @@ export default function UserCarousel() {
                   <h4 className="text-white font-medium text-sm">{t.name}</h4>
                   <p className="text-gray-400 text-xs">{t.title}</p>
                 </div>
+              </div>
               </div>
             </div>
           ))}

@@ -18,11 +18,18 @@ export default function TrustedSection() {
         <Image src={stars} width={588} height={588} alt="stars" className="absolute z-20" />
       </div>
       <div className="grid grid-cols-6 gap-10 justify-center items-center w-full h-fit px-[90px]">
-        {partners.map((partner) => (
-          <div key={partner.name} className="flex items-center justify-center">
+        {partners.slice(0, -2).map((partner, index) => (
+          <div key={`${partner.name}-${index}`} className="flex items-center justify-center">
             <Image src={partner.logo} alt={partner.alt} />
           </div>
         ))}
+        <div className="col-span-6 flex justify-center gap-10">
+          {partners.slice(-2).map((partner, index) => (
+            <div key={`${partner.name}-bottom-${index}`} className="flex items-center justify-center">
+              <Image src={partner.logo} alt={partner.alt} />
+            </div>
+          ))}
+        </div>
       </div>
       <UsersCarousel />
     </div>
