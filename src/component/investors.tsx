@@ -1,12 +1,13 @@
 "use client"
-import React, { Component, useState } from 'react'
+import React, { useState } from 'react'
 import radicaltransparency from "@/../public/svg/radical-transparency.svg"
 import futureliquidity from "@/../public/svg/future-liquidity.svg"
 import directimpact from "@/../public/svg/direct-impact.svg"
 import Image from 'next/image'
-import { ChartNoAxesCombined, ChevronDown, SearchCheck, Wallet } from 'lucide-react'
+import { ChartNoAxesCombined, SearchCheck, Wallet } from 'lucide-react'
 import InvestmentPlatform from './projects'
 import AnimatedChevrons from './ui/animated-chevrons'
+import stars from "@/../public/image/stars.png";
 export default function Investors() {
     const [openId, setOpenId] = useState<string | null>("financial-return")
 
@@ -76,31 +77,40 @@ export default function Investors() {
     ]
     return (
         <div className='flex flex-col justify-center items-center gap-12'>
-            <div
-                className='w-full h-[1024px] flex justify-between items-center '
-            >
-                <div className='w-1/2 h-full  flex justify-end items-center px-[90px]'>
-                    <div className='w-[823px] h-fit  flex flex-col justify-center items-start gap-12 text-white'>
-                        <h1 className='text-[64px] font-bold'>Invest Directly in the
-                            Future of Our Planet</h1>
-                        <h2 className='text-2xl font-normal'>Access transparent, liquid, and high-impact green infrastructure projects, <br /> powered by the security of the blockchain</h2>
-                        <button className='w-[154px] h-12 bg-[#24FF8E] flex justify-center items-center'>
+            <div className="w-full h-[900px] relative flex justify-start items-center overflow-hidden">
+                <div
+                    className="absolute inset-0"
+                    style={{
+                        backgroundImage: `
+        linear-gradient(to right, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.85) 35%, rgba(0, 0, 0, 0.4) 60%, rgba(0, 0, 0, 0) 80%), 
+        url('/image/investor-hero.png')
+      `,
+                        backgroundPosition: "40% center",
+                        backgroundSize: "110% auto",
+                        backgroundRepeat: "no-repeat",
+                        zIndex: 0,
+                    }}
+                ></div>
+
+                {/* Content */}
+                <div className="relative z-10 w-full h-full flex justify-start items-center px-[90px]">
+                    <div className="max-w-[820px] flex flex-col justify-center items-start gap-12 text-white">
+                        <h1 className="text-[64px] font-bold leading-tight">
+                            Invest Directly in the <br /> Future of Our Planet
+                        </h1>
+                        <h2 className="text-2xl font-normal text-white/90">
+                            Access transparent, liquid, and high-impact green infrastructure projects,
+                            <br /> powered by the security of the blockchain
+                        </h2>
+                        <button className="w-[154px] h-12 bg-[#24FF8E] text-black flex justify-center items-center font-semibold hover:opacity-90 transition">
                             Get Started
                         </button>
                     </div>
                 </div>
-                <div
-                    className='w-[832px] h-full'
-                    style={{
-                        backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0) 50%), url("/image/investor-hero.png")`,
-                        backgroundPosition: "45% center",
-                        backgroundSize: "cover",
-                        backgroundRepeat: "no-repeat",
-                    }}
-                >
-                </div>
             </div>
-            <div className='w-full h-fit flex flex-col justify-center items-center  px-[90px] py-12 gap-24'>
+
+
+            <div className='w-full h-fit flex flex-col justify-center items-center  px-[90px] py-12 gap-24 '>
                 <h2 className='text-[42px] text-white font-bold'>The InfraFund Difference</h2>
                 <div className='w-full h-[700px] border border-[#5D5D5D] rounded-[50px] flex justify-center items-center'>
                     {infradiffrence.map((item, index) => (
@@ -117,7 +127,8 @@ export default function Investors() {
                     ))}
                 </div>
             </div>
-            <div className="flex flex-col justify-center items-center gap-10 p-10">
+            <div className="flex flex-col justify-center items-center gap-10 p-10  w-full relative">
+                <Image src={stars} width={588} height={588} alt="stars" className="absolute z-20 -top-[10%] right-[1%]" />
                 <h2 className="text-5xl font-bold text-white">How to Invest</h2>
                 <div className="flex flex-col gap-8 justify-center items-center">
                     {invest.map((item, index) => {
@@ -138,53 +149,65 @@ export default function Investors() {
                         );
                     })}
                 </div>
+                <div className="w-[1000px] h-[588px] rounded-full absolute z-10 bottom-0" style={{
+                    background: "radial-gradient(50% 50% at 50% 50%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)",
+                    filter: "blur(400px)",
+                }} />
+                <Image src={stars} width={588} height={588} alt="stars" className="absolute z-20 -bottom-[10%] left-[1%]" />
             </div>
             {/* Projects */}
             <InvestmentPlatform />
             {/* FAQ */}
-            <div className='py-24 flex flex-col justify-center items-center'>
-                <h2 className='text-[42px] text-white font-bold'>Investor FAQ</h2>
-                <div className="space-y-4 w-[834px]">
-                    {faqs.map((faq) => {
-                        const isOpen = openId === faq.id
+            <div className='w-full h-fit relative '>
+                <div className="w-[1000px] h-[588px] rounded-full absolute z-10 bottom-[10%] left-[25%]" style={{
+                    background: "radial-gradient(50% 50% at 50% 50%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)",
+                    filter: "blur(400px)",
+                }} />
+                <div className='py-24 flex flex-col justify-center items-center gap-6'>
+                    <h2 className='text-[42px] text-white font-bold'>Investor FAQ</h2>
+                    <div className="space-y-4 w-[834px]">
+                        {faqs.map((faq) => {
+                            const isOpen = openId === faq.id
 
-                        return (
-                            <div
-                                key={faq.id}
-                                className="border border-slate-700 rounded-lg bg-slate-800/50 overflow-hidden transition-all duration-500 ease-out hover:bg-slate-800/80 hover:border-slate-600 hover:scale-[1.01] hover:shadow-xl hover:shadow-slate-900/50"
-                            >
-                                <button
-                                    onClick={() => toggleFaq(faq.id)}
-                                    className="w-full flex items-center justify-between px-6 py-6 text-left transition-colors duration-300 hover:text-slate-200"
-                                >
-                                    <span className="text-lg font-medium">{faq.question}</span>
-                                    <svg
-                                        className={`w-5 h-5 transition-transform duration-500 ease-out ${isOpen ? "rotate-180" : "rotate-0"
-                                            }`}
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </button>
-
+                            return (
                                 <div
-                                    className={`transition-all duration-500 ease-out ${isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-                                        }`}
+                                    key={faq.id}
+                                    className="border border-slate-700 rounded-lg bg-slate-800/50 overflow-hidden transition-all duration-500 ease-out hover:bg-slate-800/80 hover:border-slate-600 hover:scale-[1.01] hover:shadow-xl hover:shadow-slate-900/50"
                                 >
-                                    <div className="px-6 pb-6 text-slate-300 leading-relaxed">{faq.answer}</div>
+                                    <button
+                                        onClick={() => toggleFaq(faq.id)}
+                                        className="w-full flex items-center justify-between px-6 py-6 text-left transition-colors duration-300 hover:text-slate-200"
+                                    >
+                                        <span className="text-lg font-medium">{faq.question}</span>
+                                        <svg
+                                            className={`w-5 h-5 transition-transform duration-500 ease-out ${isOpen ? "rotate-180" : "rotate-0"
+                                                }`}
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+
+                                    <div
+                                        className={`transition-all duration-500 ease-out ${isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                                            }`}
+                                    >
+                                        <div className="px-6 pb-6 text-slate-300 leading-relaxed">{faq.answer}</div>
+                                    </div>
                                 </div>
-                            </div>
-                        )
-                    })}
+                            )
+                        })}
+                    </div>
                 </div>
-            </div>
-            <div className='w-full py-36 flex flex-col justify-center items-center gap-20'>
-                <h2 className='text-5xl font-bold text-white'>Ready to build your impact portfolio?</h2>
-                <button className='w-[154px] h-12 flex justify-center items-center bg-[#24FF8E] text-black'>
-                    Get Started
-                </button>
+
+                <div className='w-full py-36 flex flex-col justify-center items-center gap-20'>
+                    <h2 className='text-5xl font-bold text-white'>Ready to build your impact portfolio?</h2>
+                    <button className='w-[154px] h-12 flex justify-center items-center bg-[#24FF8E] text-black'>
+                        Get Started
+                    </button>
+                </div>
             </div>
         </div>
     )
