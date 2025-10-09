@@ -1,68 +1,12 @@
 import React from 'react'
 import infrafund from "@/../public/svg/infrafund.svg";
 import Image from "next/image";
-import { Instagram, Linkedin } from "lucide-react";
-import telegram from "@/../public/svg/Telegram.svg";
-import X from "@/../public/svg/X.svg";
 import Link from "next/link";
+import { socials } from '@/constants/socials';
+import { navItems } from '@/constants/FooterNavItem';
 export default function FooterDefault() {
-    const socials = [
-        {
-            name: "linkedin",
-            icon: Linkedin,
-            type: "component",
-            link: "https://www.linkedin.com/company/infrafund-net/",
-        },
-        {
-            name: "X",
-            icon: X,
-            type: "image",
-            link: "https://x.com/InfraFund_net",
-        },
-        {
-            name: "Telegram",
-            icon: telegram,
-            type: "image",
-            link: "https://t.me/InfraFund",
-        },
-        {
-            name: "Instagram",
-            icon: Instagram,
-            type: "component",
-            link: "https://www.instagram.com/infrafund?igsh=eHhuMWtxeTZsanR2&utm_source=qr",
-        },
-    ];
-    const navItems = [
-        {
-            title: "Platform",
-            items: [
-                { name: "Projects", link: "/platform/overview" },
-                { name: "Investors", link: "/platform/features" },
-                { name: "Builders", link: "/platform/pricing" },
-            ],
-        },
-        {
-            title: "Company",
-            items: [
-                { name: "About Us", link: "/company/about" },
-                { name: "Careers", link: "/company/careers" },
-                { name: "Contact", link: "/company/contact" },
-            ],
-        },
-        {
-            title: "Learn",
-            items: [
-                { name: "Blog", link: "/company/about" },
-                { name: "FAQ", link: "/company/careers" },
-                { name: "How InfraFund Works", link: "/company/contact" },
-                { name: "Terms & Conditions", link: "/company/contact" },
-                { name: "Privacy Policy", link: "/company/contact" },
-            ],
-        },
-    ];
-
     return (
-        <div className='w-full h-[656px] flex flex-col justify-center items-center gap-8 relative  px-[90px]'>
+        <div className='w-full h-[656px] flex flex-col justify-center items-center gap-8 relative px-[90px] overflow-hidden'>
             <div className='w-full  justify-between items-center flex'>
                 <div className='flex flex-col gap-6'>
                     <div className="w-[265px] h-fit flex flex-col gap-4 text-base font-normal text-[#D6D6D6]">
@@ -119,6 +63,14 @@ export default function FooterDefault() {
             <div className='absolute z-10 w-full h-[101px] text-center bottom-0 border-t-[1px] border-[#FFFFFF1A] flex justify-center items-center'>
                 <span className='text-base font-normal text-[#C1C7CB]'>© 2025 InfraNetZero LTD | All rights <br /> reserved.</span>
             </div>
+            <div
+                className="w-[1000px] h-[588px] rounded-full absolute -z-10 -bottom-[130%]"
+                style={{
+                    background:
+                        "radial-gradient(50% 50% at 50% 100%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)",
+                    filter: "blur(400px)",
+                }}
+            />
         </div>
     )
 }

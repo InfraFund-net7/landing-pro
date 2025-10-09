@@ -2,67 +2,11 @@ import React from "react";
 import world from "@/../public/svg/world.svg";
 import infrafund from "@/../public/svg/infrafund.svg";
 import Image from "next/image";
-import { Instagram, Linkedin } from "lucide-react";
-import telegram from "@/../public/svg/Telegram.svg";
-import X from "@/../public/svg/X.svg";
 import Link from "next/link";
 import Uk from "@/../public/svg/englandflag.svg"
+import { socials } from "@/constants/socials";
+import { navItems } from "@/constants/FooterNavItem";
 export default function FooterHome() {
-  const socials = [
-    {
-      name: "linkedin",
-      icon: Linkedin,
-      type: "component",
-      link: "https://www.linkedin.com/company/infrafund-net/",
-    },
-    {
-      name: "X",
-      icon: X,
-      type: "image",
-      link: "https://x.com/InfraFund_net",
-    },
-    {
-      name: "Telegram",
-      icon: telegram,
-      type: "image",
-      link: "https://t.me/InfraFund",
-    },
-    {
-      name: "Instagram",
-      icon: Instagram,
-      type: "component",
-      link: "https://www.instagram.com/infrafund?igsh=eHhuMWtxeTZsanR2&utm_source=qr",
-    },
-  ];
-  const navItems = [
-    {
-      title: "Platform",
-      items: [
-        { name: "Projects", link: "/platform/overview" },
-        { name: "Investors", link: "/platform/features" },
-        { name: "Builders", link: "/platform/pricing" },
-      ],
-    },
-    {
-      title: "Company",
-      items: [
-        { name: "About Us", link: "/company/about" },
-        { name: "Careers", link: "/company/careers" },
-        { name: "Contact", link: "/company/contact" },
-      ],
-    },
-    {
-      title: "Learn",
-      items: [
-        { name: "Blog", link: "/company/about" },
-        { name: "FAQ", link: "/company/careers" },
-        { name: "How InfraFund Works", link: "/company/contact" },
-        { name: "Terms & Conditions", link: "/company/contact" },
-        { name: "Privacy Policy", link: "/company/contact" },
-      ],
-    },
-  ];
-
   return (
     <div className="w-full h-[600px] px-[90px] flex justify-between items-center relative">
       <div className="absolute bottom-6 right-5 -z-10">

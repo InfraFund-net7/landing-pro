@@ -3,7 +3,6 @@ import ChooseInfraFund from "@/component/choose-infrafund";
 import ContactUs from "@/component/contact-us";
 import FundingSection from "@/component/funding-section";
 import InvestmentPlatform from "@/component/projects";
-import Tokenization from "@/component/tokenization";
 import TrustedSection from "@/component/trusted-section";
 
 export default function Home() {
@@ -13,7 +12,6 @@ export default function Home() {
       <ChooseInfraFund />
       <InvestmentPlatform />
       <FundingSection />
-      {/* <Tokenization /> */}
       <TrustedSection />
       <ContactUs />
     </main>
