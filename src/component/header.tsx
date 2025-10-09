@@ -25,7 +25,7 @@ export default function Header() {
     { name: "Investors", route: "/Investors" },
     { name: "Builders", route: "" },
     { name: "Learn", route: "" },
-    { name: "About Us", route: "" },
+    { name: "About Us", route: "/about-us" },
   ];
 
   return (
