@@ -82,5 +82,5 @@ jobs:
             cd $APP_PATH
             docker-compose -f docker-compose-traefik.yml down || true
             cd ..
-            sudo rm -rf "$APP_PATH"
+            sudo rm -rf "$APP_NAME"
             docker image prune -f
