@@ -73,7 +73,15 @@ export default function AboutUs() {
               </div>
               <div className="w-fit h-fit flex flex-col gap-1 justify-center items-center">
                 <div className="flex justify-center items-center gap-2 w-full h-fit">
-                  <Image src={linkedin} alt="linkedin" width={20} height={20} />
+                  <a
+                    href={item.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Open ${item.name} on LinkedIn`}
+                    className="group inline-flex items-center"
+                  >
+                    <Image src={linkedin} alt="linkedin" width={20} height={20} />
+                  </a>
                   <h3 className="text-[20px] font-normal">{item.name}</h3>
                 </div>
                 <h4 className="w-[225px] text-sm font-normal text-gray-500 text-center">{item.role}</h4>
@@ -90,7 +98,7 @@ export default function AboutUs() {
         }} />
         <div className='w-1/2 h-full flex flex-col justify-evenly items-start text-white px-16'>
           <h2 className='text-[100px]'>Our Story</h2>
-          <p className='text-base font-normal w-[533px]'>Our story stems from research conducted by our founder, Iman Alibeigi, and his master&apos;s thesis on blockchain-based project finance. With the support of the University of Exeter, the UK&apos;s first Climate Action Impact University, this academic research was transformed into a real-world venture. The concept was then incubated and accelerated by the SETsquared Partnership—the first-rank University Incubator in Europe where InfraFund was officially born. We immediately made our mark by winning the Environmental Impact Award, a testament to our mission-driven approach from day one.</p>
+          <p className='text-[17px] font-normal w-[533px]'>Our story begins not with a company, but with a conviction: the mission<br /> to reach Net Zero is being stalled by a broken financial system. Our<br /> founder, Iman Alibeigi, drawing on his master's thesis and experience<br /> managing a $2B construction portfolio, saw a <strong>$3.5 trillion annual<br /> investment gap</strong> and a system that locked out the very communities it<br /> was meant to serve. With the support of the <strong>University of Exeter</strong>, the<br /> UK's first Climate Action Impact University, and the top-ranked <br /><strong>SETsquared Partnership</strong>, this conviction was forged into a venture:<br /> <strong>InfraFund</strong>.</p>
         </div>
         <div className='w-1/2 flex h-full justify-center items-end '>
           <div className="w-[565px] h-[377px]  rounded-[50px] bg-[url('/image/our-story.jpg')] bg-cover bg-no-repeat relative">

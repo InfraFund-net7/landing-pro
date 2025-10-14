@@ -80,7 +80,7 @@ export default function Timeline() {
                                 className="absolute left-1/2 w-0.5 -translate-x-1/2"
                                 style={{
                                     top: `${(index * 100) / (timelineData.length - 1)}%`,
-                                    height: `${100 / (timelineData.length - 3.7)}%`,
+                                    height: `${100 / (timelineData.length - 3.4)}%`,
                                     background: `linear-gradient(to bottom, rgb(34, 197, 94) ${progress}%, rgb(209, 213, 219) ${progress}%)`,
                                     transition: "background 0.2s linear",
                                 }}

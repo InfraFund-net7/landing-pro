@@ -18,6 +18,8 @@ import ExeterUniversity from "@/../public/svg/collaborate/InfraFund-University-o
 import UniswapHook from "@/../public/svg/collaborate/InfraFund-Uniswap-Hook-Incubator.svg";
 import Uniswap from "@/../public/svg/collaborate/InfraFund-Uniswap.svg";
 import Soonami from "@/../public/svg/collaborate/InfraFund-Soonami.io.svg"
+import CompaniesHouse from "@/../public/svg/collaborate/InfraFund-companies-house.svg"
+import UkParliamnet from "@/../public/svg/collaborate/InfraFund-uk-parliamnet.svg"
 export const partners = [
   { name: "Cambridge", logo: Cambridge, alt: "InfraFund-CambridgeUniversity" },
   { name: "Autodesk", logo: Autodesk, alt: "InfraFund-autodesk-technology-impact" },
@@ -39,4 +41,6 @@ export const partners = [
   { name: "UniswapHook", logo: UniswapHook, alt: "InfraFund-Uniswap-Hook-Incubator" },
   { name: "Uniswap", logo: Uniswap, alt: "InfraFund-Uniswap" },
   { name: "Soonami", logo: Soonami, alt: "InfraFund-Soonami" },
+  { name: "CompaniesHouse", logo: CompaniesHouse, alt: "InfraFund-Companies-House" },
+  { name: "UkParliamnet", logo: UkParliamnet, alt: "InfraFund-Uk-Parliamnet" },
 ];
