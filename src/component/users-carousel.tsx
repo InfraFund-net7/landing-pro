@@ -82,7 +82,6 @@ export default function UserCarousel() {
   return (
     <div className="w-full flex flex-col items-center gap-6">
       <div className="flex items-center justify-center gap-4 w-full">
-        {/* دکمه قبلی */}
         <ChevronLeft
           size={32}
           onClick={prevSlide}

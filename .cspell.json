@@ -72,7 +72,16 @@
     "sodales",
     "vestibulum",
     "Homayoun",
-    "Heidarzadeh"
+    "Heidarzadeh",
+    "englandflag",
+    "projectbg",
+    "formalising",
+    "professionalisation",
+    "UKRI",
+    "recognised",
+    "decentralised",
+    "Parliamnet",
+    "decarbonise"
   ],
   "ignorePaths": ["node_modules", "build", ".next"],
   "files": ["**/*.{js,jsx,ts,tsx,md}"]
