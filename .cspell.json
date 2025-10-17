@@ -81,7 +81,14 @@
     "recognised",
     "decentralised",
     "Parliamnet",
-    "decarbonise"
+    "decarbonise",
+    "Tokenisation",
+    "tokenisation",
+    "gsap",
+    "GSAP",
+    "yoyo",
+    "projectbuilder",
+    "tokenisation"
   ],
   "ignorePaths": ["node_modules", "build", ".next"],
   "files": ["**/*.{js,jsx,ts,tsx,md}"]

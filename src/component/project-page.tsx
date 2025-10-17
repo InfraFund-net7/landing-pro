@@ -1,96 +1,32 @@
 "use client";
-import { Project } from "@/types/types";
 import React, { useState, useEffect, useRef } from "react";
-import solarpanel from "@/../public/image/solarpanel.jpg";
 import ProjectCard from "./ui/ProjectCard";
 import { ChevronLeft } from "lucide-react";
+import { Project } from "@/types/types";
+import { projects } from "@/constants/projectData";
 
 export default function ProjectPage() {
-  const projects: Project[] = [
-    {
-      id: 1,
-      category: "Solar Energy",
-      title: "Solar Home California, USA",
-      fundingTarget: "$18M",
-      projectedReturn: "6.5%",
-      fundingStatus: 68,
-      image: solarpanel,
-    },
-    {
-      id: 2,
-      category: "Wind Energy",
-      title: "North Sea Wind Farm, Denmark",
-      fundingTarget: "$25M",
-      projectedReturn: "7%",
-      fundingStatus: 52,
-      image: solarpanel,
-    },
-    {
-      id: 3,
-      category: "Solar Energy",
-      title: "Solar Rooftops, UK",
-      fundingTarget: "$15M",
-      projectedReturn: "6.2%",
-      fundingStatus: 62,
-      image: solarpanel,
-    },
-    {
-      id: 4,
-      category: "Solar Energy",
-      title: "Solar Home California, USA",
-      fundingTarget: "$18M",
-      projectedReturn: "6.5%",
-      fundingStatus: 68,
-      image: solarpanel,
-    },
-    {
-      id: 5,
-      category: "Wind Energy",
-      title: "North Sea Wind Farm, Denmark",
-      fundingTarget: "$25M",
-      projectedReturn: "7%",
-      fundingStatus: 52,
-      image: solarpanel,
-    },
-    {
-      id: 6,
-      category: "Solar Energy",
-      title: "Solar Rooftops, UK",
-      fundingTarget: "$15M",
-      projectedReturn: "6.2%",
-      fundingStatus: 62,
-      image: solarpanel,
-    },
-  ];
+
 
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [bgImage, setBgImage] = useState<string | null>(null);
   const bgRef = useRef<HTMLDivElement>(null);
+
   type TabName = "Overview" | "Financials" | "Technical" | "Documents";
   const [activeTab, setActiveTab] = useState<TabName>("Overview");
-  const handleBack = () => {
-    setSelectedProject(null);
-  };
+
+  const handleBack = () => setSelectedProject(null);
+
   const tabContent: Record<TabName, string> = {
     Overview: `The North Sea Wind Project by WindNetZero is one of the largest
-offshore wind farms in Europe, designed to generate over 500,000 MWh of clean
-energy annually. By displacing fossil fuel usage, this project will help reduce
-250,000 tons of CO₂ emissions each year, making a measurable impact on achieving
-NetZero goals.`,
-
-    Financials: `This project has a total investment size of £350M with expected annual returns
-of 8-12%. The financing structure includes a mix of equity and debt, with secured
-revenue through long-term Power Purchase Agreements.`,
-
-    Technical: `The project utilizes advanced 14MW offshore wind turbines with a total capacity
-of 1.2GW. It features smart-grid integration and AI-powered maintenance prediction
-to ensure optimal performance and minimal downtime.`,
-
-    Documents: `You can access all official project documents including feasibility studies,
-environmental reports, and investment decks in this section.`,
+offshore wind farms in Europe...`,
+    Financials: `This project has a total investment size of £350M...`,
+    Technical: `The project utilizes advanced 14MW offshore wind turbines...`,
+    Documents: `You can access all official project documents...`,
   };
 
   const tabs: TabName[] = Object.keys(tabContent) as TabName[];
+
   useEffect(() => {
     if (selectedProject) {
       setTimeout(() => {
@@ -104,8 +40,7 @@ environmental reports, and investment decks in this section.`,
   return (
     <div className="w-full min-h-screen text-white transition-colors duration-700 ease-in-out">
       {selectedProject ? (
-        <div className="w-full h-screen flex flex-col justify-center items-center text-center relative">
-
+        <div className="relative flex flex-col justify-center items-center text-center w-full h-screen">
           <div
             ref={bgRef}
             className="absolute inset-0 transition-opacity duration-700 ease-in-out"
@@ -116,56 +51,55 @@ environmental reports, and investment decks in this section.`,
               opacity: bgImage ? 1 : 0,
             }}
           />
-          <div className="w-full h-full flex flex-col justify-start items-center bg-black/40 p-10 gap-16 px-[90px] py-44 relative z-10 animate-fadeIn">
-            <div className="w-full h-fit flex justify-start items-center gap-2">
+          <div className="relative z-10 w-full h-full flex flex-col justify-start items-center bg-black/50 px-6 md:px-16 lg:px-28 py-20 gap-10 md:gap-16">
+            <div className="flex items-center gap-3 w-full">
               <ChevronLeft
                 onClick={handleBack}
-                size={50}
+                size={40}
                 className="cursor-pointer text-white hover:text-[#24FF8E] transition-colors"
               />
-              <h1 className="text-[42px] font-bold">{selectedProject.title}</h1>
+              <h1 className="text-2xl md:text-[42px] font-bold text-left">
+                {selectedProject.title}
+              </h1>
             </div>
 
             <div
-              className="w-[618px] h-[617px] bg-black/60 rounded-[50px] p-12 flex flex-col gap-24"
-              style={{
-                backdropFilter: "blur(12px)",
-              }}
+              className="bg-black/60 rounded-[30px] md:rounded-[50px] p-6 md:p-12 w-full max-w-[650px] flex flex-col gap-10 md:gap-24"
+              style={{ backdropFilter: "blur(12px)" }}
             >
-              {/* Navigation Tabs */}
-              <div className="flex justify-center items-center gap-4 w-fit h-fit">
-
-                <div className="w-full h-fit flex justify-start items-center gap-6">
-                  {tabs.map((tab) => (
-                    <span
-                      key={tab}
-                      onClick={() => setActiveTab(tab)}
-                      className={`text-base text-white cursor-pointer transition-all ${activeTab === tab
-                        ? "font-bold text-[#24FF8E]"
-                        : "font-normal hover:font-bold hover:text-[#24FF8E]"
-                        }`}
-                    >
-                      {tab}
-                    </span>
-                  ))}
-                </div>
+              <div className="flex flex-wrap justify-center md:justify-start items-center gap-4">
+                {tabs.map((tab) => (
+                  <span
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`text-sm md:text-base cursor-pointer transition-all ${activeTab === tab
+                      ? "font-bold text-[#24FF8E]"
+                      : "font-normal hover:text-[#24FF8E]"
+                      }`}
+                  >
+                    {tab}
+                  </span>
+                ))}
               </div>
 
-              {/* Tab Content */}
-              <p className="text-lg text-white text-left leading-relaxed">
+              <p className="text-sm md:text-lg text-left leading-relaxed">
                 {tabContent[activeTab]}
               </p>
             </div>
           </div>
         </div>
       ) : (
-        <div className="flex flex-col justify-end items-center gap-16 min-h-screen animate-fadeIn py-[179px]">
-          <div className="flex flex-col justify-center items-center gap-4 py-16">
-            <h1 className="text-[42px] font-bold">Open NetZero Funds</h1>
-            <h3 className="text-xl font-normal">Open NetZero Funds</h3>
+        <div className="flex flex-col justify-end items-center gap-10 md:gap-16 min-h-screen py-16 md:py-[179px] animate-fadeIn px-4">
+          <div className="flex flex-col justify-center items-center gap-2 md:gap-4 text-center">
+            <h1 className="text-3xl md:text-[42px] font-bold">
+              Open NetZero Funds
+            </h1>
+            <h3 className="text-base md:text-xl font-normal">
+              Open NetZero Funds
+            </h3>
           </div>
 
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center">
             {projects.map((project) => (
               <div key={project.id} onClick={() => setSelectedProject(project)}>
                 <ProjectCard project={project} />
@@ -173,8 +107,8 @@ environmental reports, and investment decks in this section.`,
             ))}
           </div>
 
-          <div className="w-full h-fit flex justify-center items-center">
-            <button className="bg-transparent border border-gray-600 hover:border-gray-400 text-white px-8 py-3 rounded-lg transition-all duration-200 hover:bg-gray-800 hover:bg-opacity-50 mt-10">
+          <div className="w-full flex justify-center items-center">
+            <button className="bg-transparent border border-gray-600 hover:border-gray-400 text-white px-6 md:px-8 py-2 md:py-3 rounded-lg transition-all duration-200 hover:bg-gray-800/50 mt-6 md:mt-10">
               Load More Projects
             </button>
           </div>

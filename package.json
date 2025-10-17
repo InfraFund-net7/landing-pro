@@ -14,10 +14,12 @@
     "fix:lint": "eslint --fix ."
   },
   "dependencies": {
+    "gsap": "^3.13.0",
     "lucide-react": "^0.542.0",
     "next": "15.5.2",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "recharts": "^3.3.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
