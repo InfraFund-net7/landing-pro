@@ -15,7 +15,6 @@ interface ProjectsSliderProps {
 export default function ProjectsSlider({
   projects,
   cardsPerSlide = 3,
-  gap = 20,
   cardWidth = 320,
 }: ProjectsSliderProps) {
   const totalSlides = Math.ceil(projects.length / cardsPerSlide);
@@ -29,10 +28,14 @@ export default function ProjectsSlider({
     setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
   };
 
-  const offset = -(currentSlide * (cardsPerSlide * (cardWidth + gap)));
+  // Slice projects for current slide
+  const visibleProjects = projects.slice(
+    currentSlide * cardsPerSlide,
+    currentSlide * cardsPerSlide + cardsPerSlide
+  );
 
   return (
-    <div className="w-full max-w-7xl flex flex-col items-center gap-8">
+    <div className="w-full flex flex-col items-center gap-8">
       <div className="w-full flex justify-center items-center gap-6">
         <ChevronLeft
           size={40}
@@ -40,17 +43,13 @@ export default function ProjectsSlider({
           onClick={prevSlide}
         />
 
-        <div className="w-full py-10 flex flex-col items-center overflow-hidden ">
+        <div className="w-full overflow-hidden">
           <div
-            className="flex transition-transform duration-700 ease-in-out"
-            style={{
-              transform: `translateX(${offset}px)`,
-              gap: `${gap}px`,
-              width: `${projects.length * (cardWidth + gap)}px`,
-            }}
+            className="grid grid-cols-3 gap-6 transition-all duration-700"
+            style={{ justifyItems: "start" }}
           >
-            {projects.map((project) => (
-              <div key={project.id} style={{ flex: `0 0 ${cardWidth}px` }}>
+            {visibleProjects.map((project) => (
+              <div key={project.id} style={{ width: `${cardWidth}px` }}>
                 <ProjectCard project={project} />
               </div>
             ))}
@@ -69,10 +68,11 @@ export default function ProjectsSlider({
           <div
             key={i}
             onClick={() => setCurrentSlide(i)}
-            className={`h-3 rounded-full cursor-pointer transition-all duration-300 ${i === currentSlide
+            className={`h-3 rounded-full cursor-pointer transition-all duration-300 ${
+              i === currentSlide
                 ? "w-[52px] bg-[#24FF8E]"
                 : "w-3 bg-gray-500 hover:bg-gray-300"
-              }`}
+            }`}
           />
         ))}
       </div>

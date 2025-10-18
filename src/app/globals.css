@@ -1,15 +1,39 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@theme {
+  --color-primary: #24ff8e;
+  --color-primary-50: #edfff5;
+  --color-primary-100: #d5ffea;
+  --color-primary-200: #aeffd6;
+  --color-primary-300: #6fffb7;
+  --color-primary-hover: #1ad87a;
+  --color-primary-pressed: #11b367;
+  --color-primary-disabled: #a2f4cc;
+  --color-primary-selected: #132f21;
+  --color-success: #22c55e;
+  --color-warning: #facc15;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+  --color-gray-50: #f5f6f8;
+  --color-gray-100: #edeef2;
+  --color-gray-200: #dee0e7;
+  --color-gray-300: #c7cad5;
+  --color-gray-400: #b3b6c6;
+  --color-gray-500: #9fa1b5;
+  --color-gray-600: #8a89a2;
+  --color-gray-700: #77768c;
+  --color-gray-800: #616172;
+  --color-gray-900: #51515e;
+  --color-card-bg: #151e2f80;
+  --color-card-bg-border: #152133;
+  --color-card-border: #ffffff1a;
+  --color-card-selected-bg: #1f2a40;
+  --color-card-cancel: #1c2332;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,25 +44,27 @@
 }
 
 @font-face {
-  font-family: "Satoshi";
-  src: url("../../public/font/Satoshi-Regular.woff2") format("woff2"),
-    url("../../public/font/Satoshi-Regular.woff") format("woff");
+  font-family: 'Satoshi';
+  src:
+    url('../../public/font/Satoshi-Regular.woff2') format('woff2'),
+    url('../../public/font/Satoshi-Regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Satoshi";
-  src: url("../../public/font/Satoshi-Bold.woff2") format("woff2"),
-    url("../../public/font/Satoshi-Bold.woff") format("woff");
+  font-family: 'Satoshi';
+  src:
+    url('../../public/font/Satoshi-Bold.woff2') format('woff2'),
+    url('../../public/font/Satoshi-Bold.woff') format('woff');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
 body {
-  font-family: "Satoshi", sans-serif;
+  font-family: 'Satoshi', sans-serif;
   background: var(--background);
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
