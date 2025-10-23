@@ -88,7 +88,11 @@
     "GSAP",
     "yoyo",
     "projectbuilder",
-    "tokenisation"
+    "tokenisation",
+    "Renewables",
+    "Tokenise",
+    "buildersdata",
+    "Metaverse"
   ],
   "ignorePaths": ["node_modules", "build", ".next"],
   "files": ["**/*.{js,jsx,ts,tsx,md}"]

@@ -49,7 +49,6 @@ export default function FooterHome() {
         <span>📍 London, UK</span>
         <span>UK Residents - Risk Warning</span>
 
-        {/* شبکه‌های اجتماعی */}
         <div className="w-full flex flex-wrap justify-center lg:justify-start gap-3 mt-3">
           {socials.map((item, index) => (
             <a
