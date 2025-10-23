@@ -7,14 +7,13 @@ import { contributors } from "@/data/contributors";
 import Timeline from "./timeline-about-us";
 import ContributorsSection from "./contributors";
 import { description } from "@/constants/aboutusData";
+import { CustomButton } from "../ui/custom-button";
 
 export default function AboutUs() {
 
   return (
-    <div className="w-full h-fit px-[90px] flex flex-col justify-center items-center space-y-16 
+    <div className="w-full h-fit px-[90px] flex flex-col justify-center items-center space-y-16 py-[175px] 
       max-xl:px-16 max-lg:px-8 max-md:px-4 max-md:space-y-12">
-
-      {/* HERO SECTION */}
       <div className="w-full h-fit flex justify-between items-center mt-[10%] 
         max-lg:flex-col-reverse max-lg:text-center max-lg:gap-10">
         <div className="flex flex-col gap-6 text-white max-lg:items-center">
@@ -38,8 +37,6 @@ export default function AboutUs() {
           className="max-lg:w-[350px] max-md:w-[280px]"
         />
       </div>
-
-      {/* VISION / MISSION / VALUES */}
       <div className="w-full h-fit flex justify-between items-center 
         max-lg:flex-col max-lg:gap-10">
         {description.map((item, index) => (
@@ -141,9 +138,13 @@ export default function AboutUs() {
           Whether you&apos;re an investor ready to make an impact or a builder with a
           vision, we&apos;re here to help. Reach out to our team to get started.
         </h3>
-        <button className="w-[184px] h-12 flex justify-center items-center bg-[#24FF8E] text-black rounded-sm text-base font-medium hover:scale-105 transition-transform">
+        <CustomButton
+          variant="filled"
+          className="w-fit h-12 flex justify-center items-center px-6 text-base font-semibold
+                     max-md:w-[130px] max-md:h-10 max-md:text-[13px] max-md:px-3 max-md:font-medium"
+        >
           Contact Us
-        </button>
+        </CustomButton>
         <div
           className="w-[1300px] h-[400px] rounded-full absolute z-0 max-md:hidden"
           style={{

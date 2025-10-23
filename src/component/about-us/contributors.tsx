@@ -90,6 +90,7 @@ function ContributorsMobileWave({
 
         const topDistance = (cardWidth + gap) * topCount / 2;
         const bottomDistance = (cardWidth + gap) * bottomCount / 2;
+
         const tlTop = gsap.to(topRow, {
             x: -topDistance,
             duration: 8,
@@ -105,12 +106,41 @@ function ContributorsMobileWave({
             yoyo: true,
             delay: 1,
         });
+        const pauseAnimation = () => {
+            tlTop.pause();
+            tlBottom.pause();
+        };
+        const resumeAnimation = () => {
+            tlTop.resume();
+            tlBottom.resume();
+        };
+
+        topRow.addEventListener("mouseenter", pauseAnimation);
+        topRow.addEventListener("mouseleave", resumeAnimation);
+        bottomRow.addEventListener("mouseenter", pauseAnimation);
+        bottomRow.addEventListener("mouseleave", resumeAnimation);
+
+        topRow.addEventListener("touchstart", pauseAnimation);
+        topRow.addEventListener("touchend", resumeAnimation);
+        bottomRow.addEventListener("touchstart", pauseAnimation);
+        bottomRow.addEventListener("touchend", resumeAnimation);
 
         return () => {
             tlTop.kill();
             tlBottom.kill();
+
+            topRow.removeEventListener("mouseenter", pauseAnimation);
+            topRow.removeEventListener("mouseleave", resumeAnimation);
+            bottomRow.removeEventListener("mouseenter", pauseAnimation);
+            bottomRow.removeEventListener("mouseleave", resumeAnimation);
+
+            topRow.removeEventListener("touchstart", pauseAnimation);
+            topRow.removeEventListener("touchend", resumeAnimation);
+            bottomRow.removeEventListener("touchstart", pauseAnimation);
+            bottomRow.removeEventListener("touchend", resumeAnimation);
         };
     }, []);
+
 
     const half = Math.ceil(contributors.length / 2);
     const top = contributors.slice(0, half);

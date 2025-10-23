@@ -1,8 +1,14 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0C0C0D;
+  --foreground: #0C0C0D;
+  --border-gradient: linear-gradient(
+    196.23deg,
+    rgba(36, 255, 142, 0.02) 0%,
+    rgba(36, 255, 142, 0.4) 50%,
+    rgba(36, 255, 142, 0.02) 100%
+  );
 }
 
 @theme {
@@ -83,7 +89,7 @@ body {
 .animate-slide-infinite {
   display: flex;
   animation: slide-infinite 30s linear infinite;
-  width: calc(100% * 2);
+  width: max-content;
   gap: 2rem;
 }
 

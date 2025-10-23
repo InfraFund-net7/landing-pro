@@ -60,12 +60,12 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
     return null
 }
 
-export default function BuilderEnergyFlow() {
+export default function BuilderTokenFlow() {
     return (
         <div className="w-[534px] h-fit flex items-center justify-center rounded-lg 
                         max-lg:w-[90%] max-md:w-full max-md:px-2 max-md:py-4">
             <div className="w-full h-full flex flex-col items-center justify-center gap-3">
-                <h1 className="text-white text-2xl font-semibold text-center max-md:text-lg">Energy Flow</h1>
+                <h1 className="text-white text-2xl font-semibold text-center max-md:text-lg">Token Value</h1>
                 <div className="w-full h-[208px] max-md:h-[180px]">
                     <ResponsiveContainer width="100%" height="100%">
                         <AreaChart

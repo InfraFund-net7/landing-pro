@@ -12,7 +12,7 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
     <div
       onClick={onClick}
       className="
-        group relative w-[90vw] sm:w-[300px] md:w-[350px] lg:w-[403px] 
+        group relative w-[75vw] sm:w-[300px] md:w-[350px] lg:w-[403px] 
         h-[450px] md:h-[577px]
         flex-shrink-0 rounded-[30px] md:rounded-[50px] 
         overflow-hidden shadow-lg cursor-pointer 

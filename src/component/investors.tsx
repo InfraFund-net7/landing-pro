@@ -4,6 +4,7 @@ import Image from 'next/image'
 import AnimatedChevrons from './ui/animated-chevrons'
 import stars from "@/../public/image/stars.png";
 import { faqs, infradiffrence, invest } from '@/constants/investorData'
+import { CustomButton } from './ui/custom-button';
 export default function Investors() {
     const [openId, setOpenId] = useState<string | null>("financial-return")
 
@@ -12,7 +13,6 @@ export default function Investors() {
     }
     return (
         <div className="flex flex-col justify-center items-center gap-12">
-            {/* HERO */}
             <div className="w-full h-[900px] relative flex justify-start items-center overflow-hidden 
                   max-lg:h-auto max-lg:py-20 max-md:flex-col max-md:text-center max-md:px-6">
                 <div
@@ -40,15 +40,17 @@ export default function Investors() {
                             Access transparent, liquid, and high-impact green infrastructure projects,
                             <br className="max-md:hidden" /> powered by the security of the blockchain
                         </h2>
-                        <button className="w-[154px] h-12 bg-[#24FF8E] text-black flex justify-center items-center font-semibold 
-                           hover:opacity-90 transition max-md:w-[130px] max-md:h-10">
+                        <CustomButton
+                            variant="filled"
+                            className="w-fit h-12 flex justify-center items-center px-6 text-base font-semibold
+             max-md:w-[130px] max-md:h-10 max-md:text-[13px] max-md:px-3 max-md:font-medium"
+                        >
                             Get Started
-                        </button>
+                        </CustomButton>
+
                     </div>
                 </div>
             </div>
-
-            {/* INFRA DIFFERENCE */}
             <div className="w-full h-fit flex flex-col justify-center items-center px-[90px] py-12 gap-24 max-lg:px-12 max-md:px-6 max-md:gap-12">
                 <h2 className="text-[42px] text-white font-bold max-md:text-[28px]">The InfraFund Difference</h2>
                 <div className="w-full h-[700px] border border-[#5D5D5D] rounded-[50px] flex justify-center items-center 
@@ -69,8 +71,6 @@ export default function Investors() {
                     ))}
                 </div>
             </div>
-
-            {/* HOW TO INVEST */}
             <div className="flex flex-col justify-center items-center gap-10 p-10 w-full relative max-md:p-6">
                 <Image src={stars} width={588} height={588} alt="stars" className="absolute z-20 -top-[10%] right-[1%] max-md:hidden" />
                 <h2 className="text-5xl font-bold text-white max-md:text-3xl">How to Invest</h2>
@@ -93,8 +93,6 @@ export default function Investors() {
                 </div>
                 <Image src={stars} width={588} height={588} alt="stars" className="absolute z-20 -bottom-[10%] left-[1%] max-md:hidden" />
             </div>
-
-            {/* FAQ */}
             <div className="w-full h-fit relative max-md:px-4">
                 <div className="py-24 flex flex-col justify-center items-center gap-6 max-md:py-12">
                     <h2 className="text-[42px] text-white font-bold max-md:text-[28px]">Investor FAQ</h2>
@@ -129,9 +127,14 @@ export default function Investors() {
 
                 <div className="w-full py-36 flex flex-col justify-center items-center gap-20 max-md:py-16 max-md:gap-10">
                     <h2 className="text-5xl font-bold text-white max-md:text-3xl text-center">Ready to build your impact portfolio?</h2>
-                    <button className="w-[154px] h-12 flex justify-center items-center bg-[#24FF8E] text-black max-md:w-[130px] max-md:h-10">
+                    <CustomButton
+                        variant="filled"
+                        className="w-fit h-12 flex justify-center items-center px-6 text-base font-semibold
+             max-md:w-[130px] max-md:h-10 max-md:text-[13px] max-md:px-3 max-md:font-medium"
+                    >
                         Get Started
-                    </button>
+                    </CustomButton>
+
                 </div>
             </div>
         </div>

@@ -4,6 +4,7 @@ import ProjectCard from "./ui/ProjectCard";
 import { ChevronLeft } from "lucide-react";
 import { Project } from "@/types/types";
 import { projects } from "@/constants/projectData";
+import { CustomButton } from "./ui/custom-button";
 
 export default function ProjectPage() {
 
@@ -51,8 +52,8 @@ offshore wind farms in Europe...`,
               opacity: bgImage ? 1 : 0,
             }}
           />
-          <div className="relative z-10 w-full h-full flex flex-col justify-start items-center bg-black/50 px-6 md:px-16 lg:px-28 py-20 gap-10 md:gap-16">
-            <div className="flex items-center gap-3 w-full">
+          <div className="relative z-10 top w-full h-full flex flex-col justify-start items-center bg-black/50 px-6 md:px-16 lg:px-28 py-20 gap-10 md:gap-16">
+            <div className="flex items-center gap-3 w-full mt-[20%] md:mt-[7%]">
               <ChevronLeft
                 onClick={handleBack}
                 size={40}
@@ -89,7 +90,7 @@ offshore wind farms in Europe...`,
           </div>
         </div>
       ) : (
-        <div className="flex flex-col justify-end items-center gap-10 md:gap-16 min-h-screen py-16 md:py-[179px] animate-fadeIn px-4">
+        <div className="flex flex-col justify-end items-center gap-10 md:gap-16 min-h-screen py-[179px] animate-fadeIn px-4">
           <div className="flex flex-col justify-center items-center gap-2 md:gap-4 text-center">
             <h1 className="text-3xl md:text-[42px] font-bold">
               Open NetZero Funds
@@ -108,9 +109,9 @@ offshore wind farms in Europe...`,
           </div>
 
           <div className="w-full flex justify-center items-center">
-            <button className="bg-transparent border border-gray-600 hover:border-gray-400 text-white px-6 md:px-8 py-2 md:py-3 rounded-lg transition-all duration-200 hover:bg-gray-800/50 mt-6 md:mt-10">
+            <CustomButton variant="outlined" className="w-fit px-6 md:px-8 py-2 md:py-3 rounded-lg transition-all duration-200 hover:bg-gray-800/50 mt-6 md:mt-10">
               Load More Projects
-            </button>
+            </CustomButton>
           </div>
         </div>
       )}

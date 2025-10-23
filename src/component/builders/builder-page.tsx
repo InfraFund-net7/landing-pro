@@ -1,10 +1,9 @@
 "use client"
 import React, { useState } from 'react'
-import projectbg from "@/../public/svg/project-bg.svg"
-import Image from 'next/image'
 import BlockchainDiagram from './blockchain-diagram'
 import BuilderFeature from './builder-feature'
 import { faqs } from '@/constants/builderData'
+import { CustomButton } from '../ui/custom-button'
 
 export default function BuilderPage() {
     const [openId, setOpenId] = useState<string | null>("financial-return")
@@ -15,11 +14,11 @@ export default function BuilderPage() {
 
     return (
         <>
-            <div className='w-full h-fit flex flex-col justify-center items-center'>
-                {/* HERO */}
-                <div className="w-full h-[900px] relative flex justify-start items-center overflow-hidden 
-                      max-lg:h-auto max-lg:py-20 max-md:flex-col max-md:text-center max-md:px-6 max-sm:h-auto max-sm:py-12">
-                    <div className='space-y-12 absolute z-10 px-[90px] max-md:static max-md:px-6 max-md:text-center'>
+            <div className='w-full h-fit flex flex-col justify-center items-center py-[175px]'>
+                <div
+                    className="w-full h-[1024px] relative flex justify-start items-center overflow-hidden bg-[url('/image/builders-hero.jpg')] bg-cover bg-no-repeat max-lg:h-auto max-lg:py-20 max-md:flex-col max-md:text-center max-md:px-6 max-md:bg-none max-sm:h-auto max-sm:py-12"
+                >
+                    <div className='space-y-12 absolute z-10 px-[90px] max-md:static max-md:px-6'>
                         <h1
                             className="text-[64px] font-bold max-md:text-4xl"
                             style={{
@@ -35,42 +34,25 @@ export default function BuilderPage() {
                             InfraFund provides the full-stack toolkit to fund your NetZero project,<br className='max-md:hidden' />
                             from tokenisation to global distribution.
                         </h2>
-                        <div className='w-[288px] h-12 bg-green-400 flex justify-center items-center text-black font-medium mx-auto max-md:w-[200px] max-md:h-10'>
+                        <CustomButton variant='filled' className='w-fit h-12 px-4 flex justify-center items-center text-sm sm:text-lg  rounded-lg '>
                             Start Your Project Application
-                        </div>
+                        </CustomButton>
                     </div>
-                    <div
-                        className="absolute right-1 w-[803px] h-[803px] rounded-[52px] -z-10 max-md:relative max-md:w-full max-md:h-[400px]"
-                        style={{
-                            backgroundImage: `
-                                linear-gradient(270.67deg, rgba(0, 0, 0, 0) 59.3%, #000000 99.38%), 
-                                url('/image/builders-hero.png')
-                            `,
-                            backgroundPosition: "center",
-                            backgroundSize: "cover",
-                            backgroundRepeat: "no-repeat",
-                            zIndex: 0,
-                        }}
-                    />
                 </div>
-
-                {/* BLOCKCHAIN SECTION */}
-                <div className="min-h-screen w-full overflow-hidden mt-10 relative flex justify-center items-center py-20 px-10 rounded-3xl max-md:px-4 max-md:py-10">
-                    <Image
-                        src={projectbg}
-                        alt="project-bg"
-                        className="absolute left-0 top-0 bottom-0 w-full h-full object-cover -z-10"
-                    />
-                    <div className="w-full max-w-[1400px] px-[90px] max-md:px-4">
+                <div className="min-h-screen w-full overflow-hidden mt-10 relative flex justify-center items-center py-20 px-[90px] rounded-3xl max-md:px-4 max-md:py-10">
+                    <div className="w-full">
                         <BlockchainDiagram />
                     </div>
                 </div>
-
-                {/* BUILDER FEATURE */}
                 <BuilderFeature />
-
-                {/* FAQ */}
-                <div className="py-24 flex flex-col justify-center items-center gap-6 max-md:py-12">
+                <div className="py-24 flex flex-col relative justify-center items-center gap-6 max-md:py-12">
+                    <div
+                        className="absolute inset-0 rounded-full blur-[300px]"
+                        style={{
+                            background:
+                                "radial-gradient(50% 50% at 50% 50%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)",
+                        }}
+                    />
                     <h2 className="text-[42px] text-white font-bold max-md:text-[28px]">Builders FAQ</h2>
                     <div className="space-y-4 w-[834px] max-lg:w-[90%] max-md:w-full max-md:px-4">
                         {faqs.map((faq) => {
@@ -100,15 +82,13 @@ export default function BuilderPage() {
                         })}
                     </div>
                 </div>
-
-                {/* CTA */}
                 <div className="w-full py-36 flex flex-col justify-center items-center gap-20 max-md:py-16 max-md:gap-10">
                     <h2 className="text-5xl font-bold text-white max-md:text-3xl text-center">Ready to Accelerate Your Funding?</h2>
-                    <button className="w-[250px] h-12 flex justify-center items-center bg-[#24FF8E] text-black max-md:w-[160px] max-md:h-10 text-sm font-semibold">
+                    <CustomButton variant='filled' className='w-fit h-12 px-4 flex justify-center items-center text-sm sm:text-lg rounded-lg '>
                         Apply to list your project
-                    </button>
+                    </CustomButton>
                 </div>
-            </div>
+            </div >
         </>
     )
 }

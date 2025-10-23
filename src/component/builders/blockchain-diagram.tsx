@@ -1,7 +1,7 @@
 "use client"
-
-import { FileCheck, Layers, DollarSign } from "lucide-react"
 import { useEffect, useRef } from "react"
+import Image from "next/image"
+import { buildersdata } from "@/data/builders"
 
 export default function BlockchainDiagram() {
     const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -9,7 +9,6 @@ export default function BlockchainDiagram() {
     useEffect(() => {
         const canvas = canvasRef.current
         if (!canvas) return
-
         const ctx = canvas.getContext("2d")
         if (!ctx) return
 
@@ -57,69 +56,67 @@ export default function BlockchainDiagram() {
     }, [])
 
     return (
-        <div className="relative w-full max-w-7xl">
-            <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />
-            <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-16 items-center py-12 md:py-20 max-md:gap-10 max-md:px-4">
-                {/* NODE 1 */}
-                <div className="flex flex-col items-center gap-6">
-                    <div className="relative">
-                        <div className="absolute inset-0 rounded-full border-2 border-green-400/30 w-48 h-48 md:w-64 md:h-64" />
-                        <div className="absolute inset-4 rounded-full border border-green-400/20 w-40 h-40 md:w-56 md:h-56" />
-                        <div className="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center">
-                            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-green-400 bg-background flex items-center justify-center animate-pulse-glow">
-                                <FileCheck className="w-16 h-16 md:w-20 md:h-20 text-green-400" strokeWidth={1.5} />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="text-center space-y-2">
-                        <h3 className="text-lg md:text-xl font-semibold text-green-400">Document Verification</h3>
-                        <p className="text-sm text-muted-foreground max-w-xs">
-                            Secure validation and authentication of digital documents
-                        </p>
-                    </div>
-                </div>
-
-                {/* NODE 2 */}
-                <div className="flex flex-col items-center gap-6">
-                    <div className="relative">
-                        <div className="absolute inset-0 rounded-full border-2 border-green-400/30 w-48 h-48 md:w-64 md:h-64" />
-                        <div className="absolute inset-4 rounded-full border border-green-400/20 w-40 h-40 md:w-56 md:h-56" />
-                        <div className="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center">
-                            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-green-400 bg-background flex items-center justify-center animate-pulse-glow">
-                                <Layers className="w-16 h-16 md:w-20 md:h-20 text-green-400" strokeWidth={1.5} />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="text-center space-y-2">
-                        <h3 className="text-lg md:text-xl font-semibold text-green-400">Blockchain Processing</h3>
-                        <p className="text-sm text-muted-foreground max-w-xs">
-                            Distributed ledger technology for secure transactions
-                        </p>
-                    </div>
-                </div>
-
-                {/* NODE 3 */}
-                <div className="flex flex-col items-center gap-6">
-                    <div className="relative">
-                        <div className="absolute inset-0 rounded-full border-2 border-green-400/30 w-48 h-48 md:w-64 md:h-64" />
-                        <div className="absolute inset-4 rounded-full border border-green-400/20 w-40 h-40 md:w-56 md:h-56" />
-                        <div className="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center">
-                            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-green-400 bg-background flex items-center justify-center animate-pulse-glow">
-                                <div className="relative">
-                                    <DollarSign className="w-16 h-16 md:w-20 md:h-20 text-green-400" strokeWidth={1.5} />
-                                    <div className="absolute -top-2 -right-2 w-2 h-2 rounded-full bg-green-400" />
-                                    <div className="absolute -bottom-2 -left-2 w-2 h-2 rounded-full bg-green-400" />
-                                    <div className="absolute top-1/2 -left-4 w-2 h-2 rounded-full bg-green-400" />
-                                    <div className="absolute top-1/2 -right-4 w-2 h-2 rounded-full bg-green-400" />
+        <div className="relative w-full flex flex-col gap-8 h-fit">
+            <canvas ref={canvasRef} className="absolute inset-0 w-full h-full"></canvas>
+            <div className="relative w-full hidden lg:flex flex-col gap-8">
+                <div className="flex justify-between items-center px-10">
+                    {buildersdata.map((item, index) => (
+                        <div key={index} className="relative">
+                            <div className="relative w-[300px] h-[300px] rounded-full flex items-center justify-center">
+                                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[rgba(36,255,142,0.02)] via-[rgba(36,255,142,0.4)] to-[rgba(36,255,142,0.02)] p-[2px]">
+                                    <div className="w-full h-full rounded-full flex justify-center items-center bg-[#0a0e1a]">
+                                        <Image
+                                            src={item.image}
+                                            width={200}
+                                            height={200}
+                                            alt={item.title}
+                                            className="object-contain"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="text-center space-y-2">
-                        <h3 className="text-lg md:text-xl font-semibold text-green-400">Digital Assets</h3>
-                        <p className="text-sm text-muted-foreground max-w-xs">Cryptocurrency and tokenized value exchange</p>
-                    </div>
+                    ))}
                 </div>
+
+                <div className="flex justify-between items-center text-center">
+                    {buildersdata.map((item, index) => (
+                        <div
+                            key={index}
+                            className="flex flex-col gap-4 w-[300px]"
+                        >
+                            <h3 className="text-lg md:text-[30px] font-medium">{item.title}</h3>
+                            <p className="text-sm md:text-[20px] font-normal max-w-xs text-slate-300">
+                                {item.description}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="relative w-full flex flex-col items-center gap-12 px-4 lg:hidden">
+                {buildersdata.map((item, index) => (
+                    <div
+                        key={index}
+                        className="flex flex-col items-center text-center gap-4"
+                    >
+                        <div className="relative w-[180px] h-[180px] rounded-full flex items-center justify-center">
+                            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[rgba(36,255,142,0.05)] via-[rgba(36,255,142,0.4)] to-[rgba(36,255,142,0.05)] p-[2px]">
+                                <div className="w-full h-full rounded-full flex justify-center items-center bg-[#0a0e1a]">
+                                    <Image
+                                        src={item.image}
+                                        width={120}
+                                        height={120}
+                                        alt={item.title}
+                                        className="object-contain"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <h3 className="text-lg font-semibold">{item.title}</h3>
+                        <p className="text-sm text-slate-300 max-w-[250px]">{item.description}</p>
+                    </div>
+                ))}
             </div>
         </div>
     )

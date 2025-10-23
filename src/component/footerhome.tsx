@@ -25,7 +25,7 @@ export default function FooterHome() {
         <Image src={world} alt="world-footer" className="w-full h-auto" />
         <Image
           src={Uk}
-          className="absolute right-[37%] top-[38%] w-[18px] sm:w-[25px] lg:w-auto"
+          className="absolute right-[34%] top-[27%] w-[18px] sm:w-[25px] lg:w-auto"
           alt="Uk"
         />
       </div>

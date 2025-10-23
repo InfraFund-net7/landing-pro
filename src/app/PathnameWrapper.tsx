@@ -1,26 +1,48 @@
-import { headers } from "next/headers";
-import Header from "@/component/header";
-import HeaderHeroWrapper from "@/component/HeaderHeroWrapper";
+"use client"
+import { ReactNode, useEffect, useState } from "react"
+import { usePathname } from "next/navigation"
+import Header from "@/component/header"
+import Hero from "@/component/hero"
+import PartnersSection from "@/component/partner"
 
-export default async function PathnameWrapper({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const headersList = await headers();
-  const pathname = headersList.get("x-custom-pathname") || "/";
-  console.log("Pathname:", pathname);
+export default function HeaderHeroWrapper({ children }: { children: ReactNode }) {
+  const pathname = usePathname()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (pathname !== "/") {
+    return (
+      <>
+        <Header />
+        {children}
+      </>
+    )
+  }
+
+  if (!mounted) {
+    return null
+  }
 
   return (
     <>
-      {pathname === "/" ? (
-        <HeaderHeroWrapper>{children}</HeaderHeroWrapper>
-      ) : (
-        <>
-          <Header />
-          {children}
-        </>
-      )}
+      <div className="relative w-full h-[1024px] sm:h-[900px] md:h-[1024px] overflow-hidden bg-[url('/image/hero-home.png')] bg-no-repeat bg-cover">
+        <div className="relative z-10 flex flex-col w-full h-full">
+          <div className="relative z-50">
+            <Header />
+          </div>
+          <div className="flex-1 relative z-10">
+            <Hero />
+          </div>
+          <div className="relative z-10 border-t border-white w-full h-[100px] sm:h-[120px] md:h-[136px] backdrop-blur-[5px] sm:backdrop-blur-[6px] md:backdrop-blur-[7px]">
+            <PartnersSection />
+          </div>
+        </div>
+      </div>
+
+      {children}
     </>
-  );
+  )
 }
