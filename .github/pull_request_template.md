@@ -1,22 +1,26 @@
 # Pull Request Template
 
-Thank you for your contribution! Please complete the following checklist before requesting a review.
+Thank you for your contribution! Complete the checklist below and provide the required descriptions. Ensure all items are satisfied before requesting reviews (see [Definition of Done](../CONTRIBUTING.md)).
 
-## Definition of Done Checklist
+## Pre-Review Checklist
 
-- [ ] I created this pull request using the provided template.
-- [ ] I have requested a review from the code owners.
-- [ ] I confirm that code owners will run Copilot, Gemini, ChatGPT, and manual reviews.
-- [ ] I have addressed all feedback and required changes from reviewers.
-- [ ] All automated checks (CI, tests, linters, etc.) pass before any reviews and after each push.
-- [ ] I have reviewed the [CONTRIBUTING.md](../CONTRIBUTING.md) guidelines.
+- [ ] PR uses the template with clear title and detailed description.
+- [ ] All CI/CD checks (linters, builds, dependencies) are passing.
+- [ ] Written tests for new functionality; all tests pass; coverage not decreased.
+- [ ] Passed security scans (Slither for smart contracts, SAST for backend/frontend) with no new high/medium issues.
+- [ ] Completed self-review and used AI Council (GitHub Copilot > CodeRabbit > GPT-5) for polish.
+- [ ] Reviewed full [Definition of Done](../CONTRIBUTING.md) guidelines.
 
----
+## Description
 
-Please provide a brief description of your changes:
+### What does this code do?
+(Provide a clear explanation of the changes)
 
-- ...
+### Why is this change necessary?
+(Explain the business/technical need)
 
-Any additional context or information:
+### How to test?
+(Include testing steps and prerequisites)
 
-- ...
+### Additional Context
+(Any other relevant information)
