@@ -8,14 +8,16 @@ import Timeline from "./timeline-about-us";
 import ContributorsSection from "./contributors";
 import { description } from "@/constants/aboutusData";
 import { CustomButton } from "../ui/custom-button";
+import FadeInStagger from "../animations/FadeInStagger";
 
 export default function AboutUs() {
 
   return (
     <div className="w-full h-fit px-[90px] flex flex-col justify-center items-center space-y-16 py-[175px] 
       max-xl:px-16 max-lg:px-8 max-md:px-4 max-md:space-y-12">
-      <div className="w-full h-fit flex justify-between items-center mt-[10%] 
+      <FadeInStagger className="w-full h-fit flex justify-between items-center mt-[10%] 
         max-lg:flex-col-reverse max-lg:text-center max-lg:gap-10">
+
         <div className="flex flex-col gap-6 text-white max-lg:items-center">
           <h1 className="text-6xl font-medium max-xl:text-5xl max-lg:text-4xl max-md:text-3xl">
             Building the Future of <br className="max-lg:hidden" /> Sustainable
@@ -36,8 +38,8 @@ export default function AboutUs() {
           alt="about-us-hero"
           className="max-lg:w-[350px] max-md:w-[280px]"
         />
-      </div>
-      <div className="w-full h-fit flex justify-between items-center 
+      </FadeInStagger>
+      <FadeInStagger className="w-full h-fit flex justify-between items-center 
         max-lg:flex-col max-lg:gap-10">
         {description.map((item, index) => (
           <div
@@ -61,10 +63,8 @@ export default function AboutUs() {
             </div>
           </div>
         ))}
-      </div>
-
-      {/* CONTRIBUTORS */}
-      <div className="w-full h-fit flex flex-col gap-16 justify-center items-center relative">
+      </FadeInStagger>
+      <FadeInStagger className="w-full h-fit flex flex-col gap-16 justify-center items-center relative" single>
         <div
           className="w-[1000px] h-[400px] rounded-full absolute z-0 bottom-[5%] max-md:hidden"
           style={{
@@ -84,10 +84,8 @@ export default function AboutUs() {
         </div>
 
         <ContributorsSection contributors={contributors} linkedin={linkedin} />
-      </div>
-
-      {/* OUR STORY */}
-      <div className="w-full h-[549px] flex justify-center items-center gap-6 relative 
+      </FadeInStagger>
+      <FadeInStagger className="w-full h-[549px] flex justify-center items-center gap-6 relative 
         max-lg:flex-col max-lg:h-fit max-lg:gap-12">
         <div
           className="w-[500px] h-[500px] rounded-full absolute left-2 -bottom-[15%] max-md:hidden"
@@ -124,13 +122,11 @@ export default function AboutUs() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* TIMELINE */}
-      <Timeline />
-
-      {/* CONTACT SECTION */}
-      <div className="w-full h-fit flex flex-col gap-12 justify-center items-center text-white text-center relative px-4">
+      </FadeInStagger>
+      <FadeInStagger single>
+        <Timeline />
+      </FadeInStagger>
+      <FadeInStagger className="w-full h-fit flex flex-col gap-12 justify-center items-center text-white text-center relative px-4">
         <h2 className="text-5xl font-bold max-md:text-3xl">
           Let&apos;s Build the Green Future Together
         </h2>
@@ -153,7 +149,7 @@ export default function AboutUs() {
             filter: "blur(400px)",
           }}
         />
-      </div>
+      </FadeInStagger>
     </div>
   );
 }

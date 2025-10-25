@@ -2,10 +2,11 @@ import { Search } from 'lucide-react'
 import React from 'react'
 import BlogCard from './blog-card'
 import { blogs } from '@/data/blog'
+import FadeInStagger from '../animations/FadeInStagger'
 
 export default function Blog() {
     return (
-        <div className='w-full min-h-screen flex flex-col gap-16 md:gap-24 justify-center items-center px-4 sm:px-8 md:px-[90px] py-[175px]'>
+        <FadeInStagger single className='w-full min-h-screen flex flex-col gap-16 md:gap-24 justify-center items-center px-4 sm:px-8 md:px-[90px] py-[175px]'>
             <div className='w-full max-w-[832px] flex flex-col justify-center items-center gap-8 text-center'>
                 <div className='w-full flex flex-col justify-center items-center gap-6'>
                     <h1 className='text-[48px] sm:text-[72px] md:text-[106px] text-white font-medium'>
@@ -34,6 +35,6 @@ export default function Blog() {
                     />
                 ))}
             </div>
-        </div>
+        </FadeInStagger>
     )
 }

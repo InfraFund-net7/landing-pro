@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation"
 import Header from "@/component/header"
 import Hero from "@/component/hero"
 import PartnersSection from "@/component/partner"
+import FadeInStagger from "@/component/animations/FadeInStagger"
 
 export default function HeaderHeroWrapper({ children }: { children: ReactNode }) {
   const pathname = usePathname()
@@ -36,9 +37,9 @@ export default function HeaderHeroWrapper({ children }: { children: ReactNode })
           <div className="flex-1 relative z-10">
             <Hero />
           </div>
-          <div className="relative z-10 border-t border-white w-full h-[100px] sm:h-[120px] md:h-[136px] backdrop-blur-[5px] sm:backdrop-blur-[6px] md:backdrop-blur-[7px]">
+          <FadeInStagger single className="relative z-10 border-t border-white w-full h-[100px] sm:h-[120px] md:h-[136px] backdrop-blur-[5px] sm:backdrop-blur-[6px] md:backdrop-blur-[7px]">
             <PartnersSection />
-          </div>
+          </FadeInStagger>
         </div>
       </div>
 

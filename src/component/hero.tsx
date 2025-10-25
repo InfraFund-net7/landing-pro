@@ -2,10 +2,11 @@
 import React from "react";
 import { CustomButton } from "./ui/custom-button";
 import { Play } from "lucide-react";
+import FadeInStagger from "./animations/FadeInStagger";
 
 export default function Hero() {
   return (
-    <div className="flex flex-col justify-center items-center w-full h-full relative overflow-hidden">
+    <FadeInStagger className="flex flex-col justify-center items-center w-full h-full relative overflow-hidden">
       <div className="w-full flex justify-start items-center px-4 sm:px-6 md:px-[90px] absolute top-[18%] sm:top-[20%]">
         <h1 className="text-white font-bold leading-tight text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight">
           Finance the <br /> Future of <br /> Energy
@@ -40,6 +41,6 @@ export default function Hero() {
           </div>
         </div>
       </div>
-    </div>
+    </FadeInStagger>
   );
 }
