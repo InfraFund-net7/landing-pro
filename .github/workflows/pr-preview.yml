@@ -55,7 +55,7 @@ jobs:
             APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/$APP_NAME
             cd $APP_PATH
             echo "APP_NAME=$APP_NAME" > .env
-            docker-compose -f docker-compose-traefik.yml up -d --build --remove-orphans
+            docker-compose -f docker-compose.traefik.yml up -d --build --remove-orphans
             docker image prune -f
 
       - name: Comment PR with Preview URL
