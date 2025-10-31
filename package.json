@@ -6,12 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "format": "npm run format:lint && npm run format:prettier && npm run format:cspell",
+    "format": "npm run format:lint && npm run format:prettier && npm run format:cspell && npm run format:knip",
     "format:lint": "eslint",
-    "format:prettier": "prettier .",
+    "format:prettier": "prettier . --check",
     "format:cspell": "cspell",
+    "format:knip": "knip",
     "fix:prettier": "prettier --write .",
-    "fix:lint": "eslint --fix ."
+    "fix:lint": "eslint --fix .",
+    "prepare": "husky"
+  },
+  "commitlint": {
+    "extends": ["@commitlint/config-conventional"]
   },
   "dependencies": {
     "gsap": "^3.13.0",
@@ -35,6 +40,7 @@
     "eslint": "^9.36.0",
     "eslint-config-next": "^15.5.2",
     "husky": "^9.1.7",
+    "knip": "^5.66.2",
     "prettier": "^3.6.2",
     "tailwindcss": "^4",
     "typescript": "^5"

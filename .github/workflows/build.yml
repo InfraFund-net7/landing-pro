@@ -25,6 +25,10 @@ jobs:
         run: npm run format
         continue-on-error: false
 
+      - name: Run Knip checks
+        run: npm run format:knip
+        continue-on-error: false
+
       - name: Build Next.js app
         run: npm run build
         env:
