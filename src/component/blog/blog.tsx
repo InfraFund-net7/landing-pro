@@ -2,11 +2,10 @@ import { Search } from 'lucide-react'
 import React from 'react'
 import BlogCard from './blog-card'
 import { blogs } from '@/data/blog'
-import FadeInStagger from '../animations/FadeInStagger'
 
 export default function Blog() {
     return (
-        <FadeInStagger single className='w-full min-h-screen flex flex-col gap-16 md:gap-24 justify-center items-center px-4 sm:px-8 md:px-[90px] py-[175px]'>
+        <div className='w-full min-h-screen flex flex-col gap-16 md:gap-24 justify-center items-center px-4 sm:px-8 md:px-[90px] py-[175px]'>
             <div className='w-full max-w-[832px] flex flex-col justify-center items-center gap-8 text-center'>
                 <div className='w-full flex flex-col justify-center items-center gap-6'>
                     <h1 className='text-[48px] sm:text-[72px] md:text-[106px] text-white font-medium'>
@@ -22,19 +21,23 @@ export default function Blog() {
                     </div>
                 </div>
             </div>
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-center items-center w-full'>
+            <div className=" grid w-full gap-6 justify-center items-start 
+  grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
+  max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-[90px]
+  overflow-hidden">
                 {blogs.map((blog, index) => (
-                    <BlogCard
-                        key={index}
-                        image={blog.image}
-                        slug={blog.slug}
-                        date={blog.date}
-                        readTime={blog.readTime}
-                        title={blog.title}
-                        description={blog.description}
-                    />
+                    <div key={index} className="w-full max-w-[400px] min-w-0 fade-in">
+                        <BlogCard
+                            image={blog.image}
+                            slug={blog.slug}
+                            date={blog.date}
+                            readTime={blog.readTime}
+                            title={blog.title}
+                            description={blog.description}
+                        />
+                    </div>
                 ))}
             </div>
-        </FadeInStagger>
+        </div>
     )
 }

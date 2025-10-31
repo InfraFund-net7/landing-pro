@@ -4,15 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { socials } from "@/constants/socials";
 import { navItems } from "@/constants/FooterNavItem";
-import FadeInStagger from "./animations/FadeInStagger";
 
 export default function FooterDefault() {
     return (
-        <FadeInStagger single>
             <div className="w-full min-h-[656px] flex flex-col justify-center items-center gap-8 relative px-6 sm:px-10 md:px-16 lg:px-[90px] overflow-hidden">
-                {/* Top Section */}
                 <div className="w-full flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10">
-                    {/* Left Side */}
                     <div className="flex flex-col gap-6 w-full lg:w-auto">
                         <div className="w-full sm:w-[265px] flex flex-col gap-4 text-sm sm:text-base font-normal text-[#D6D6D6]">
                             <Image src={infrafund} width={200} height={50} alt="InfraFund" className="w-[180px] sm:w-[261px] h-auto" />
@@ -39,8 +35,6 @@ export default function FooterDefault() {
                             </div>
                         </div>
                     </div>
-
-                    {/* Right Side (Nav Sections) */}
                     <div className="w-full sm:w-[511px] flex flex-wrap sm:flex-nowrap justify-between items-start gap-6">
                         {navItems.map((section, i) => (
                             <div key={i} className="min-w-[120px]">
@@ -61,11 +55,9 @@ export default function FooterDefault() {
                         ))}
                     </div>
                 </div>
-
-                {/* Text Section */}
                 <div className="w-full h-fit flex justify-start items-center">
                     <p className="text-xs sm:text-sm md:text-base text-[#C1C7CB] leading-relaxed">
-                        InfraNetZero LTD is authorised and regulated by the Financial Conduct Authority in the UK. Please be aware that investing in tokenized renewable energy assets through our platform
+                        InfraNetZero LTD (trading as InfraFund) is an award winning startup, incubated & accelerated in SETsquared Partnership delivered by University of Exeter. Please be aware that investing in tokenized renewable energy assets through our platform
                         (www.InfraFund.net) is a high-risk activity where your capital is at risk, and you may lose your entire investment. These investments are not covered by the Financial Services
                         Compensation Scheme (FSCS). By creating an account, you accept our Terms of Service and Privacy Policy. We do not provide any investment, tax, or legal advice; any investment decisions are
                         solely your responsibility. All personal data is handled in strict compliance with UK GDPR. We strongly advise you to consult with independent professional advisors before making any
@@ -77,8 +69,6 @@ export default function FooterDefault() {
                         © 2025 InfraNetZero LTD | All rights reserved.
                     </span>
                 </div>
-
-                {/* Gradient Glow */}
                 <div
                     className="w-[600px] sm:w-[800px] md:w-[1000px] h-[400px] sm:h-[500px] md:h-[588px] rounded-full absolute -z-10 -bottom-[80%] sm:-bottom-[100%]"
                     style={{
@@ -88,6 +78,5 @@ export default function FooterDefault() {
                     }}
                 />
             </div>
-        </FadeInStagger>
     );
 }

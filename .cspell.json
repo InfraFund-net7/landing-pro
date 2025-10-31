@@ -92,7 +92,12 @@
     "Renewables",
     "Tokenise",
     "buildersdata",
-    "Metaverse"
+    "Metaverse",
+    "Builderfaqs",
+    "Investfaqs",
+    "Platformfaqs",
+    "revolutionise",
+    "stablecoins"
   ],
   "ignorePaths": ["node_modules", "build", ".next"],
   "files": ["**/*.{js,jsx,ts,tsx,md}"]

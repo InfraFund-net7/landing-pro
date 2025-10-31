@@ -4,12 +4,10 @@ import React from "react";
 import Image from "next/image";
 import stars from "@/../public/image/stars.png";
 import { chosenItems } from "@/constants/chooseData";
-import FadeInStagger from "./animations/FadeInStagger";
 
 export default function ChooseInfraFund() {
 
   return (
-    <FadeInStagger>
       <section className="relative w-full flex flex-col items-center justify-center px-6 sm:px-10 md:px-20 py-20 gap-16 md:gap-20 overflow-hidden">
         <h2 className=" text-3xl sm:text-4xl md:text-[42px] text-white font-bold text-center">
           Why Choose InfraFund?
@@ -61,6 +59,5 @@ export default function ChooseInfraFund() {
           ))}
         </div>
       </section>
-    </FadeInStagger>
   );
 }

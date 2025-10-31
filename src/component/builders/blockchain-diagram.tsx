@@ -57,41 +57,31 @@ export default function BlockchainDiagram() {
 
     return (
         <div className="relative w-full flex flex-col gap-8 h-fit">
-            <canvas ref={canvasRef} className="absolute inset-0 w-full h-full"></canvas>
-            <div className="relative w-full hidden lg:flex flex-col gap-8">
-                <div className="flex justify-between items-center px-10">
-                    {buildersdata.map((item, index) => (
-                        <div key={index} className="relative">
-                            <div className="relative w-[300px] h-[300px] rounded-full flex items-center justify-center">
-                                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[rgba(36,255,142,0.02)] via-[rgba(36,255,142,0.4)] to-[rgba(36,255,142,0.02)] p-[2px]">
-                                    <div className="w-full h-full rounded-full flex justify-center items-center bg-[#0a0e1a]">
-                                        <Image
-                                            src={item.image}
-                                            width={200}
-                                            height={200}
-                                            alt={item.title}
-                                            className="object-contain"
-                                        />
-                                    </div>
+            <div className="relative w-full hidden lg:flex justify-between items-start px-10">
+                {buildersdata.map((item, index) => (
+                    <div
+                        key={index}
+                        className="flex flex-col items-center text-center gap-6 w-[300px]"
+                    >
+                        <div className="relative w-[300px] h-[300px] rounded-full flex items-center justify-center">
+                            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[rgba(36,255,142,0.02)] via-[rgba(36,255,142,0.4)] to-[rgba(36,255,142,0.02)] p-[2px]">
+                                <div className="w-full h-full rounded-full flex justify-center items-center bg-[#0a0e1a]">
+                                    <Image
+                                        src={item.image}
+                                        width={200}
+                                        height={200}
+                                        alt={item.title}
+                                        className="object-contain"
+                                    />
                                 </div>
                             </div>
                         </div>
-                    ))}
-                </div>
-
-                <div className="flex justify-between items-center text-center">
-                    {buildersdata.map((item, index) => (
-                        <div
-                            key={index}
-                            className="flex flex-col gap-4 w-[300px]"
-                        >
-                            <h3 className="text-lg md:text-[30px] font-medium">{item.title}</h3>
-                            <p className="text-sm md:text-[20px] font-normal max-w-xs text-slate-300">
-                                {item.description}
-                            </p>
-                        </div>
-                    ))}
-                </div>
+                        <h3 className="text-lg md:text-[30px] font-medium">{item.title}</h3>
+                        <p className="text-sm md:text-[20px] font-normal max-w-xs text-slate-300">
+                            {item.description}
+                        </p>
+                    </div>
+                ))}
             </div>
 
             <div className="relative w-full flex flex-col items-center gap-12 px-4 lg:hidden">

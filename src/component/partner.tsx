@@ -21,6 +21,10 @@ export default function PartnersSection() {
     })
   }, [])
 
+  const filteredPartners = partners.filter(
+    (p) => p.name !== "CompaniesHouse"
+  )
+
   return (
     <section className="w-full py-8 sm:py-10 md:py-12 px-2 sm:px-4 overflow-hidden">
       <div className="max-w-7xl mx-auto">
@@ -28,7 +32,7 @@ export default function PartnersSection() {
           className="flex gap-6 sm:gap-8 md:gap-10 flex-shrink-0"
           ref={sliderRef}
         >
-          {[...partners, ...partners].map((partner, index) => (
+          {[...filteredPartners, ...filteredPartners].map((partner, index) => (
             <div
               key={index}
               className="flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity duration-300 ease-in-out flex-shrink-0"

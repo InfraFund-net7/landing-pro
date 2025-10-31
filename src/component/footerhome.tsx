@@ -6,11 +6,9 @@ import Link from "next/link";
 import Uk from "@/../public/svg/englandflag.svg";
 import { socials } from "@/constants/socials";
 import { navItems } from "@/constants/FooterNavItem";
-import FadeInStagger from "./animations/FadeInStagger";
 
 export default function FooterHome() {
   return (
-    <FadeInStagger>
       <div
         className="
         w-full 
@@ -36,8 +34,7 @@ export default function FooterHome() {
             <Image src={infrafund} width={261} height={63} alt="InfraFund" />
           </div>
           <p className="leading-relaxed">
-            InfraNetZero LTD is authorised and regulated by the Financial Conduct
-            Authority in the UK. Please be aware that investing in tokenized
+            InfraNetZero LTD (trading as InfraFund) is an award winning startup, incubated & accelerated in SETsquared Partnership delivered by University of Exeter. Please be aware that investing in tokenized
             renewable energy assets through our platform (www.InfraFund.net) is a
             high-risk activity where your capital is at risk, and you may lose
             your entire investment. These investments are not covered by the
@@ -112,6 +109,5 @@ export default function FooterHome() {
           </div>
         </div>
       </div>
-    </FadeInStagger>
   );
 }

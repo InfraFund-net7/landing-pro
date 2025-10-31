@@ -19,7 +19,7 @@ export const navItems = [
         title: "Learn",
         items: [
             { name: "Blog", link: "/blog" },
-            { name: "FAQ", link: "/company/careers" },
+            { name: "FAQ", link: "/faq" },
             { name: "How InfraFund Works", link: "/company/contact" },
             { name: "Terms & Conditions", link: "/company/contact" },
             { name: "Privacy Policy", link: "/company/contact" },

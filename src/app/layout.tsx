@@ -14,8 +14,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <PathnameWrapper>{children}</PathnameWrapper>
-        <Footer />
+          <PathnameWrapper>{children}</PathnameWrapper>
+          <Footer />
       </body>
     </html>
   );

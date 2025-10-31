@@ -21,7 +21,7 @@ export default function Header() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50)
+      setScrolled(window.scrollY > 1)
     }
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
@@ -59,8 +59,8 @@ export default function Header() {
 
   const Navigation = [
     { name: "Projects", route: "/project" },
-    { name: "Investors", route: "/Investors" },
-    { name: "Builders", route: "/builders" },
+    { name: "For Investors", route: "/Investors" },
+    { name: "For Builders", route: "/builders" },
     { name: "Learn", route: "/blog" },
     { name: "About Us", route: "/about-us" },
   ]

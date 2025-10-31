@@ -7,13 +7,13 @@ import TrustedSection from "@/component/trusted-section";
 
 export default function Home() {
   return (
-    <main className="w-full min-h-screen flex flex-col">
-      <AnimatedCounter />
-      <ChooseInfraFund />
-      <InvestmentPlatform />
-      <FundingSection />
-      <TrustedSection />
-      <ContactUs />
-    </main>
+    <>
+      <section className="fade-in"><AnimatedCounter /></section>
+      <section className="fade-in"><ChooseInfraFund /></section>
+      <section className="fade-in"><InvestmentPlatform /></section>
+      <section className="fade-in"><FundingSection /></section>
+      <section className="fade-in"><TrustedSection /></section>
+      <section className="fade-in"><ContactUs /></section>
+    </>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import FadeInStagger from "./animations/FadeInStagger";
 
 interface CounterData {
   value: number;
@@ -88,15 +87,13 @@ export function AnimatedCounter() {
   }, [isVisible]);
 
   return (
-    <FadeInStagger>
       <div
         ref={counterRef}
-        className="w-full py-10 px-6 sm:px-10 md:h-[390px] md:px-20 grid grid-cols-2 md:grid-cols-4 gap-x-10 gap-y-12 justify-items-center items-center"
+        className="fade-in w-full py-10 px-6 sm:px-10 md:h-[390px] md:px-20 grid grid-cols-2 md:grid-cols-4 gap-x-10 gap-y-12 justify-items-center items-center"
       >
         {counters.map((counter, index) => (
           <CounterItem key={index} data={counter} index={index} shouldAnimate={isVisible} />
         ))}
       </div>
-    </FadeInStagger>
   );
 }

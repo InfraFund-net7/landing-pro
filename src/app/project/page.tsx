@@ -2,6 +2,8 @@ import React from "react";
 import { Metadata } from "next";
 import ProjectPage from "@/component/project-page";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://infrafund.io";
+
 export const metadata: Metadata = {
     title: "Projects | InfraFund - Open NetZero Investments",
     description:
@@ -17,11 +19,11 @@ export const metadata: Metadata = {
         title: "Projects | InfraFund",
         description:
             "Discover and invest in verified sustainable projects that power the global transition to NetZero.",
-        url: "https://infrafund.io/projects",
+        url: `${siteUrl}/projects`,
         siteName: "InfraFund",
         images: [
             {
-                url: "/image/project-hero.png",
+                url: `${siteUrl}/image/project-hero.png`,
                 width: 1200,
                 height: 630,
                 alt: "InfraFund Projects",
@@ -35,7 +37,14 @@ export const metadata: Metadata = {
         title: "InfraFund Projects",
         description:
             "Explore high-impact renewable energy and infrastructure projects with transparent returns.",
-        images: ["/image/project-hero.png"],
+        images: [`${siteUrl}/image/project-hero.png`],
+    },
+    alternates: {
+        canonical: `${siteUrl}/projects`,
+    },
+    robots: {
+        index: true,
+        follow: true,
     },
 };
 

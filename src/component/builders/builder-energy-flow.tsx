@@ -15,7 +15,7 @@ interface EnergyData {
     energy: number
 }
 
-const energyData: EnergyData[] = [
+const rawEnergyData: EnergyData[] = [
     { month: "Jan", energy: 120 },
     { month: "Feb", energy: 150 },
     { month: "Mar", energy: 300 },
@@ -34,6 +34,12 @@ const energyData: EnergyData[] = [
     { month: "Apr", energy: 320 },
     { month: "May", energy: 150 },
 ]
+
+const maxEnergy = Math.max(...rawEnergyData.map((d) => d.energy))
+const energyData = rawEnergyData.map((d) => ({
+    ...d,
+    energy: Number((d.energy / maxEnergy).toFixed(2)),
+}))
 
 type CustomTooltipProps = {
     active?: boolean
@@ -65,7 +71,9 @@ export default function BuilderEnergyFlow() {
         <div className="w-[534px] h-fit flex items-center justify-center rounded-lg 
                         max-lg:w-[90%] max-md:w-full max-md:px-2 max-md:py-4">
             <div className="w-full h-full flex flex-col items-center justify-center gap-3">
-                <h1 className="text-white text-2xl font-semibold text-center max-md:text-lg">Energy Flow</h1>
+                <h1 className="text-white text-2xl font-semibold text-center max-md:text-lg">
+                    Performance Indicator
+                </h1>
                 <div className="w-full h-[208px] max-md:h-[180px]">
                     <ResponsiveContainer width="100%" height="100%">
                         <AreaChart
@@ -78,7 +86,14 @@ export default function BuilderEnergyFlow() {
                                     <stop offset="100%" stopColor="#2d4a73" stopOpacity={0.3} />
                                 </linearGradient>
                             </defs>
-                            <CartesianGrid strokeDasharray="0" stroke="#2a2e3d" vertical horizontal />
+
+                            <CartesianGrid
+                                strokeDasharray="0"
+                                stroke="#2a2e3d"
+                                vertical
+                                horizontal
+                            />
+
                             <XAxis
                                 dataKey="month"
                                 stroke="#6b7280"
@@ -86,17 +101,21 @@ export default function BuilderEnergyFlow() {
                                 tickLine={false}
                                 axisLine={false}
                             />
+
                             <YAxis
                                 stroke="#6b7280"
                                 tick={{ fill: "#9ca3af", fontSize: 12 }}
                                 tickLine={false}
                                 axisLine={false}
-                                ticks={[0, 75, 150, 225, 300]}
+                                domain={[0, 1]}
+                                ticks={[0, 0.25, 0.5, 0.75, 1]}
                             />
+
                             <Tooltip
                                 content={<CustomTooltip />}
                                 cursor={{ stroke: "#4a6fa5", strokeWidth: 1 }}
                             />
+
                             <Area
                                 type="monotone"
                                 dataKey="energy"

@@ -117,3 +117,10 @@ body {
 .animate-fadeIn {
   animation: fadeIn 0.7s ease-in-out;
 }
+@supports (-webkit-overflow-scrolling: touch) {
+  .radial-fix {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+}
