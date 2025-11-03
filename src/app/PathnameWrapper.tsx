@@ -1,12 +1,16 @@
-"use client";
-import { ReactNode, useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
-import Header from "@/component/header";
-import Hero from "@/component/hero";
-import PartnersSection from "@/component/partner";
-import { useFadeInScroll } from "@/hooks/useFadeInScroll";
+'use client';
+import { ReactNode, useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
+import Header from '@/component/header';
+import Hero from '@/component/hero';
+import PartnersSection from '@/component/partner';
+import { useFadeInScroll } from '@/hooks/useFadeInScroll';
 
-export default function HeaderHeroWrapper({ children }: { children: ReactNode }) {
+export default function HeaderHeroWrapper({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
 
@@ -18,14 +22,16 @@ export default function HeaderHeroWrapper({ children }: { children: ReactNode })
 
   useEffect(() => {
     if (mounted) {
-      console.log("%c[GSAP] Wrapper Mounted, activating FadeIn", "color: violet");
+      console.log(
+        '%c[GSAP] Wrapper Mounted, activating FadeIn',
+        'color: violet'
+      );
     }
   }, [mounted]);
 
-
   if (!mounted) return null;
 
-  if (pathname !== "/") {
+  if (pathname !== '/') {
     return (
       <>
         <Header />
@@ -42,7 +48,7 @@ export default function HeaderHeroWrapper({ children }: { children: ReactNode })
             <Header />
           </div>
           <Hero />
-          <div className="relative z-10 border-t border-white w-full h-[100px] sm:h-[120px] md:h-[136px] backdrop-blur-[5px] sm:backdrop-blur-[6px] md:backdrop-blur-[7px]">
+          <div className="relative z-10 border-t border-white w-full h-[100px] sm:h-[120px] md:h-[136px] backdrop-blur-[3px] sm:backdrop-blur-[4px] md:backdrop-blur-[5px]">
             <PartnersSection />
           </div>
         </div>

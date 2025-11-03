@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from 'react';
 
 interface CounterData {
   value: number;
@@ -10,13 +10,17 @@ interface CounterData {
 }
 
 const counters: CounterData[] = [
-  { value: 15, label: "Supported Chains" },
-  { value: 50, label: "Integrated Projects" },
-  { value: 874, label: "TVL", prefix: "$", suffix: "M" },
-  { value: 90, label: "Yieldcoin Market Share", suffix: "%" },
+  { value: 15, label: 'Supported Chains' },
+  { value: 50, label: 'Integrated Projects' },
+  { value: 874, label: 'TVL', prefix: '$', suffix: 'M' },
+  { value: 90, label: 'Yieldcoin Market Share', suffix: '%' },
 ];
 
-function useAnimatedCounter(targetValue: number, shouldAnimate: boolean, duration = 2000) {
+function useAnimatedCounter(
+  targetValue: number,
+  shouldAnimate: boolean,
+  duration = 2000
+) {
   const [currentValue, setCurrentValue] = useState(0);
   const [hasAnimated, setHasAnimated] = useState(false);
 
@@ -56,14 +60,18 @@ function CounterItem({
   index: number;
   shouldAnimate: boolean;
 }) {
-  const animatedValue = useAnimatedCounter(data.value, shouldAnimate, 2000 + index * 200);
+  const animatedValue = useAnimatedCounter(
+    data.value,
+    shouldAnimate,
+    2000 + index * 200
+  );
 
   return (
     <div className="text-left w-full">
       <div className="text-3xl sm:text-5xl md:text-[72px] font-medium text-white mb-1 md:mb-2">
-        {data.prefix || ""}
+        {data.prefix || ''}
         {animatedValue.toLocaleString()}
-        {data.suffix || ""}
+        {data.suffix || ''}
       </div>
       <div className="text-gray-400 text-sm md:text-2xl">{data.label}</div>
     </div>
@@ -79,7 +87,7 @@ export function AnimatedCounter() {
       ([entry]) => {
         if (entry.isIntersecting && !isVisible) setIsVisible(true);
       },
-      { threshold: 0.3, rootMargin: "0px 0px -50px 0px" }
+      { threshold: 0.3, rootMargin: '0px 0px -50px 0px' }
     );
 
     if (counterRef.current) observer.observe(counterRef.current);
@@ -87,13 +95,18 @@ export function AnimatedCounter() {
   }, [isVisible]);
 
   return (
-      <div
-        ref={counterRef}
-        className="fade-in w-full py-10 px-6 sm:px-10 md:h-[390px] md:px-20 grid grid-cols-2 md:grid-cols-4 gap-x-10 gap-y-12 justify-items-center items-center"
-      >
-        {counters.map((counter, index) => (
-          <CounterItem key={index} data={counter} index={index} shouldAnimate={isVisible} />
-        ))}
-      </div>
+    <div
+      ref={counterRef}
+      className="fade-in w-full py-10 px-6 sm:px-10 md:h-[390px] md:px-20 grid grid-cols-2 md:grid-cols-4 gap-x-10 gap-y-12 justify-items-center items-center"
+    >
+      {counters.map((counter, index) => (
+        <CounterItem
+          key={index}
+          data={counter}
+          index={index}
+          shouldAnimate={isVisible}
+        />
+      ))}
+    </div>
   );
 }

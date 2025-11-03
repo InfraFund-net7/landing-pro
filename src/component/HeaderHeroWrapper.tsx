@@ -1,11 +1,15 @@
-"use client"
-import { type ReactNode /*, useEffect, useRef, useState*/ } from "react"
-import { usePathname } from "next/navigation"
-import Header from "./header"
-import Hero from "./hero"
-import PartnersSection from "./partner"
+'use client';
+import { type ReactNode /*, useEffect, useRef, useState*/ } from 'react';
+import { usePathname } from 'next/navigation';
+import Header from './header';
+import Hero from './hero';
+import PartnersSection from './partner';
 
-export default function HeaderHeroWrapper({ children }: { children: ReactNode }) {
+export default function HeaderHeroWrapper({
+  children,
+}: {
+  children: ReactNode;
+}) {
   // const videoRef = useRef<HTMLVideoElement | null>(null)
   // const [, setHasWatched] = useState<boolean | null>(null)
 
@@ -47,15 +51,15 @@ export default function HeaderHeroWrapper({ children }: { children: ReactNode })
   //   }
   // }, [])
 
-  const pathname = usePathname()
+  const pathname = usePathname();
 
-  if (pathname !== "/") {
+  if (pathname !== '/') {
     return (
       <>
         <Header />
         {children}
       </>
-    )
+    );
   }
 
   return (
@@ -76,5 +80,5 @@ export default function HeaderHeroWrapper({ children }: { children: ReactNode })
 
       <>{children}</>
     </>
-  )
+  );
 }

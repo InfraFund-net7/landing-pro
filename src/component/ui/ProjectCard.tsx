@@ -1,6 +1,6 @@
-"use client";
-import { Project } from "@/types/types";
-import Image from "next/image";
+'use client';
+import { Project } from '@/types/types';
+import Image from 'next/image';
 
 interface ProjectCardProps {
   project: Project;

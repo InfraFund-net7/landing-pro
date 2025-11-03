@@ -1,11 +1,11 @@
-import Image from "next/image"
-import BlogContents from "./blog-contents"
-import RelatedBlog from "./related-blog"
-import ProjectSection from "./project-section"
-import type { Blog } from "@/data/mockBlog"
+import Image from 'next/image';
+import BlogContents from './blog-contents';
+import RelatedBlog from './related-blog';
+import ProjectSection from './project-section';
+import type { Blog } from '@/data/mockBlog';
 
 interface BlogPageProps {
-  blog: Blog
+  blog: Blog;
 }
 
 export default function BlogPage({ blog }: BlogPageProps) {
@@ -36,7 +36,9 @@ export default function BlogPage({ blog }: BlogPageProps) {
                   {blog.category}
                 </div>
               </div>
-              <div className="hidden lg:flex w-[108px] h-full justify-center items-end">Socials</div>
+              <div className="hidden lg:flex w-[108px] h-full justify-center items-end">
+                Socials
+              </div>
             </div>
           </div>
 
@@ -51,7 +53,9 @@ export default function BlogPage({ blog }: BlogPageProps) {
           )}
         </div>
 
-        <p className="text-sm sm:text-base font-normal text-justify">{blog.description}</p>
+        <p className="text-sm sm:text-base font-normal text-justify">
+          {blog.description}
+        </p>
       </div>
 
       <hr className="w-full h-[1px] bg-[#DCDCE0]" />
@@ -60,5 +64,5 @@ export default function BlogPage({ blog }: BlogPageProps) {
       <RelatedBlog />
       <ProjectSection />
     </div>
-  )
+  );
 }

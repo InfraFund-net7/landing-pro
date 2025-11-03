@@ -1,5 +1,5 @@
-import React from "react";
-import { CustomButton } from "./ui/custom-button";
+import React from 'react';
+import { CustomButton } from './ui/custom-button';
 
 export default function ContactUs() {
   return (
@@ -10,11 +10,14 @@ export default function ContactUs() {
 
       <span className="text-base sm:text-lg md:text-2xl font-normal text-center text-gray-300 leading-relaxed max-w-3xl">
         Whether you&apos;re an investor ready to make an impact or a builder
-        with a vision, we&apos;re
-        here to help. Reach out to our team to get started.
+        with a vision, we&apos;re here to help. Reach out to our team to get
+        started.
       </span>
-      <CustomButton variant="filled" className="w-[140px] sm:w-[151px] h-[45px] sm:h-[48px] flex justify-center items-center   text-black text-sm sm:text-base font-bold 
-          rounded-md hover:scale-105 transition-all duration-300">
+      <CustomButton
+        variant="filled"
+        className="w-[140px] sm:w-[151px] h-[45px] sm:h-[48px] flex justify-center items-center   text-black text-sm sm:text-base font-bold 
+          rounded-md hover:scale-105 transition-all duration-300"
+      >
         Contact Us
       </CustomButton>
     </div>

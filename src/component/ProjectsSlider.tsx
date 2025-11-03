@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { Project } from "@/types/types";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useState } from "react";
-import ProjectCard from "./ui/ProjectCard";
+import { Project } from '@/types/types';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import ProjectCard from './ui/ProjectCard';
 
 interface ProjectsSliderProps {
   projects: Project[];
@@ -33,8 +33,8 @@ export default function ProjectsSlider({
     };
 
     handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [cardsPerSlide]);
 
   const totalSlides = Math.ceil(projects.length / slidesPerView);
@@ -61,11 +61,10 @@ export default function ProjectsSlider({
           onClick={prevSlide}
         />
         <div className="w-full flex justify-center items-center gap-6 ">
-
           <div className="w-full overflow-hidden">
             <div
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-700"
-              style={{ justifyItems: "start" }}
+              style={{ justifyItems: 'start' }}
             >
               {visibleProjects.map((project) => (
                 <div key={project.id} style={{ width: `${cardWidth}px` }}>
@@ -87,10 +86,11 @@ export default function ProjectsSlider({
           <div
             key={i}
             onClick={() => setCurrentSlide(i)}
-            className={`h-3 rounded-full cursor-pointer transition-all duration-300 ${i === currentSlide
-              ? "w-[52px] bg-[#24FF8E]"
-              : "w-3 bg-gray-500 hover:bg-gray-300"
-              }`}
+            className={`h-3 rounded-full cursor-pointer transition-all duration-300 ${
+              i === currentSlide
+                ? 'w-[52px] bg-[#24FF8E]'
+                : 'w-3 bg-gray-500 hover:bg-gray-300'
+            }`}
           />
         ))}
       </div>

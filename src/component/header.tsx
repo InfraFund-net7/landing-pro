@@ -1,76 +1,76 @@
-"use client"
-import { ChevronRight, X, Menu } from "lucide-react"
-import Image from "next/image"
-import { useEffect, useRef, useState } from "react"
-import InfraFund from "@/../public/svg/infrafund.svg"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import gsap from "gsap"
-import { CustomButton } from "./ui/custom-button"
+'use client';
+import { ChevronRight, X, Menu } from 'lucide-react';
+import Image from 'next/image';
+import { useEffect, useRef, useState } from 'react';
+import InfraFund from '@/../public/svg/infrafund.svg';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import gsap from 'gsap';
+import { CustomButton } from './ui/custom-button';
 
 export default function Header() {
-  const [scrolled, setScrolled] = useState(false)
-  const [showBanner, setShowBanner] = useState(true)
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [mounted, setMounted] = useState(false)
-  const sidebarRef = useRef<HTMLDivElement | null>(null)
-  const overlayRef = useRef<HTMLDivElement | null>(null)
-  const router = useRouter()
+  const [scrolled, setScrolled] = useState(false);
+  const [showBanner, setShowBanner] = useState(true);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement | null>(null);
+  const overlayRef = useRef<HTMLDivElement | null>(null);
+  const router = useRouter();
 
-  useEffect(() => setMounted(true), [])
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 1)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+      setScrolled(window.scrollY > 1);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
-    if (!mounted) return
+    if (!mounted) return;
 
     if (isMenuOpen) {
       gsap.to(overlayRef.current, {
         opacity: 1,
         duration: 0.4,
-        ease: "power2.out",
-        pointerEvents: "auto",
-      })
+        ease: 'power2.out',
+        pointerEvents: 'auto',
+      });
       gsap.to(sidebarRef.current, {
         x: 0,
         duration: 0.5,
-        ease: "power3.out",
-      })
+        ease: 'power3.out',
+      });
     } else {
       gsap.to(overlayRef.current, {
         opacity: 0,
         duration: 0.3,
-        ease: "power2.in",
-        pointerEvents: "none",
-      })
+        ease: 'power2.in',
+        pointerEvents: 'none',
+      });
       gsap.to(sidebarRef.current, {
-        x: "100%",
+        x: '100%',
         duration: 0.4,
-        ease: "power3.in",
-      })
+        ease: 'power3.in',
+      });
     }
-  }, [isMenuOpen, mounted])
+  }, [isMenuOpen, mounted]);
 
   const Navigation = [
-    { name: "Projects", route: "/project" },
-    { name: "For Investors", route: "/Investors" },
-    { name: "For Builders", route: "/builders" },
-    { name: "Learn", route: "/blog" },
-    { name: "About Us", route: "/about-us" },
-  ]
+    { name: 'Projects', route: '/project' },
+    { name: 'For Investors', route: '/Investors' },
+    { name: 'For Builders', route: '/builders' },
+    { name: 'Learn', route: '/blog' },
+    { name: 'About Us', route: '/about-us' },
+  ];
 
   return (
     <>
       <header
         className={`w-full h-fit px-[90px] flex flex-col gap-4 text-sm font-medium 
         transition-all duration-500 ease-in-out max-md:px-6
-        ${scrolled ? "backdrop-blur-md bg-black/40 shadow-md" : "bg-transparent"}
+        ${scrolled ? 'backdrop-blur-md bg-black/40 shadow-md' : 'bg-transparent'}
         fixed top-0 left-0 z-[950]`}
       >
         {showBanner && (
@@ -92,10 +92,10 @@ export default function Header() {
         <div className="w-full h-fit flex justify-between items-center py-2 transition-all duration-500 relative z-[960]">
           <div className="gap-8 w-fit h-fit flex justify-center items-center">
             <Image
-              src={InfraFund || "/placeholder.svg"}
+              src={InfraFund || '/placeholder.svg'}
               alt="InfraFund"
               className="cursor-pointer w-auto h-auto"
-              onClick={() => router.push("/")}
+              onClick={() => router.push('/')}
             />
 
             <div className="hidden lg:flex justify-center items-center gap-4">
@@ -153,12 +153,12 @@ export default function Header() {
 
         <div className="mt-10 mb-6">
           <Image
-            src={InfraFund || "/placeholder.svg"}
+            src={InfraFund || '/placeholder.svg'}
             alt="InfraFund"
             className="cursor-pointer"
             onClick={() => {
-              router.push("/")
-              setIsMenuOpen(false)
+              router.push('/');
+              setIsMenuOpen(false);
             }}
           />
         </div>
@@ -186,5 +186,5 @@ export default function Header() {
         </div>
       </div>
     </>
-  )
+  );
 }

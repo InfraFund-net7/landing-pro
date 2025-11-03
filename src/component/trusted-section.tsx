@@ -1,8 +1,8 @@
-import { partners } from "@/data/partners";
-import Image from "next/image";
-import React from "react";
-import UsersCarousel from "./users-carousel";
-import stars from "@/../public/image/stars.png";
+import { partners } from '@/data/partners';
+import Image from 'next/image';
+import React from 'react';
+import UsersCarousel from './users-carousel';
+import stars from '@/../public/image/stars.png';
 
 export default function TrustedSection() {
   return (
@@ -16,8 +16,8 @@ export default function TrustedSection() {
           className="w-full h-full rounded-full absolute z-10"
           style={{
             background:
-              "radial-gradient(50% 50% at 50% 50%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)",
-            filter: "blur(200px)",
+              'radial-gradient(50% 50% at 50% 50%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)',
+            filter: 'blur(200px)',
           }}
         />
         <Image
@@ -32,7 +32,7 @@ export default function TrustedSection() {
       <div className="w-full flex flex-col items-center px-4 sm:px-6 md:px-[90px] relative -z-10">
         <div className="grid grid-cols-2  sm:grid-cols-3 lg:grid-cols-6 gap-6 sm:gap-8 justify-center items-center w-full max-w-7xl">
           {partners
-            .filter((p) => p.name !== "CompaniesHouse")
+            .filter((p) => p.name !== 'CompaniesHouse')
             .slice(0, -3)
             .map((partner, index) => (
               <div
@@ -51,7 +51,7 @@ export default function TrustedSection() {
 
         <div className="mt-8 sm:mt-12 flex flex-wrap justify-center items-center gap-6 sm:gap-10 md:gap-12">
           {partners
-            .filter((p) => p.name !== "CompaniesHouse")
+            .filter((p) => p.name !== 'CompaniesHouse')
             .slice(-3)
             .map((partner, index) => (
               <div

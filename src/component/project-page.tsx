@@ -1,20 +1,18 @@
-"use client";
-import React, { useState, useEffect, useRef } from "react";
-import ProjectCard from "./ui/ProjectCard";
-import { ChevronLeft } from "lucide-react";
-import { Project } from "@/types/types";
-import { projects } from "@/constants/projectData";
-import { CustomButton } from "./ui/custom-button";
+'use client';
+import React, { useState, useEffect, useRef } from 'react';
+import ProjectCard from './ui/ProjectCard';
+import { ChevronLeft } from 'lucide-react';
+import { Project } from '@/types/types';
+import { projects } from '@/constants/projectData';
+import { CustomButton } from './ui/custom-button';
 
 export default function ProjectPage() {
-
-
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [bgImage, setBgImage] = useState<string | null>(null);
   const bgRef = useRef<HTMLDivElement>(null);
 
-  type TabName = "Overview" | "Financials" | "Technical" | "Documents";
-  const [activeTab, setActiveTab] = useState<TabName>("Overview");
+  type TabName = 'Overview' | 'Financials' | 'Technical' | 'Documents';
+  const [activeTab, setActiveTab] = useState<TabName>('Overview');
 
   const handleBack = () => setSelectedProject(null);
 
@@ -46,9 +44,9 @@ offshore wind farms in Europe...`,
             ref={bgRef}
             className="absolute inset-0"
             style={{
-              backgroundImage: bgImage ? `url(${bgImage})` : "none",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
+              backgroundImage: bgImage ? `url(${bgImage})` : 'none',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
               opacity: bgImage ? 1 : 0,
             }}
           />
@@ -66,17 +64,18 @@ offshore wind farms in Europe...`,
 
             <div
               className="bg-black/60 rounded-[30px] md:rounded-[50px] p-6 md:p-12 w-full max-w-[650px] flex flex-col gap-10 md:gap-24"
-              style={{ backdropFilter: "blur(12px)" }}
+              style={{ backdropFilter: 'blur(12px)' }}
             >
               <div className="flex flex-wrap justify-center md:justify-start items-center gap-4">
                 {tabs.map((tab) => (
                   <span
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`text-sm md:text-base cursor-pointer transition-all ${activeTab === tab
-                      ? "font-bold text-[#24FF8E]"
-                      : "font-normal hover:text-[#24FF8E]"
-                      }`}
+                    className={`text-sm md:text-base cursor-pointer transition-all ${
+                      activeTab === tab
+                        ? 'font-bold text-[#24FF8E]'
+                        : 'font-normal hover:text-[#24FF8E]'
+                    }`}
                   >
                     {tab}
                   </span>
@@ -91,23 +90,34 @@ offshore wind farms in Europe...`,
         </div>
       ) : (
         <div className="flex flex-col justify-end items-center gap-10 md:gap-16 min-h-screen py-[179px]  px-4">
-            <div className="flex flex-col justify-center items-center gap-2 md:gap-4 text-center">
-              <h1 className="text-3xl md:text-[42px] font-bold">
-                Open NetZero Funds
-              </h1>
-              <h3 className="text-base md:text-xl font-normal">
-                Open NetZero Funds
-              </h3>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center">
-              {projects.map((project) => (
-                <div key={project.id} onClick={() => setSelectedProject(project)}>
-                  <ProjectCard project={project} />
-                </div>
-              ))}
-            </div>
+          <div
+            className="w-[600px] sm:left-0 sm:w-[800px] md:w-[1000px] h-[300px] sm:h-[500px] md:h-[588px] rounded-full absolute -z-10 top-[10%] sm:-bottom-[100%]"
+            style={{
+              background:
+                'radial-gradient(50% 50% at 50% 100%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)',
+              filter: 'blur(400px)',
+            }}
+          />
+          <div className="flex flex-col justify-center items-center gap-2 md:gap-4 text-center">
+            <h1 className="text-3xl md:text-[42px] font-bold">
+              Open NetZero Funds
+            </h1>
+            <h3 className="text-base md:text-xl font-normal">
+              Open NetZero Funds
+            </h3>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center">
+            {projects.map((project) => (
+              <div key={project.id} onClick={() => setSelectedProject(project)}>
+                <ProjectCard project={project} />
+              </div>
+            ))}
+          </div>
           <div className="w-full flex justify-center items-center">
-            <CustomButton variant="outlined" className="w-fit px-6 md:px-8 py-2 md:py-3 rounded-lg transition-all duration-200 hover:bg-gray-800/50 mt-6 md:mt-10">
+            <CustomButton
+              variant="outlined"
+              className="w-fit px-6 md:px-8 py-2 md:py-3 rounded-lg transition-all duration-200 hover:bg-gray-800/50 mt-6 md:mt-10"
+            >
               Load More Projects
             </CustomButton>
           </div>

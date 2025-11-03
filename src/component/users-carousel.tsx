@@ -1,30 +1,33 @@
-"use client";
+'use client';
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
+import { useState, useEffect, useRef } from 'react';
 
 const testimonials = [
   {
     id: 1,
-    quote: "The ability to automate milestone payments through smart contracts is a massive step forward. It will eliminate payment delays, improve our cash flow, and allow us to focus on what we do best: building.",
-    name: "Test",
-    title: "EPC Contractor, Exeter",
-    image: "/image/user-test.jpg",
+    quote:
+      'The ability to automate milestone payments through smart contracts is a massive step forward. It will eliminate payment delays, improve our cash flow, and allow us to focus on what we do best: building.',
+    name: 'Test',
+    title: 'EPC Contractor, Exeter',
+    image: '/image/user-test.jpg',
   },
   {
     id: 2,
-    quote: "For the first time, the AI-Driven Digital Twin gives us real-time, trusted data on a project's performance. This level of transparency de-risks the investment and gives us the confidence to back the next generation of green assets.",
-    name: "Luke Lang",
-    title: "Angel Investor, England",
-    image: "/image/user-test.jpg",
+    quote:
+      "For the first time, the AI-Driven Digital Twin gives us real-time, trusted data on a project's performance. This level of transparency de-risks the investment and gives us the confidence to back the next generation of green assets.",
+    name: 'Luke Lang',
+    title: 'Angel Investor, England',
+    image: '/image/user-test.jpg',
   },
   {
     id: 3,
-    quote: "InfraFund's platform is set to revolutionise how we finance renewable energy projects. Slashing funding time from years to weeks will accelerate our ability to deploy green infrastructure and help us reach our NetZero goals faster",
-    name: "Sarah Johnson",
-    title: "Renewable Energy Developer, UK",
-    image: "/image/user-test.jpg",
+    quote:
+      "InfraFund's platform is set to revolutionise how we finance renewable energy projects. Slashing funding time from years to weeks will accelerate our ability to deploy green infrastructure and help us reach our NetZero goals faster",
+    name: 'Sarah Johnson',
+    title: 'Renewable Energy Developer, UK',
+    image: '/image/user-test.jpg',
   },
 ];
 
@@ -41,8 +44,8 @@ export default function UsersCarousel() {
     };
 
     handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const nextSlide = () => {

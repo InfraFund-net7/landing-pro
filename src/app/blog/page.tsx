@@ -1,8 +1,6 @@
-import Blog from '@/component/blog/blog'
-import React from 'react'
+import Blog from '@/component/blog/blog';
+import React from 'react';
 
 export default function page() {
-    return (
-        <Blog />
-    )
+  return <Blog />;
 }

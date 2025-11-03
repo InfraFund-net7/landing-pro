@@ -1,14 +1,14 @@
-"use client";
-import React, { useState } from "react";
-import { CustomButton } from "./ui/custom-button";
-import { Play, X } from "lucide-react";
+'use client';
+import React, { useState } from 'react';
+import { CustomButton } from './ui/custom-button';
+import { Play, X } from 'lucide-react';
 
 export default function Hero() {
   const [showVideo, setShowVideo] = useState(false);
 
   return (
     <div className="flex flex-col justify-center items-center w-full h-full relative overflow-hidden">
-      <div className="absolute top-[25%] sm:top-[20%] w-full flex justify-start items-center px-4 sm:px-6 md:px-[90px]">
+      <div className="absolute top-[40%] sm:top-[30%] w-full flex justify-start items-center px-4 sm:px-6 md:px-[90px]">
         <h1 className="text-white font-bold leading-tight text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight">
           Finance the <br /> Future of <br /> Energy
         </h1>
@@ -17,9 +17,9 @@ export default function Hero() {
       <div className="absolute bottom-6 sm:bottom-10 w-full flex flex-col justify-center items-end px-4 sm:px-6 md:px-[90px]">
         <div className="w-full max-w-[592px] flex flex-col gap-6 sm:gap-8 md:gap-10">
           <h2 className="text-white text-sm sm:text-base md:text-lg leading-relaxed">
-            We are the operating system for tokenizing real-world green{" "}
+            We are the operating system for tokenizing real-world green{' '}
             <br className="hidden sm:block" />
-            infrastructure, connecting global capital directly to the projects{" "}
+            infrastructure, connecting global capital directly to the projects{' '}
             <br className="hidden sm:block" />
             building our NetZero future.
           </h2>

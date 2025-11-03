@@ -1,29 +1,27 @@
-"use client"
-import { useRef, useEffect } from "react"
-import { partners } from "@/data/partners"
-import Image from "next/image"
-import gsap from "gsap"
+'use client';
+import { useRef, useEffect } from 'react';
+import { partners } from '@/data/partners';
+import Image from 'next/image';
+import gsap from 'gsap';
 
 export default function PartnersSection() {
-  const sliderRef = useRef<HTMLDivElement>(null)
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!sliderRef.current) return
-    const slider = sliderRef.current
+    if (!sliderRef.current) return;
+    const slider = sliderRef.current;
 
-    const totalWidth = slider.scrollWidth / 2
+    const totalWidth = slider.scrollWidth / 2;
 
     gsap.to(slider, {
       x: `-${totalWidth}px`,
       duration: 50,
-      ease: "linear",
-      repeat: -1
-    })
-  }, [])
+      ease: 'linear',
+      repeat: -1,
+    });
+  }, []);
 
-  const filteredPartners = partners.filter(
-    (p) => p.name !== "CompaniesHouse"
-  )
+  const filteredPartners = partners.filter((p) => p.name !== 'CompaniesHouse');
 
   return (
     <section className="w-full py-8 sm:py-10 md:py-12 px-2 sm:px-4 overflow-hidden">
@@ -38,7 +36,7 @@ export default function PartnersSection() {
               className="flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity duration-300 ease-in-out flex-shrink-0"
             >
               <Image
-                src={partner.logo || "/placeholder.svg"}
+                src={partner.logo || '/placeholder.svg'}
                 alt={partner.alt}
                 width={100}
                 height={32}
@@ -50,5 +48,5 @@ export default function PartnersSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }
