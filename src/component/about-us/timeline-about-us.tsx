@@ -155,23 +155,23 @@ export default function Timeline() {
                   <div className="w-full md:flex-1 md:pr-8">
                     {quarterLeft ? (
                       <div className="flex flex-col gap-2">
-                        <h3 className="text-xl md:text-3xl font-medium text-left md:text-right">
-                          {item.quarter}
-                        </h3>
+                        <h3 className="text-xl md:text-[25px] font-medium text-left md:text-right"
+                          dangerouslySetInnerHTML={{ __html: item.quarter }}
+                        />
                         <p
-                          className="text-sm md:text-base font-bold text-left"
+                          className="text-sm md:text-base font-normal text-left"
                           dangerouslySetInnerHTML={{ __html: item.description }}
                         />
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex flex-wrap justify-center items-center gap-4 p-4">
                         {item.logos?.map((name, logoIndex) => {
                           const partner = partners.find((p) => p.name === name);
                           if (!partner) return null;
                           return (
                             <div
                               key={`${item.quarter}-${logoIndex}`}
-                              className="flex justify-center items-center w-fit h-fit p-2 md:p-4"
+                              className="flex justify-center items-center p-2 md:p-4"
                             >
                               <Image
                                 src={partner.logo.src || '/placeholder.svg'}
@@ -190,16 +190,16 @@ export default function Timeline() {
                   <div className="hidden md:block md:flex-1 md:pl-8">
                     {!quarterLeft ? (
                       <div className="flex flex-col gap-2 text-left">
-                        <h3 className="text-3xl font-medium ">
-                          {item.quarter}
-                        </h3>
+                        <h3 className="text-[25px] font-medium "
+                          dangerouslySetInnerHTML={{ __html: item.quarter }}
+                        />
                         <p
-                          className="text-sm md:text-base font-bold text-left"
+                          className="text-sm md:text-base font-normal text-left"
                           dangerouslySetInnerHTML={{ __html: item.description }}
                         />
                       </div>
                     ) : (
-                      <div className="flex flex-wrap gap-4">
+                      <div className="grid grid-cols-2 justify-center items-center gap-4 w-[410px] h-fit ">
                         {item.logos?.map((name, logoIndex) => {
                           const partner = partners.find((p) => p.name === name);
                           if (!partner) return null;
@@ -225,9 +225,11 @@ export default function Timeline() {
                   <div className="w-full md:hidden">
                     {!quarterLeft && (
                       <div className="flex flex-col gap-2 text-left mt-4">
-                        <h3 className="text-xl font-medium">{item.quarter}</h3>
+                        <h3 className="text-xl font-medium"
+                          dangerouslySetInnerHTML={{ __html: item.quarter }}
+                        />
                         <p
-                          className="text-sm md:text-base font-bold text-left"
+                          className="text-sm md:text-base font-normal text-left"
                           dangerouslySetInnerHTML={{ __html: item.description }}
                         />
                       </div>

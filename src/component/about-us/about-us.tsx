@@ -9,8 +9,10 @@ import ContributorsSection from './contributors';
 import { description } from '@/constants/aboutusData';
 import { CustomButton } from '../ui/custom-button';
 import FadeInStagger from '../animations/FadeInStagger';
+import { useFadeInScroll } from '@/hooks/useFadeInScroll';
 
 export default function AboutUs() {
+  useFadeInScroll();
   return (
     <div
       className="w-full h-fit px-[90px] flex flex-col radial-fix justify-center items-center space-y-16 py-[175px]
@@ -94,7 +96,7 @@ export default function AboutUs() {
           />
         </div>
       </section>
-      <section className="fade-in">
+      <section className="fade-in w-full">
         <div
           className="w-full h-[549px] flex justify-center items-center gap-6 relative 
         max-lg:flex-col max-lg:h-fit max-lg:gap-12"

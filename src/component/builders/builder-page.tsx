@@ -1,11 +1,14 @@
+"use client"
 import React from 'react';
 import BlockchainDiagram from './blockchain-diagram';
 import BuilderFeature from './builder-feature';
 import { Builderfaqs } from '@/constants/builderData';
 import { CustomButton } from '../ui/custom-button';
 import FaqList from '../ui/FaqList';
+import { useFadeInScroll } from '@/hooks/useFadeInScroll';
 
 export default function BuilderPage() {
+    useFadeInScroll();
   return (
     <>
       <div className="w-full h-fit flex flex-col justify-center items-center py-[175px] sm:py-0">
