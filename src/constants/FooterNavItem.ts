@@ -21,8 +21,6 @@ export const navItems = [
       { name: 'FAQ', link: '/faq' },
       { name: 'Terms & Conditions', link: '/terms' },
       { name: 'Privacy Policy', link: '/privacy' },
-      { name: 'UK Residents', link: '/uk-residents' },
-      { name: 'Risk Warning', link: '/risk-warning' },
     ],
   },
 ];

@@ -48,7 +48,21 @@ export default function FooterHome() {
           independent professional advisors before making any investment.
         </p>
         <span>📍 London, UK</span>
-        <span>UK Residents - Risk Warning</span>
+        <span>
+          <Link
+            href="/uk-residents"
+            className="hover:text-[#24FF8E] transition-colors"
+          >
+            UK Residents
+          </Link>
+          {" - "}
+          <Link
+            href="/risk-warning"
+            className="hover:text-[#24FF8E] transition-colors"
+          >
+            Risk Warning
+          </Link>
+        </span>
 
         <div className="w-full flex flex-wrap justify-center lg:justify-start gap-3 mt-3">
           {socials.map((item, index) => (

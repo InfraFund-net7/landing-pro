@@ -19,7 +19,21 @@ export default function FooterDefault() {
               className="w-[180px] sm:w-[261px] h-auto"
             />
             <span>📍 London, UK</span>
-            <span>UK Residents - Risk Warning</span>
+            <span>
+              <Link
+                href="/uk-residents"
+                className="hover:text-[#24FF8E] transition-colors"
+              >
+                UK Residents
+              </Link>
+              {" - "}
+              <Link
+                href="/risk-warning"
+                className="hover:text-[#24FF8E] transition-colors"
+              >
+                Risk Warning
+              </Link>
+            </span>
             <div className="w-fit flex flex-wrap gap-2.5 justify-start items-center">
               {socials.map((item, index) => (
                 <a
