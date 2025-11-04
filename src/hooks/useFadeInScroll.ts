@@ -4,18 +4,21 @@ import { useLayoutEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export const useFadeInScroll = () => {
   useLayoutEffect(() => {
-    const timer = setTimeout(() => {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
+    if (typeof window === 'undefined') return;
 
-      const elements = gsap.utils.toArray<HTMLElement>('.fade-in');
-
-      if (!elements.length) return;
+    const ctx = gsap.context(() => {
+      const elements = document.querySelectorAll<HTMLElement>('.fade-in');
 
       elements.forEach((el) => {
+        if (el.hasAttribute('data-fade-initialized')) return;
+        el.setAttribute('data-fade-initialized', 'true');
+
         gsap.fromTo(
           el,
           { y: 80, opacity: 0 },
@@ -26,20 +29,16 @@ export const useFadeInScroll = () => {
             ease: 'power2.out',
             scrollTrigger: {
               trigger: el,
-              start: 'top bottom',
+              start: 'top bottom-=50',
               toggleActions: 'play none none reverse',
-              markers: false,
             },
           }
         );
       });
-
-      ScrollTrigger.refresh();
-    }, 300);
+    });
 
     return () => {
-      clearTimeout(timer);
-      ScrollTrigger.getAll().forEach((t) => t.kill());
+      ctx.revert();
     };
   }, []);
 };

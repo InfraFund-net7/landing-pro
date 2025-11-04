@@ -7,12 +7,18 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import gsap from 'gsap';
 import { CustomButton } from './ui/custom-button';
+import { Modal } from './ui/modal';
+import infrafund from "@/../public/svg/infrafund.svg"
+import { waitlistdata } from '@/data/waitlist';
+import greentik from "@/../public/svg/green-tik.svg"
+import { FormInput } from './ui/form-input';
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
@@ -76,7 +82,12 @@ export default function Header() {
         {showBanner && (
           <div className="relative w-full h-11 bg-[#00000080] rounded-b-lg text-white flex justify-center items-center gap-1 sm:gap-1.5 text-[8px] sm:text-sm">
             InfraFund&apos;s $INF token is launching soon. Join the
-            <span className="text-[#24FF8E]"> Waitlist </span>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="text-[#24FF8E] hover:underline ml-1"
+            >
+              Waitlist
+            </button>
             <ChevronRight size={16} className="hidden sm:inline" />
             {scrolled && (
               <button
@@ -137,7 +148,6 @@ export default function Header() {
         onClick={() => setIsMenuOpen(false)}
         className="fixed inset-0 bg-black/70 backdrop-blur-sm opacity-0 pointer-events-none z-[998]"
       />
-
       <div
         ref={sidebarRef}
         className="fixed top-0 right-0 h-full w-[80%] max-w-[320px] 
@@ -185,6 +195,66 @@ export default function Header() {
           </button>
         </div>
       </div>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        showCloseButton={false}
+      >
+        <div className='gap-6 text-center flex flex-col justify-center items-center w-full h-fit px-2'>
+          <div className='flex flex-col justify-center items-center w-full gap-2'>
+            <Image
+              src={infrafund}
+              width={199}
+              height={48}
+              alt='infrafund'
+              className='w-full max-w-[199px] h-auto'
+            />
+            <span className='text-xs sm:text-sm text-gray-50'>
+              The OS for Green Infrastructure Tokenisation
+            </span>
+          </div>
+
+          <div className='flex justify-center items-center w-full gap-2'>
+            <span className='text-xl sm:text-3xl text-white font-bold text-center leading-tight'>
+              Finance the NetZero<br />Transition
+            </span>
+          </div>
+
+          <div className='flex justify-center items-center w-full gap-2 '>
+            <span className='text-sm sm:text-base text-white text-center leading-relaxed'>
+              Join the waiting list for the InfraFund Token launch.<br />
+              Be the first to invest in a tokenized, sustainable future.
+            </span>
+          </div>
+
+          <div className='flex flex-col justify-center items-center w-full gap-6'>
+            <FormInput placeholder='Enter Your Email' />
+            <CustomButton
+              className='w-full h-[52px] text-black text-sm sm:text-base'
+              variant='filled'
+              type='button'
+            >
+              Get Early Access
+            </CustomButton>
+          </div>
+
+          <div className='flex flex-col justify-center items-center gap-3 h-fit sm:h-[233px]  w-full border-t border-[#37415180] '>
+            <span className='text-base font-bold text-white'>By joining, you&apos;ll get:</span>
+            {waitlistdata.map((item, index) => (
+              <div className='w-full flex justify-start items-center gap-2 text-base text-left' key={index}>
+                <Image src={greentik} width={16} height={16} alt='green-tik' />
+                <p>
+                  <span className='font-bold'>{item.title}</span>:<span className='font-normal'>{item.description}</span>
+                </p>
+              </div>
+            ))}
+          </div>
+          <div className='w-full h-1 flex justify-center items-center'>
+            <span className=' text-[#6B7280] font-normal'>© 2025 InfraFund. All rights reserved.</span>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }
