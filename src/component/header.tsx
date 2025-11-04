@@ -18,7 +18,7 @@ export default function Header() {
   const [showBanner, setShowBanner] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); // ← کنترل مودال
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
@@ -83,7 +83,7 @@ export default function Header() {
           <div className="relative w-full h-11 bg-[#00000080] rounded-b-lg text-white flex justify-center items-center gap-1 sm:gap-1.5 text-[8px] sm:text-sm">
             InfraFund&apos;s $INF token is launching soon. Join the
             <button
-              onClick={() => setIsModalOpen(true)} // ← اینجا مودال باز میشه
+              onClick={() => setIsModalOpen(true)}
               className="text-[#24FF8E] hover:underline ml-1"
             >
               Waitlist
@@ -143,14 +143,11 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Overlay برای منو */}
       <div
         ref={overlayRef}
         onClick={() => setIsMenuOpen(false)}
         className="fixed inset-0 bg-black/70 backdrop-blur-sm opacity-0 pointer-events-none z-[998]"
       />
-
-      {/* Sidebar منو موبایل */}
       <div
         ref={sidebarRef}
         className="fixed top-0 right-0 h-full w-[80%] max-w-[320px] 
@@ -204,7 +201,7 @@ export default function Header() {
         onClose={() => setIsModalOpen(false)}
         showCloseButton={false}
       >
-        <div className='gap-6 text-center flex flex-col justify-center items-center w-full h-fit'>
+        <div className='gap-6 text-center flex flex-col justify-center items-center w-full h-fit px-2'>
           <div className='flex flex-col justify-center items-center w-full gap-2'>
             <Image
               src={infrafund}

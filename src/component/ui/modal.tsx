@@ -1,8 +1,8 @@
-// Modal.tsx
 "use client";
 
 import { X } from "lucide-react";
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import gsap from "gsap";
 
 interface ModalProps {
   isOpen: boolean;
@@ -20,31 +20,80 @@ export function Modal({
   onClose,
   children,
   ModalTitle,
-  width = "90vw", // ← برای موبایل
+  width = "90vw",
   height = "auto",
   className = "",
   showCloseButton = true,
 }: ModalProps) {
-  if (!isOpen) return null;
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const overlay = overlayRef.current;
+    const modal = modalRef.current;
+
+    if (isOpen) {
+      gsap.set(overlay, { opacity: 0, display: "flex" });
+      gsap.set(modal, { opacity: 0, y: 30, scale: 0.95 });
+      gsap.to(overlay, { opacity: 1, duration: 0.3, ease: "power2.out" });
+      gsap.to(modal, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.4,
+        ease: "power3.out",
+        delay: 0.1,
+      });
+    } else {
+      gsap.to(modal, {
+        opacity: 0,
+        y: 20,
+        scale: 0.95,
+        duration: 0.3,
+        ease: "power2.in",
+      });
+      gsap.to(overlay, {
+        opacity: 0,
+        duration: 0.3,
+        ease: "power2.in",
+        delay: 0.1,
+        onComplete: () => {
+          gsap.set(overlay, { display: "none" });
+        },
+      });
+    }
+  }, [isOpen]);
+
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
 
   return (
     <div
-      className="fixed inset-0 z-[999999] flex items-center justify-center bg-[#090B1166] backdrop-blur-sm animate-fade-in p-4"
+      ref={overlayRef}
+      onClick={handleOverlayClick}
+      className="fixed inset-0 z-[999999] hidden items-center justify-center bg-[#090B1166] backdrop-blur-sm p-4"
       aria-modal="true"
       role="dialog"
     >
       <div
+        ref={modalRef}
         style={{
-          width: width,
-          maxWidth: "512px", // ← مثل فیگما، حداکثر 512px
-          maxHeight: "90vh", // جلوگیری از اسکرول غیرضروری
-          height: height,
+          width,
+          maxWidth: "512px",
+          maxHeight: "95vh",
+          height,
         }}
-        className={`relative p-6 sm:p-8 flex flex-col justify-between items-start rounded-[20px] shadow-lg bg-[#343C5266] backdrop-blur-xl border border-card-bg-border animate-slide-in ${className}`}
+        className={`relative p-6 sm:p-5 flex flex-col justify-between text-center items-start rounded-[20px] shadow-lg bg-[#343C5266] backdrop-blur-xl border border-card-bg-border ${className}`}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="w-full flex justify-between items-center">
           {ModalTitle && (
-            <h2 className="text-xl sm:text-2xl font-bold text-white">{ModalTitle}</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-white">
+              {ModalTitle}
+            </h2>
           )}
           {showCloseButton && (
             <button
@@ -57,7 +106,7 @@ export function Modal({
           )}
         </div>
 
-        <div className="w-full mt-4 overflow-y-auto">
+        <div className="w-full overflow-y-auto hide-scrollbar">
           {children}
         </div>
       </div>
