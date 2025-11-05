@@ -117,6 +117,7 @@ export default function Timeline() {
           {timelineData.map((item, index) => {
             const isGreen = nodeStates[index] === 1
             const quarterLeft = isQuarterLeft(index)
+            const isQ22025 = item.quarter === "Q2 2025"
 
             return (
               <div
@@ -150,31 +151,56 @@ export default function Timeline() {
                           dangerouslySetInnerHTML={{ __html: item.quarter }}
                         />
                         <p
+                          style={{ hyphens: 'auto', textAlign: 'justify' }}
                           className="text-sm md:text-base font-normal text-left"
                           dangerouslySetInnerHTML={{ __html: item.description }}
                         />
                       </div>
                     ) : (
-                      <div className="flex flex-wrap justify-center items-center gap-4 p-4">
-                        {item.logos?.map((name, logoIndex) => {
-                          const partner = partners.find((p) => p.name === name)
-                          if (!partner) return null
-                          return (
+                      <div className="flex flex-wrap justify-center items-center gap-4 p-4 ">
+                        <div
+                          className={`flex ${isQ22025 ? 'flex-col items-center' : 'flex-wrap justify-center'
+                            } gap-4 p-4  w-full`}
+                        >
+                          {item.logos?.includes('UkParliamnet') && (
                             <div
-                              key={`${item.quarter}-${logoIndex}`}
-                              className="flex justify-center items-center p-2 md:p-4"
+                              key="ukparleman"
+                              className="flex justify-center items-center p-2 md:p-4 w-full"
                             >
                               <Image
-                                src={partner.logo.src || "/placeholder.svg"}
-                                alt={partner.alt}
+                                src={partners.find(p => p.name === 'UkParliamnet')?.logo.src || "/placeholder.svg"}
+                                alt={partners.find(p => p.name === 'UkParliamnet')?.alt || "UK Parliament"}
                                 width={0}
                                 height={0}
                                 sizes="100vw"
                                 className="h-auto w-full max-w-[120px] md:max-w-[193px] max-h-12 md:max-h-20 object-contain"
                               />
                             </div>
-                          )
-                        })}
+                          )}
+
+                          <div className="flex flex-wrap justify-center gap-4 w-full">
+                            {item.logos?.map((name, logoIndex) => {
+                              if (name === 'UkParliamnet') return null;
+                              const partner = partners.find((p) => p.name === name);
+                              if (!partner) return null;
+                              return (
+                                <div
+                                  key={`${item.quarter}-${logoIndex}`}
+                                  className="flex justify-center items-center p-2 md:p-4"
+                                >
+                                  <Image
+                                    src={partner.logo.src || "/placeholder.svg"}
+                                    alt={partner.alt}
+                                    width={0}
+                                    height={0}
+                                    sizes="100vw"
+                                    className="h-auto w-full max-w-[120px] md:max-w-[193px] max-h-12 md:max-h-20 object-contain"
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -183,6 +209,7 @@ export default function Timeline() {
                       <div className="flex flex-col gap-2 text-left">
                         <h3 className="text-[25px] font-medium " dangerouslySetInnerHTML={{ __html: item.quarter }} />
                         <p
+                          style={{ hyphens: 'auto', textAlign: 'justify' }}
                           className="text-sm md:text-base font-normal text-left"
                           dangerouslySetInnerHTML={{ __html: item.description }}
                         />

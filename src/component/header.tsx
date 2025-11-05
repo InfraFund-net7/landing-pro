@@ -81,12 +81,12 @@ export default function Header() {
       >
         {showBanner && (
           <div className="relative w-full h-11 bg-[#00000080] rounded-b-lg text-white flex justify-center items-center gap-1 sm:gap-1.5 text-[8px] sm:text-sm">
-            InfraFund&apos;s $INF token is launching soon. Join the
+            InfraFund&apos;s INF token is launching soon. Join the
             <button
               onClick={() => setIsModalOpen(true)}
-              className="text-[#24FF8E] hover:underline ml-1"
+              className="text-[#24FF8E] underline ml-1"
             >
-              Waitlist
+              Waitlist!
             </button>
             <ChevronRight size={16} className="hidden sm:inline" />
             {scrolled && (
@@ -210,19 +210,29 @@ export default function Header() {
               alt='infrafund'
               className='w-full max-w-[199px] h-auto'
             />
-            <span className='text-xs sm:text-sm text-gray-50'>
+            <span className='text-xs sm:text-sm '
+              style={{
+                color: '#f5f6f8',
+                WebkitTextFillColor: '#f5f6f8',
+              }}
+            >
               The OS for Green Infrastructure Tokenisation
             </span>
           </div>
 
           <div className='flex justify-center items-center w-full gap-2'>
-            <span className='text-xl sm:text-3xl text-white font-bold text-center leading-tight'>
+            <span className='text-xl sm:text-3xl  font-bold text-center leading-tight'
+              style={{
+                color: '#ffffff',
+                WebkitTextFillColor: '#ffffff',
+              }}
+            >
               Finance the NetZero<br />Transition
             </span>
           </div>
 
           <div className='flex justify-center items-center w-full gap-2 '>
-            <span className='text-sm sm:text-base text-white text-center leading-relaxed'>
+            <span className='text-sm sm:text-base  text-center leading-relaxed'>
               Join the waiting list for the InfraFund Token launch.<br />
               Be the first to invest in a tokenized, sustainable future.
             </span>
@@ -240,7 +250,12 @@ export default function Header() {
           </div>
 
           <div className='flex flex-col justify-center items-center gap-3 h-fit sm:h-[233px]  w-full border-t border-[#37415180] '>
-            <span className='text-base font-bold text-white'>By joining, you&apos;ll get:</span>
+            <span className='text-base font-bold'
+              style={{
+                color: '#ffffff',
+                WebkitTextFillColor: '#ffffff',
+              }}
+            >By joining, you&apos;ll get:</span>
             {waitlistdata.map((item, index) => (
               <div className='w-full flex justify-start items-center gap-2 text-base text-left' key={index}>
                 <Image src={greentik} width={16} height={16} alt='green-tik' />

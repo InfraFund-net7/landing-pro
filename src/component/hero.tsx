@@ -8,8 +8,8 @@ export default function Hero() {
 
   return (
     <div className="flex flex-col justify-center items-center w-full h-full relative overflow-hidden">
-      <div className="absolute top-[40%] sm:top-[30%] w-full flex justify-start items-center px-4 sm:px-6 md:px-[90px]">
-        <h1 className="text-white font-bold leading-tight text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight">
+      <div className="absolute top-[30%] sm:top-[30%] w-full flex justify-start items-center px-4 sm:px-6 md:px-[90px]">
+        <h1 className="text-white font-bold leading-tight text-5xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight">
           Finance the <br /> Future of <br /> Energy
         </h1>
       </div>

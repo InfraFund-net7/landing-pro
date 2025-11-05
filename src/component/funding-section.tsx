@@ -77,7 +77,9 @@ export default function FundingSection() {
                   {item.title}
                 </h3>
               </div>
-              <p className="text-white text-sm leading-relaxed">
+              <p className="text-white text-sm leading-relaxed"
+                style={{ hyphens: 'auto', textAlign: 'justify' }}
+              >
                 {item.description}
               </p>
             </div>
@@ -117,7 +119,9 @@ export default function FundingSection() {
                   {item.title}
                 </h3>
               </div>
-              <p className="text-white text-sm leading-relaxed">
+              <p className="text-white text-sm leading-relaxed"
+                style={{ hyphens: 'auto', textAlign: 'justify' }}
+              >
                 {item.description}
               </p>
             </div>

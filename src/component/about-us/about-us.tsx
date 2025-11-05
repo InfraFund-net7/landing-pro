@@ -93,11 +93,14 @@ export default function AboutUs() {
             }}
           />
           <div
-            className="w-1/2 h-full flex flex-col justify-evenly items-start text-white px-16 
-          max-lg:w-full max-lg:px-4 max-lg:items-center max-lg:text-center max-lg:gap-6"
+            className="w-1/2 gap-28 h-full flex flex-col justify-center items-start text-white px-16 
+    max-lg:w-full max-lg:px-4 max-lg:items-center max-lg:text-center max-lg:gap-6"
           >
-            <h2 className="text-[100px] max-xl:text-7xl max-lg:text-5xl max-md:text-3xl">Our Story</h2>
-            <p className="text-[17px] font-normal max-w-[533px] w-full max-lg:w-full max-md:text-sm leading-relaxed">
+            <h2 className="text-[100px] max-xl:text-7xl max-lg:text-5xl max-md:text-3xl mb-8">
+              Our Story
+            </h2>
+            <div className="w-full  h-fit flex justify-center items-center">
+            <p className="text-[17px] font-normal max-w-[533px] w-full max-lg:w-full max-md:text-sm leading-relaxed text-justify">
               Our story begins not with a company, but with a conviction: the mission to reach Net Zero is being stalled
               by a broken financial system. Our founder, Iman Alibeigi, drawing on his master&apos;s thesis and
               experience managing a $2B construction portfolio, saw a{" "}
@@ -106,6 +109,7 @@ export default function AboutUs() {
               Climate Action Impact University, and the top-ranked <strong>SETsquared Partnership</strong>, this
               conviction was forged into a venture: <strong>InfraFund</strong>.
             </p>
+            </div>
           </div>
           <div className="w-1/2 flex h-full justify-center items-end max-lg:w-full">
             <div className="w-full max-w-[565px] aspect-[565/377] rounded-[50px] bg-[url('/image/our-story.jpg')] bg-cover bg-no-repeat relative max-md:w-[90%]">

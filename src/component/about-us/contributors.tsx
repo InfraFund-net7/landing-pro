@@ -108,7 +108,13 @@ const ContributorCard = ({ item, linkedin }: { item: Contributor; linkedin: stri
         />
         <div
           className="absolute bottom-0 left-0 right-0 rounded-b-[30px] p-2 bg-[#191C2980] backdrop-blur-md text-[10px] w-full text-white text-center 
-            opacity-0 scale-y-0 origin-bottom transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:scale-y-100"
+    opacity-0 scale-y-0 origin-bottom transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:scale-y-100"
+          style={{
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            color: '#ffffff',
+            WebkitTextFillColor: '#ffffff',
+          }}
         >
           {item.description}
         </div>

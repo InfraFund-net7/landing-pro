@@ -13,18 +13,30 @@ export default function PartnersSection() {
 
     const totalWidth = slider.scrollWidth / 2;
 
-    gsap.to(slider, {
+    const tween = gsap.to(slider, {
       x: `-${totalWidth}px`,
       duration: 50,
       ease: 'linear',
       repeat: -1,
     });
+
+    const handleMouseEnter = () => tween.pause();
+    const handleMouseLeave = () => tween.resume();
+
+    slider.addEventListener('mouseenter', handleMouseEnter);
+    slider.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      slider.removeEventListener('mouseenter', handleMouseEnter);
+      slider.removeEventListener('mouseleave', handleMouseLeave);
+      tween.kill();
+    };
   }, []);
 
   const filteredPartners = partners.filter((p) => p.name !== 'CompaniesHouse');
 
   return (
-    <section className="w-full py-8 sm:py-10 md:py-12 px-2 sm:px-4 overflow-hidden">
+    <section className="w-full bg-[#00000066] py-8 sm:py-10 md:py-12 px-2 sm:px-4 overflow-hidden">
       <div className="max-w-7xl mx-auto">
         <div
           className="flex gap-6 sm:gap-8 md:gap-10 flex-shrink-0"

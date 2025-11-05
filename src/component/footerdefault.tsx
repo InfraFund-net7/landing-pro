@@ -83,7 +83,9 @@ export default function FooterDefault() {
         </div>
       </div>
       <div className="w-full h-fit flex justify-start items-center">
-        <p className="text-xs sm:text-sm md:text-base text-[#C1C7CB] leading-relaxed">
+        <p className="text-xs sm:text-sm md:text-base text-[#C1C7CB] leading-relaxed"
+          style={{ hyphens: 'auto', textAlign: 'justify' }}
+        >
           InfraNetZero LTD (trading as InfraFund) is an award winning startup,
           incubated & accelerated in SETsquared Partnership delivered by
           University of Exeter. Please be aware that investing in tokenized

@@ -49,7 +49,7 @@ export default function TrustedSection() {
             ))}
         </div>
 
-        <div className="mt-8 sm:mt-12 flex flex-wrap justify-center items-center gap-6 sm:gap-10 md:gap-12">
+        <div className="mt-8 w-full grid grid-cols-2 sm:mt-12 sm:flex sm:flex-wrap sm:justify-center sm:items-center gap-6 sm:gap-10 md:gap-12">
           {partners
             .filter((p) => p.name !== 'CompaniesHouse')
             .slice(-3)

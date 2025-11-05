@@ -33,7 +33,10 @@ export default function FooterHome() {
         <div className="flex justify-center lg:justify-start">
           <Image src={infrafund} width={261} height={63} alt="InfraFund" />
         </div>
-        <p className="leading-relaxed">
+        <p
+          className="leading-relaxed text-justify"
+          style={{ hyphens: 'auto', textAlign: 'justify' }}
+        >
           InfraNetZero LTD (trading as InfraFund) is an award winning startup,
           incubated & accelerated in SETsquared Partnership delivered by
           University of Exeter. Please be aware that investing in tokenized
