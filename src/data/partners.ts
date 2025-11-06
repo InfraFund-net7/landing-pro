@@ -1,4 +1,3 @@
-import Cambridge from '@/../public/svg/collaborate/InfraFund-CambridgeUniversity.svg';
 import Autodesk from '@/../public/svg/collaborate/InfraFund-autodesk-technology-impact.svg';
 import Exeter from '@/../public/svg/collaborate/InfraFund-Exeter-Innovation.svg';
 import ExeterStudent from '@/../public/svg/collaborate/InfraFund-Exeter-Student-Startup.svg';
@@ -21,58 +20,58 @@ import Soonami from '@/../public/svg/collaborate/InfraFund-Soonami.io.svg';
 import CompaniesHouse from '@/../public/svg/collaborate/InfraFund-companies-house.svg';
 import UkParliamnet from '@/../public/svg/collaborate/InfraFund-uk-parliamnet.svg';
 export const partners = [
-  { name: 'Cambridge', logo: Cambridge, alt: 'InfraFund-CambridgeUniversity' },
-  {
-    name: 'Autodesk',
-    logo: Autodesk,
-    alt: 'InfraFund-autodesk-technology-impact',
-  },
-  { name: 'Exeter', logo: Exeter, alt: 'InfraFund-Exeter-Innovation' },
-  {
-    name: 'ExeterStudent',
-    logo: ExeterStudent,
-    alt: 'InfraFund-Exeter-Student-Startup',
-  },
-  {
-    name: 'ExeterSustainability',
-    logo: ExeterSustainability,
-    alt: 'InfraFund-Exeter-Sustainability-Awards',
-  },
-  { name: 'Growth', logo: Growth, alt: 'InfraFund-Growth-Forge-Accelerator' },
-  { name: 'ICURe', logo: ICURe, alt: 'InfraFund-ICURe' },
-  { name: 'InnovateUK', logo: InnovateUK, alt: 'InfraFund-Innovate-UK' },
-  {
-    name: 'MicrosoftStartup',
-    logo: MicrosoftStartup,
-    alt: 'InfraFund-Microsoft-For-Startup',
-  },
-  { name: 'Microsoft', logo: Microsoft, alt: 'InfraFund-Microsoft' },
-  { name: 'Midlands', logo: Midlands, alt: 'InfraFund-Midlands-Innovation' },
-  { name: 'Santander', logo: Santander, alt: 'InfraFund-Santander' },
-  { name: 'ScalingEdge', logo: ScalingEdge, alt: 'InfraFund-Scaling-the-Edge' },
-  { name: 'SETSquared', logo: SETSquared, alt: 'InfraFund-SETsquared' },
-  {
-    name: 'TechSouthWest',
-    logo: TechSouthWest,
-    alt: 'InfraFund-TechSouthWest',
-  },
-  { name: 'HelixWay', logo: HelixWay, alt: 'InfraFund-the-helix-way' },
   {
     name: 'ExeterUniversity',
     logo: ExeterUniversity,
     alt: 'InfraFund-University-of-Exeter',
   },
+  { name: 'SETSquared', logo: SETSquared, alt: 'InfraFund-SETsquared' },
+  {
+    name: 'Autodesk',
+    logo: Autodesk,
+    alt: 'InfraFund-autodesk-technology-impact',
+  },
+  { name: 'Microsoft', logo: Microsoft, alt: 'InfraFund-Microsoft' },
+  {
+    name: 'MicrosoftStartup',
+    logo: MicrosoftStartup,
+    alt: 'InfraFund-Microsoft-For-Startup',
+  },
+  { name: 'Exeter', logo: Exeter, alt: 'InfraFund-Exeter-Innovation' },
+  { name: 'InnovateUK', logo: InnovateUK, alt: 'InfraFund-Innovate-UK' },
+  { name: 'ICURe', logo: ICURe, alt: 'InfraFund-ICURe' },
+  { name: 'Uniswap', logo: Uniswap, alt: 'InfraFund-Uniswap' },
   {
     name: 'UniswapHook',
     logo: UniswapHook,
     alt: 'InfraFund-Uniswap-Hook-Incubator',
   },
-  { name: 'Uniswap', logo: Uniswap, alt: 'InfraFund-Uniswap' },
+  { name: 'ScalingEdge', logo: ScalingEdge, alt: 'InfraFund-Scaling-the-Edge' },
+  { name: 'HelixWay', logo: HelixWay, alt: 'InfraFund-the-helix-way' },
+  { name: 'UkParliamnet', logo: UkParliamnet, alt: 'InfraFund-Uk-Parliamnet' },
+  { name: 'Growth', logo: Growth, alt: 'InfraFund-Growth-Forge-Accelerator' },
+  {
+    name: 'TechSouthWest',
+    logo: TechSouthWest,
+    alt: 'InfraFund-TechSouthWest',
+  },
+  {
+    name: 'ExeterStudent',
+    logo: ExeterStudent,
+    alt: 'InfraFund-Exeter-Student-Startup',
+  },
+  { name: 'Midlands', logo: Midlands, alt: 'InfraFund-Midlands-Innovation' },
+  { name: 'Santander', logo: Santander, alt: 'InfraFund-Santander' },
+  {
+    name: 'ExeterSustainability',
+    logo: ExeterSustainability,
+    alt: 'InfraFund-Exeter-Sustainability-Awards',
+  },
   { name: 'Soonami', logo: Soonami, alt: 'InfraFund-Soonami' },
   {
     name: 'CompaniesHouse',
     logo: CompaniesHouse,
     alt: 'InfraFund-Companies-House',
   },
-  { name: 'UkParliamnet', logo: UkParliamnet, alt: 'InfraFund-Uk-Parliamnet' },
+
 ];

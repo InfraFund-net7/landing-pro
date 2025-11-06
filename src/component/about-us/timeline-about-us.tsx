@@ -145,17 +145,23 @@ export default function Timeline() {
                 <div className="flex flex-col md:flex-row items-start gap-4 md:gap-8 pl-20 md:pl-0">
                   <div className="w-full md:flex-1 md:pr-8 max-w-full">
                     {quarterLeft ? (
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-2  text-justify">
                         <h3
-                          className="text-xl md:text-[25px] font-medium text-left md:text-right"
+                          className="text-xl md:text-[25px] font-medium leading-tight text-right md:text-right"
                           dangerouslySetInnerHTML={{ __html: item.quarter }}
                         />
                         <p
-                          style={{ hyphens: 'auto', textAlign: 'justify' }}
-                          className="text-sm md:text-base font-normal text-left"
+                          style={{
+                            hyphens: 'auto',
+                            textAlign: 'justify',
+                            padding: 0,
+                            margin: 0,
+                          }}
+                          className="text-sm md:text-base font-normal text-left  w-full"
                           dangerouslySetInnerHTML={{ __html: item.description }}
                         />
                       </div>
+
                     ) : (
                       <div className="flex flex-wrap justify-center items-center gap-4 p-4 ">
                         <div
@@ -209,8 +215,13 @@ export default function Timeline() {
                       <div className="flex flex-col gap-2 text-left">
                         <h3 className="text-[25px] font-medium " dangerouslySetInnerHTML={{ __html: item.quarter }} />
                         <p
-                          style={{ hyphens: 'auto', textAlign: 'justify' }}
-                          className="text-sm md:text-base font-normal text-left"
+                          style={{
+                            hyphens: 'auto',
+                            textAlign: 'justify',
+                            padding: 0,
+                            margin: 0,
+                          }}
+                          className="text-sm md:text-base font-normal text-left "
                           dangerouslySetInnerHTML={{ __html: item.description }}
                         />
                       </div>

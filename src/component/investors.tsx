@@ -1,11 +1,17 @@
-import React from 'react';
+"use client"
+import React, { useState } from 'react';
 import Image from 'next/image';
 import AnimatedChevrons from './ui/animated-chevrons';
 import stars from '@/../public/image/stars.png';
 import { infradiffrence, invest, Investfaqs } from '@/constants/investorData';
 import { CustomButton } from './ui/custom-button';
 import FaqList from './ui/FaqList';
+import ContactUs from './contactus/contactus';
 export default function Investors() {
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
+  const openContactModal = () => setIsContactModalOpen(true);
+  const closeContactModal = () => setIsContactModalOpen(false);
   return (
     <div className="fade-in flex flex-col justify-center items-center gap-12">
       <div
@@ -146,7 +152,7 @@ export default function Investors() {
               <FaqList faqs={Investfaqs} />
             </div>
           </div>
-
+          <ContactUs isOpen={isContactModalOpen} onClose={closeContactModal} />
           <div className="fade-in w-full py-36 flex flex-col justify-center items-center gap-20 max-md:py-16 max-md:gap-10">
             <h2 className="text-5xl font-bold text-white max-md:text-3xl text-center">
               Ready to build your impact portfolio?
@@ -155,6 +161,7 @@ export default function Investors() {
               variant="filled"
               className="w-fit h-12 flex justify-center items-center px-6 text-base font-semibold
              max-md:w-[130px] max-md:h-10 max-md:text-[13px] max-md:px-3 max-md:font-medium"
+              onClick={openContactModal}
             >
               Get Started
             </CustomButton>

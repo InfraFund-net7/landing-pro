@@ -15,16 +15,16 @@ export default function Hero() {
       </div>
 
       <div className="absolute bottom-6 sm:bottom-10 w-full flex flex-col justify-center items-end px-4 sm:px-6 md:px-[90px]">
-        <div className="w-full max-w-[592px] flex flex-col gap-6 sm:gap-8 md:gap-10">
-          <h2 className="text-white text-sm sm:text-base md:text-lg leading-relaxed">
+        <div className="w-full max-w-[590px]  flex flex-col gap-6 sm:gap-8 md:gap-10">
+          <h2 className="text-white text-sm sm:text-[15px] md:text-[17px]"
+            style={{ hyphens: 'auto', textAlign: 'justify' }}
+          >
             We are the operating system for tokenizing real-world green{' '}
-            <br className="hidden sm:block" />
             infrastructure, connecting global capital directly to the projects{' '}
-            <br className="hidden sm:block" />
             building our NetZero future.
           </h2>
 
-          <div className="flex flex-col sm:flex-row justify-start items-center gap-3 sm:gap-4 md:gap-6">
+          <div className="flex flex-col sm:flex-row justify-start items-center gap-3 sm:gap-4 md:justify-between">
             <CustomButton
               variant="filled"
               className="w-full sm:w-[176px] h-[44px] sm:h-[48px] rounded-[4px] flex justify-center items-center text-sm font-bold"

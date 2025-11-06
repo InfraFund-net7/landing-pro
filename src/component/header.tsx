@@ -86,17 +86,14 @@ export default function Header() {
               onClick={() => setIsModalOpen(true)}
               className="text-[#24FF8E] underline ml-1"
             >
-              Waitlist!
+              Waitlist{""} {""}{""}!
             </button>
-            <ChevronRight size={16} className="hidden sm:inline" />
-            {scrolled && (
-              <button
-                onClick={() => setShowBanner(false)}
-                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 text-white hover:text-[#24FF8E]"
-              >
-                <X className="w-3 h-3 sm:w-[18px] sm:h-[18px]" />
-              </button>
-            )}
+            <button
+              onClick={() => setShowBanner(false)}
+              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 text-white hover:text-[#24FF8E]"
+            >
+              <X className="w-3 h-3 sm:w-[18px] sm:h-[18px]" />
+            </button>
           </div>
         )}
 
@@ -216,7 +213,7 @@ export default function Header() {
                 WebkitTextFillColor: '#f5f6f8',
               }}
             >
-              The OS for Green Infrastructure Tokenisation
+              The OS for Green Infrastructure Tokenization
             </span>
           </div>
 

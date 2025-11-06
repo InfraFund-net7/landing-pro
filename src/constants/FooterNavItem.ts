@@ -11,7 +11,7 @@ export const navItems = [
     title: 'Company',
     items: [
       { name: 'About Us', link: '/about-us' },
-      { name: 'Contact', link: '/about-us' },
+      { name: 'Contact', type: 'modal' },
     ],
   },
   {

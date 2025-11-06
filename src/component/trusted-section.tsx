@@ -33,7 +33,7 @@ export default function TrustedSection() {
         <div className="grid grid-cols-2  sm:grid-cols-3 lg:grid-cols-6 gap-6 sm:gap-8 justify-center items-center w-full max-w-7xl">
           {partners
             .filter((p) => p.name !== 'CompaniesHouse')
-            .slice(0, -3)
+            .slice(0, -2)
             .map((partner, index) => (
               <div
                 key={index}
@@ -52,7 +52,7 @@ export default function TrustedSection() {
         <div className="mt-8 w-full grid grid-cols-2 sm:mt-12 sm:flex sm:flex-wrap sm:justify-center sm:items-center gap-6 sm:gap-10 md:gap-12">
           {partners
             .filter((p) => p.name !== 'CompaniesHouse')
-            .slice(-3)
+            .slice(-2)
             .map((partner, index) => (
               <div
                 key={index}

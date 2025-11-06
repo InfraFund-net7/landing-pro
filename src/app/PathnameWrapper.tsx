@@ -42,7 +42,11 @@ export default function HeaderHeroWrapper({
 
   return (
     <>
-      <div className="relative w-full h-screen sm:h-[90vh] md:h-screen overflow-hidden bg-[url('/image/hero-home.png')] bg-no-repeat bg-cover">
+      <div
+        className="relative w-full h-screen sm:h-[90vh] md:h-screen overflow-hidden bg-[url('/image/hero-home.png')] bg-no-repeat bg-cover"
+        style={{ backgroundPosition: 'center 60%' }}
+      >
+
         <div className="relative z-10 flex flex-col w-full h-full">
           <div className="relative z-50">
             <Header />

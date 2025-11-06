@@ -71,11 +71,10 @@ offshore wind farms in Europe...`,
                   <span
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`text-sm md:text-base cursor-pointer transition-all ${
-                      activeTab === tab
-                        ? 'font-bold text-[#24FF8E]'
-                        : 'font-normal hover:text-[#24FF8E]'
-                    }`}
+                    className={`text-sm md:text-base cursor-pointer transition-all ${activeTab === tab
+                      ? 'font-bold text-[#24FF8E]'
+                      : 'font-normal hover:text-[#24FF8E]'
+                      }`}
                   >
                     {tab}
                   </span>
@@ -89,9 +88,9 @@ offshore wind farms in Europe...`,
           </div>
         </div>
       ) : (
-        <div className="flex flex-col justify-end items-center gap-10 md:gap-16 min-h-screen py-[179px]  px-4">
+        <div className="flex flex-col justify-end items-center gap-10 md:gap-16 min-h-screen py-[179px]  sm:px-4">
           <div
-            className="w-[600px] sm:left-0 sm:w-[800px] md:w-[1000px] h-[300px] sm:h-[500px] md:h-[588px] rounded-full absolute -z-10 top-[10%] sm:-bottom-[100%]"
+            className="hidden sm:left-0 sm:w-[800px] md:w-[1000px] h-[300px] sm:h-[500px] md:h-[588px] rounded-full absolute -z-10 top-[10%] sm:-bottom-[100%]"
             style={{
               background:
                 'radial-gradient(50% 50% at 50% 100%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)',
@@ -103,7 +102,7 @@ offshore wind farms in Europe...`,
               Open NetZero Funds
             </h1>
             <h3 className="text-base md:text-xl font-normal">
-              Open NetZero Funds
+              Contribute in NetZero Transition while Benefiting from them
             </h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center">
@@ -114,12 +113,9 @@ offshore wind farms in Europe...`,
             ))}
           </div>
           <div className="w-full flex justify-center items-center">
-            <CustomButton
-              variant="outlined"
-              className="w-fit px-6 md:px-8 py-2 md:py-3 rounded-lg transition-all duration-200 hover:bg-gray-800/50 mt-6 md:mt-10"
-            >
+            <button className="bg-transparent border border-gray-600 hover:border-gray-400 text-white px-8 py-3 rounded-lg mt-10">
               Load More Projects
-            </CustomButton>
+            </button>
           </div>
         </div>
       )}

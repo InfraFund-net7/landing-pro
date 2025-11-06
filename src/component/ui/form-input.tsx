@@ -5,6 +5,7 @@ interface FormInputProps {
     placeholder: string;
     type?: string;
     icon?: React.ReactNode;
+    isTextarea?: boolean; // ✅ اضافه شد
 }
 
 export function FormInput({
@@ -12,7 +13,23 @@ export function FormInput({
     placeholder,
     type = "text",
     icon,
+    isTextarea = false,
 }: FormInputProps) {
+    if (isTextarea) {
+        return (
+            <div className="flex flex-col gap-2 w-full">
+                <label className="text-white text-sm font-medium">{label}</label>
+                <div className="relative">
+                    <textarea
+                        placeholder={placeholder}
+                        className="w-full bg-[#131C2F] px-4 py-3 rounded-lg outline-none text-white placeholder-placeholder-text focus:outline-none focus:ring-2 focus:ring-active-green transition-colors duration-200 resize-none"
+                        style={{ height: '120px' }} 
+                    />
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="flex flex-col gap-2 w-full">
             <label className="text-white text-sm font-medium">{label}</label>

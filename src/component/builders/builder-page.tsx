@@ -1,14 +1,19 @@
 "use client"
-import React from 'react';
+import React, { useState } from 'react';
 import BlockchainDiagram from './blockchain-diagram';
 import BuilderFeature from './builder-feature';
 import { Builderfaqs } from '@/constants/builderData';
 import { CustomButton } from '../ui/custom-button';
 import FaqList from '../ui/FaqList';
 import { useFadeInScroll } from '@/hooks/useFadeInScroll';
+import ContactUs from '../contactus/contactus';
 
 export default function BuilderPage() {
-    useFadeInScroll();
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
+  const openContactModal = () => setIsContactModalOpen(true);
+  const closeContactModal = () => setIsContactModalOpen(false);
+  useFadeInScroll();
   return (
     <>
       <div className="w-full h-fit flex flex-col justify-center items-center py-[175px] sm:py-0">
@@ -60,6 +65,7 @@ export default function BuilderPage() {
             </div>
           </div>
         </section>
+        <ContactUs isOpen={isContactModalOpen} onClose={closeContactModal} />
         <section className="fade-in">
           <div className="fade-in w-full py-36 flex flex-col justify-center items-center gap-20 max-md:py-16 max-md:gap-10">
             <h2 className="text-5xl font-bold text-white max-md:text-3xl text-center">
@@ -68,6 +74,8 @@ export default function BuilderPage() {
             <CustomButton
               variant="filled"
               className="w-fit h-12 px-4 flex justify-center items-center text-sm sm:text-lg rounded-lg "
+              onClick={openContactModal}
+
             >
               Apply to list your project
             </CustomButton>

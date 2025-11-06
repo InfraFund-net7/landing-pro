@@ -9,23 +9,30 @@ import { description } from "@/constants/aboutusData"
 import { CustomButton } from "../ui/custom-button"
 import FadeInStagger from "../animations/FadeInStagger"
 import { useFadeInScroll } from "@/hooks/useFadeInScroll"
+import { useState } from "react"
+import ContactUs from "../contactus/contactus"
 
 export default function AboutUs() {
-  useFadeInScroll()
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
+  const openContactModal = () => setIsContactModalOpen(true);
+  const closeContactModal = () => setIsContactModalOpen(false);
   return (
     <div
       className="w-full h-fit px-[90px] flex flex-col radial-fix justify-center items-center space-y-16 py-[175px]
   max-xl:px-16 max-lg:px-8 max-md:px-4 max-md:space-y-12 md:py-0"
     >
       <div
-        className="w-full h-fit flex justify-between items-center mt-[10%] 
-        max-lg:flex-col-reverse max-lg:text-center max-lg:gap-10"
+        className="w-full h-fit flex justify-between items-center mt-[15%] 
+        max-lg:flex-col-reverse mb-[17%] max-lg:text-center max-lg:gap-10"
       >
         <div className="flex flex-col gap-6 text-white max-lg:items-center">
           <h1 className="text-6xl font-medium max-xl:text-5xl max-lg:text-4xl max-md:text-3xl">
             Building the Future of <br className="max-lg:hidden" /> Sustainable Energy, Today
           </h1>
-          <h3 className="text-2xl font-normal max-xl:text-xl max-md:text-base leading-relaxed">
+          <h3 className="text-2xl font-normal max-xl:text-xl max-md:text-base leading-relaxed sm:w-[940px]"
+            style={{ hyphens: 'auto', textAlign: 'justify' }}
+          >
             At InfraFund, we leverage the power of technology to make investing in renewable energy projects accessible,
             transparent, and rewarding for everyone, everywhere. We are pushing the boundaries of traditional finance to
             enable you to directly invest in a greener future.
@@ -40,7 +47,7 @@ export default function AboutUs() {
         />
       </div>
       <div
-        className="w-full h-fit flex justify-between items-center 
+        className="w-full h-fit flex mb-[15%] justify-between items-center 
         max-lg:flex-col max-lg:gap-10"
       >
         {description.map((item, index) => (
@@ -59,7 +66,7 @@ export default function AboutUs() {
           </div>
         ))}
       </div>
-      <section className="fade-in w-full">
+      <section className="fade-in w-full mb-[15%]">
         <div className="w-full h-fit flex flex-col gap-16 justify-center items-center relative">
           <div
             className="max-w-[1000px] w-full h-[400px] rounded-full absolute z-0 bottom-[5%] max-md:hidden"
@@ -81,8 +88,8 @@ export default function AboutUs() {
       </section>
       <section className="fade-in w-full">
         <div
-          className="w-full h-fit min-h-[549px] flex justify-center items-center gap-6 relative 
-        max-lg:flex-col max-lg:h-fit max-lg:gap-12 py-8"
+          className="w-full h-fit min-h-[549px]  flex justify-center items-center gap-6 relative 
+        max-lg:flex-col max-lg:h-fit max-lg:gap-12"
         >
           <div
             className="max-w-[500px] w-full h-[500px] rounded-full absolute left-2 -bottom-[15%] max-md:hidden"
@@ -93,25 +100,25 @@ export default function AboutUs() {
             }}
           />
           <div
-            className="w-1/2 gap-28 h-full flex flex-col justify-center items-start text-white px-16 
-    max-lg:w-full max-lg:px-4 max-lg:items-center max-lg:text-center max-lg:gap-6"
+            className="w-1/2 gap-28  h-full flex flex-col justify-center items-start px-4 text-white 
+    max-lg:w-full max-lg:items-center max-lg:text-center max-lg:gap-6"
           >
-            <h2 className="text-[100px] max-xl:text-7xl max-lg:text-5xl max-md:text-3xl mb-8">
+            <h2 className="text-[100px] w-full px-16  max-xl:text-7xl max-lg:text-5xl max-md:text-3xl mb-8">
               Our Story
             </h2>
-            <div className="w-full  h-fit flex justify-center items-center">
-            <p className="text-[17px] font-normal max-w-[533px] w-full max-lg:w-full max-md:text-sm leading-relaxed text-justify">
-              Our story begins not with a company, but with a conviction: the mission to reach Net Zero is being stalled
-              by a broken financial system. Our founder, Iman Alibeigi, drawing on his master&apos;s thesis and
-              experience managing a $2B construction portfolio, saw a{" "}
-              <strong>$3.5 trillion annual investment gap</strong> and a system that locked out the very communities it
-              was meant to serve. With the support of the <strong>University of Exeter</strong>, the UK&apos;s first
-              Climate Action Impact University, and the top-ranked <strong>SETsquared Partnership</strong>, this
-              conviction was forged into a venture: <strong>InfraFund</strong>.
-            </p>
+            <div className="w-full  md:px-[83px] h-fit flex justify-start items-center">
+              <p className="text-[17px] font-normal max-w-[533px] w-full max-lg:w-full max-md:text-sm leading-relaxed text-justify">
+                Our story begins not with a company, but with a conviction: the mission to reach Net Zero is being stalled
+                by a broken financial system. Our founder, Iman Alibeigi, drawing on his master&apos;s thesis and
+                experience managing a $2B construction portfolio, saw a{" "}
+                <strong>$3.5 trillion annual investment gap</strong> and a system that locked out the very communities it
+                was meant to serve. With the support of the <strong>University of Exeter</strong>, the UK&apos;s first
+                Climate Action Impact University, and the top-ranked <strong>SETsquared Partnership</strong>, this
+                conviction was forged into a venture: <strong>InfraFund</strong>.
+              </p>
             </div>
           </div>
-          <div className="w-1/2 flex h-full justify-center items-end max-lg:w-full">
+          <div className="w-1/2 flex h-full  justify-center items-end max-lg:w-full">
             <div className="w-full max-w-[565px] aspect-[565/377] rounded-[50px] bg-[url('/image/our-story.jpg')] bg-cover bg-no-repeat relative max-md:w-[90%]">
               <div className="px-2.5 py-1 bg-[#191C2980] backdrop-blur-md w-fit rounded-[45px] flex justify-center items-center absolute bottom-3 left-5">
                 <span className="text-xs font-normal text-white">Photo credits to Appleton Event Photography</span>
@@ -123,6 +130,7 @@ export default function AboutUs() {
       <FadeInStagger single>
         <Timeline />
       </FadeInStagger>
+      <ContactUs isOpen={isContactModalOpen} onClose={closeContactModal} />
       <section className="fade-in">
         <div className="w-full h-fit flex flex-col gap-12 justify-center items-center text-white text-center relative px-4">
           <h2 className="text-5xl font-bold max-md:text-3xl">Let&apos;s Build the Green Future Together</h2>
@@ -131,6 +139,7 @@ export default function AboutUs() {
             Reach out to our team to get started.
           </h3>
           <CustomButton
+            onClick={openContactModal}
             variant="filled"
             className="w-fit h-12 flex justify-center items-center px-6 text-base font-semibold
                      max-md:w-[130px] max-md:h-10 max-md:text-[13px] max-md:px-3 max-md:font-medium"
@@ -138,7 +147,7 @@ export default function AboutUs() {
             Contact Us
           </CustomButton>
           <div
-            className="max-w-[1300px] w-full h-[400px] rounded-full absolute z-0 max-md:hidden"
+            className="max-w-[1300px] w-full h-[400px] rounded-full absolute -z-10 max-md:hidden"
             style={{
               background:
                 "radial-gradient(50% 50% at 50% 50%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)",
