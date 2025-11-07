@@ -157,7 +157,7 @@ export default function Timeline() {
                             padding: 0,
                             margin: 0,
                           }}
-                          className="text-sm md:text-base font-normal text-left  w-full"
+                          className="text-sm text-white md:text-base font-normal text-left  w-full"
                           dangerouslySetInnerHTML={{ __html: item.description }}
                         />
                       </div>
@@ -221,7 +221,7 @@ export default function Timeline() {
                             padding: 0,
                             margin: 0,
                           }}
-                          className="text-sm md:text-base font-normal text-left "
+                          className="text-sm text-white md:text-base font-normal text-left "
                           dangerouslySetInnerHTML={{ __html: item.description }}
                         />
                       </div>
@@ -254,7 +254,7 @@ export default function Timeline() {
                       <div className="flex flex-col gap-2 text-left mt-4">
                         <h3 className="text-xl font-medium" dangerouslySetInnerHTML={{ __html: item.quarter }} />
                         <p
-                          className="text-sm md:text-base font-normal text-left"
+                          className="text-sm text-white md:text-base font-normal text-left "
                           dangerouslySetInnerHTML={{ __html: item.description }}
                         />
                       </div>

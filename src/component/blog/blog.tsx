@@ -8,7 +8,7 @@ export default function Blog() {
   return (
     <div className="w-full min-h-screen flex flex-col gap-16 md:gap-24 justify-center items-center px-4 sm:px-8 md:px-[90px] py-[175px]">
       <div
-        className="w-[600px] sm:right-0 sm:w-[800px] md:w-[1000px] h-[300px] sm:h-[500px] md:h-[588px] rounded-full absolute -z-10 top-[10%] sm:-bottom-[100%]"
+        className="hidden md:block w-[1000px] h-[588px] rounded-full absolute -z-10 top-[10%] left-1/2 -translate-x-1/2"
         style={{
           background:
             'radial-gradient(50% 50% at 50% 100%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)',
@@ -57,7 +57,7 @@ export default function Blog() {
           </div>
         </div>
         <div
-          className="w-[600px] sm:left-0 sm:w-[800px] md:w-[1000px] h-[300px] sm:h-[500px] md:h-[588px] rounded-full absolute -z-10 bottom-[10%] sm:-bottom-[100%]"
+          className="hidden md:block w-[1000px] h-[588px] rounded-full absolute -z-10 bottom-[10%] left-1/2 -translate-x-1/2"
           style={{
             background:
               'radial-gradient(50% 50% at 50% 100%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)',

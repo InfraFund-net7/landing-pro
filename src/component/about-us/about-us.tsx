@@ -8,7 +8,6 @@ import ContributorsSection from "./contributors"
 import { description } from "@/constants/aboutusData"
 import { CustomButton } from "../ui/custom-button"
 import FadeInStagger from "../animations/FadeInStagger"
-import { useFadeInScroll } from "@/hooks/useFadeInScroll"
 import { useState } from "react"
 import ContactUs from "../contactus/contactus"
 
@@ -30,7 +29,9 @@ export default function AboutUs() {
           <h1 className="text-6xl font-medium max-xl:text-5xl max-lg:text-4xl max-md:text-3xl">
             Building the Future of <br className="max-lg:hidden" /> Sustainable Energy, Today
           </h1>
-          <h3 className="text-2xl font-normal max-xl:text-xl max-md:text-base leading-relaxed sm:w-[940px]"
+          <h3
+            className="text-2xl font-normal max-xl:text-xl max-md:text-base  leading-relaxed 
+             w-full max-w-[940px] mx-auto"
             style={{ hyphens: 'auto', textAlign: 'justify' }}
           >
             At InfraFund, we leverage the power of technology to make investing in renewable energy projects accessible,
@@ -100,14 +101,17 @@ export default function AboutUs() {
             }}
           />
           <div
-            className="w-1/2 gap-28  h-full flex flex-col justify-center items-start px-4 text-white 
-    max-lg:w-full max-lg:items-center max-lg:text-center max-lg:gap-6"
+            className="w-full lg:w-1/2 gap-8 lg:gap-28 h-full flex flex-col justify-center 
+              items-start px-4 lg:px-8 xl:px-16 text-white 
+              max-lg:w-full max-lg:items-center max-lg:text-center max-lg:gap-6"
           >
-            <h2 className="text-[100px] w-full px-16  max-xl:text-7xl max-lg:text-5xl max-md:text-3xl mb-8">
+            <h2 className="text-[100px] w-full max-xl:text-7xl max-lg:text-5xl max-md:text-3xl mb-8 leading-tight">
               Our Story
             </h2>
-            <div className="w-full  md:px-[83px] h-fit flex justify-start items-center">
-              <p className="text-[17px] font-normal max-w-[533px] w-full max-lg:w-full max-md:text-sm leading-relaxed text-justify">
+
+            <div className="w-full md:px-6 xl:px-12 h-fit flex justify-start items-center">
+              <p className="text-[17px] font-normal max-w-[533px] w-full 
+                 max-lg:max-w-full max-md:text-sm leading-relaxed text-justify">
                 Our story begins not with a company, but with a conviction: the mission to reach Net Zero is being stalled
                 by a broken financial system. Our founder, Iman Alibeigi, drawing on his master&apos;s thesis and
                 experience managing a $2B construction portfolio, saw a{" "}

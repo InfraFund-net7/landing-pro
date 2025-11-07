@@ -228,7 +228,7 @@ export default function Header() {
             </span>
           </div>
 
-          <div className='flex justify-center items-center w-full gap-2 '>
+          <div className='flex justify-center text-white items-center w-full gap-2 '>
             <span className='text-sm sm:text-base  text-center leading-relaxed'>
               Join the waiting list for the InfraFund Token launch.<br />
               Be the first to invest in a tokenized, sustainable future.
@@ -254,7 +254,7 @@ export default function Header() {
               }}
             >By joining, you&apos;ll get:</span>
             {waitlistdata.map((item, index) => (
-              <div className='w-full flex justify-start items-center gap-2 text-base text-left' key={index}>
+              <div className='w-full flex justify-start items-center text-white gap-2 text-base text-left' key={index}>
                 <Image src={greentik} width={16} height={16} alt='green-tik' />
                 <p>
                   <span className='font-bold'>{item.title}</span>:<span className='font-normal'>{item.description}</span>
