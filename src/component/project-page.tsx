@@ -26,11 +26,21 @@ offshore wind farms in Europe...`,
 
   const tabs: TabName[] = Object.keys(tabContent) as TabName[];
 
+  // 👇 این useEffect رو حذف یا ساده‌تر کن
+  // useEffect(() => {
+  //   if (selectedProject) {
+  //     setTimeout(() => {
+  //       setBgImage(selectedProject.image.src);
+  //     }, 300);
+  //   } else {
+  //     setBgImage(null);
+  //   }
+  // }, [selectedProject]);
+
+  // 👇 جایگزین ساده‌تر
   useEffect(() => {
     if (selectedProject) {
-      setTimeout(() => {
-        setBgImage(selectedProject.image.src);
-      }, 300);
+      setBgImage(selectedProject.image.src);
     } else {
       setBgImage(null);
     }

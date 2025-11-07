@@ -1,4 +1,3 @@
-'use client';
 import { Project } from '@/types/types';
 import Image from 'next/image';
 
@@ -12,12 +11,11 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
     <div
       onClick={onClick}
       className="
-        group relative w-[75vw] sm:w-[300px] md:w-[350px] lg:w-[403px] 
-        h-[450px] md:h-[577px]
-        flex-shrink-0 rounded-[30px] md:rounded-[50px] 
-        overflow-hidden shadow-lg cursor-pointer 
-        transition-transform duration-500
-      "
+    absolute bottom-0 w-full bg-[#C4C4C466] backdrop-blur-md shadow-md 
+    p-4 md:p-6 h-[180px] md:h-[230px]
+    transition-all duration-300 ease-in-out 
+    group-hover:opacity-95
+  "
     >
       <div className="absolute top-4 left-4 md:top-6 md:left-6 z-50">
         <div className="px-3 py-1 md:px-4 md:py-2 bg-white/50 backdrop-blur-md rounded-full">
@@ -26,11 +24,15 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
           </h3>
         </div>
       </div>
-
       <Image
-        src={project.image}
+        src={project.image.src}
         alt={project.title}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
+        fill
+        sizes="(max-width: 768px) 75vw, (max-width: 1024px) 300px, 403px"
+        className="object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
+        priority={project.id <= 3}
+        placeholder="blur"
+        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
       />
 
       <div
