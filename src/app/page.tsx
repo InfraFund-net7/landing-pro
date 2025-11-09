@@ -8,7 +8,7 @@ import TrustedSection from '@/component/trusted-section';
 import { useFadeInScroll } from '@/hooks/useFadeInScroll';
 
 export default function Home() {
-   useFadeInScroll(); 
+  useFadeInScroll();
   return (
     <>
       {/* <section className="fade-in"><AnimatedCounter /></section> */}
@@ -24,9 +24,7 @@ export default function Home() {
       <section className="fade-in">
         <TrustedSection />
       </section>
-      <section className="fade-in">
-        <ContactUsPage />
-      </section>
+      <ContactUsPage />
     </>
   );
 }

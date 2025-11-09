@@ -71,11 +71,11 @@ export default function FooterDefault() {
               </div>
             </div>
           </div>
-          <div className="w-full sm:w-[511px] flex flex-wrap sm:flex-nowrap justify-between items-start gap-6">
+          <div className="w-full sm:w-[511px] flex flex-nowrap justify-between items-start gap-6">
             {navItems.map((section, i) => (
               <div key={i} className="min-w-[120px] text-gray-400">
                 <h3 className="font-bold text-base sm:text-lg">{section.title}</h3>
-                <ul className="mt-2 space-y-1 text-sm sm:text-base">
+                <ul className="mt-2 space-y-1 text-xs sm:text-base">
                   {section.items.map((item, j) => {
                     if (item.type === 'modal' && item.name === 'Contact') {
                       return (

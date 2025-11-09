@@ -103,7 +103,7 @@ export default function Timeline() {
             return (
               <div
                 key={`line-${index}`}
-                className="absolute left-8 md:left-1/2 w-0.5 md:-translate-x-1/2"
+                className="absolute left-1/2 -translate-x-1/2 w-0.5"
                 style={{
                   top: `${(index * 100) / (timelineData.length - 1)}%`,
                   height: `${100 / (timelineData.length - 3.4)}%`,
@@ -128,7 +128,7 @@ export default function Timeline() {
                 className="timeline-section relative mb-16 md:mb-32 last:mb-0"
               >
                 <div
-                  className="absolute left-8 md:left-1/2 md:-translate-x-1/2 w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center border-2 z-20 bg-[#0f172a]"
+                  className="absolute left-1/2 -translate-x-1/2 w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center border-2 z-20 bg-[#0f172a]"
                   style={{
                     borderColor: isGreen ? "rgb(34, 197, 94)" : "rgb(209, 213, 219)",
                     transition: "all 0.3s ease",
@@ -142,57 +142,53 @@ export default function Timeline() {
                     }}
                   />
                 </div>
-                <div className="flex flex-col md:flex-row items-start gap-4 md:gap-8 pl-20 md:pl-0">
-                  <div className="w-full md:flex-1 md:pr-8 max-w-full">
+                <div className="flex items-start gap-4 md:gap-8">
+                  <div className="flex-1 pr-4 md:pr-8 max-w-full">
                     {quarterLeft ? (
-                      <div className="flex flex-col gap-2  text-justify">
+                      <div className="flex flex-col gap-2 text-right">
                         <h3
-                          className="text-xl md:text-[25px] font-medium leading-tight text-right md:text-right"
+                          className="text-lg md:text-[25px] font-medium leading-tight"
                           dangerouslySetInnerHTML={{ __html: item.quarter }}
                         />
                         <p
                           style={{
-                            hyphens: 'auto',
-                            textAlign: 'justify',
+                            hyphens: "auto",
+                            textAlign: "justify",
                             padding: 0,
                             margin: 0,
                           }}
-                          className="text-sm text-white md:text-base font-normal text-left  w-full"
+                          className="text-sm text-white md:text-base font-normal"
                           dangerouslySetInnerHTML={{ __html: item.description }}
                         />
                       </div>
-
                     ) : (
-                      <div className="flex flex-wrap justify-center items-center gap-4 p-4 ">
+                      <div className="flex flex-wrap justify-center items-center gap-2 md:gap-4 p-2 md:p-4">
                         <div
-                          className={`flex ${isQ22025 ? 'flex-col items-center' : 'flex-wrap justify-center'
-                            } gap-4 p-4  w-full`}
+                          className={`flex ${isQ22025 ? "flex-col items-center" : "flex-wrap justify-center"
+                            } gap-2 md:gap-4 w-full`}
                         >
-                          {item.logos?.includes('UkParliamnet') && (
-                            <div
-                              key="ukparleman"
-                              className="flex justify-center items-center p-2 md:p-4 w-full"
-                            >
+                          {item.logos?.includes("UkParliamnet") && (
+                            <div key="ukparleman" className="flex justify-center items-center p-2 md:p-4 w-full">
                               <Image
-                                src={partners.find(p => p.name === 'UkParliamnet')?.logo.src || "/placeholder.svg"}
-                                alt={partners.find(p => p.name === 'UkParliamnet')?.alt || "UK Parliament"}
+                                src={partners.find((p) => p.name === "UkParliamnet")?.logo.src || "/placeholder.svg"}
+                                alt={partners.find((p) => p.name === "UkParliamnet")?.alt || "UK Parliament"}
                                 width={0}
                                 height={0}
                                 sizes="100vw"
-                                className="h-auto w-full max-w-[120px] md:max-w-[193px] max-h-12 md:max-h-20 object-contain"
+                                className="h-auto w-full max-w-[80px] md:max-w-[193px] max-h-8 md:max-h-20 object-contain"
                               />
                             </div>
                           )}
 
-                          <div className="flex flex-wrap justify-center gap-4 w-full">
+                          <div className="flex flex-wrap justify-center gap-2 md:gap-4 w-full">
                             {item.logos?.map((name, logoIndex) => {
-                              if (name === 'UkParliamnet') return null;
-                              const partner = partners.find((p) => p.name === name);
-                              if (!partner) return null;
+                              if (name === "UkParliamnet") return null
+                              const partner = partners.find((p) => p.name === name)
+                              if (!partner) return null
                               return (
                                 <div
                                   key={`${item.quarter}-${logoIndex}`}
-                                  className="flex justify-center items-center p-2 md:p-4"
+                                  className="flex justify-center items-center p-1 md:p-4"
                                 >
                                   <Image
                                     src={partner.logo.src || "/placeholder.svg"}
@@ -200,40 +196,43 @@ export default function Timeline() {
                                     width={0}
                                     height={0}
                                     sizes="100vw"
-                                    className="h-auto w-full max-w-[120px] md:max-w-[193px] max-h-12 md:max-h-20 object-contain"
+                                    className="h-auto w-full max-w-[80px] md:max-w-[193px] max-h-8 md:max-h-20 object-contain"
                                   />
                                 </div>
-                              );
+                              )
                             })}
                           </div>
                         </div>
                       </div>
                     )}
                   </div>
-                  <div className="hidden md:block md:flex-1 md:pl-8 max-w-full">
+                  <div className="flex-1 pl-4 md:pl-8 max-w-full">
                     {!quarterLeft ? (
                       <div className="flex flex-col gap-2 text-left">
-                        <h3 className="text-[25px] font-medium " dangerouslySetInnerHTML={{ __html: item.quarter }} />
+                        <h3
+                          className="text-lg md:text-[25px] font-medium"
+                          dangerouslySetInnerHTML={{ __html: item.quarter }}
+                        />
                         <p
                           style={{
-                            hyphens: 'auto',
-                            textAlign: 'justify',
+                            hyphens: "auto",
+                            textAlign: "justify",
                             padding: 0,
                             margin: 0,
                           }}
-                          className="text-sm text-white md:text-base font-normal text-left "
+                          className="text-sm text-white md:text-base font-normal"
                           dangerouslySetInnerHTML={{ __html: item.description }}
                         />
                       </div>
                     ) : (
-                      <div className="grid grid-cols-2 justify-center items-center gap-4 max-w-[410px] w-full h-fit mx-auto">
+                      <div className="grid grid-cols-1 md:grid-cols-2 justify-center items-center gap-2 md:gap-4 max-w-[410px] w-full h-fit mx-auto">
                         {item.logos?.map((name, logoIndex) => {
                           const partner = partners.find((p) => p.name === name)
                           if (!partner) return null
                           return (
                             <div
                               key={`${item.quarter}-${logoIndex}`}
-                              className="flex justify-center items-center w-full h-fit p-4"
+                              className="flex justify-center items-center w-full h-fit p-2 md:p-4"
                             >
                               <Image
                                 src={partner.logo.src || "/placeholder.svg"}
@@ -241,41 +240,7 @@ export default function Timeline() {
                                 width={0}
                                 height={0}
                                 sizes="100vw"
-                                className="h-auto w-full max-w-full max-h-16 object-contain"
-                              />
-                            </div>
-                          )
-                        })}
-                      </div>
-                    )}
-                  </div>
-                  <div className="w-full md:hidden">
-                    {!quarterLeft && (
-                      <div className="flex flex-col gap-2 text-left mt-4">
-                        <h3 className="text-xl font-medium" dangerouslySetInnerHTML={{ __html: item.quarter }} />
-                        <p
-                          className="text-sm text-white md:text-base font-normal text-left "
-                          dangerouslySetInnerHTML={{ __html: item.description }}
-                        />
-                      </div>
-                    )}
-                    {quarterLeft && (
-                      <div className="grid grid-cols-1 gap-4 mt-4">
-                        {item.logos?.map((name, logoIndex) => {
-                          const partner = partners.find((p) => p.name === name)
-                          if (!partner) return null
-                          return (
-                            <div
-                              key={`${item.quarter}-${logoIndex}-mobile`}
-                              className="flex justify-center items-center w-fit h-fit p-2"
-                            >
-                              <Image
-                                src={partner.logo.src || "/placeholder.svg"}
-                                alt={partner.alt}
-                                width={0}
-                                height={0}
-                                sizes="100vw"
-                                className="h-auto w-full max-w-[120px] max-h-12 object-contain"
+                                className="h-auto w-full max-w-[80px] md:max-w-full max-h-10 md:max-h-16 object-contain"
                               />
                             </div>
                           )

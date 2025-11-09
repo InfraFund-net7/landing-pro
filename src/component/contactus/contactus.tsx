@@ -51,17 +51,17 @@ export default function ContactUs({ isOpen, onClose }: ContactUsProps) {
             onClose={onClose}
             showCloseButton={true}
             ModalTitle="Contact Us"
-            className="w-full h-full"
+            className="w-full max-w-lg mx-auto h-auto p-6 rounded-xl bg-[#121826]"
         >
             {showEmailForm ? (
-                <div className="flex flex-col justify-between items-start gap-8 w-full h-full py-8   text-left">
+                <div className="flex flex-col gap-6 w-full ">
                     <EmailSend onBack={handleBack} />
                 </div>
             ) : (
-                <div className="flex flex-col items-center justify-end gap-12 w-full h-full py-8">
+                <div className="flex flex-col items-center justify-between gap-8 w-full">
                     <span className="text-white text-xl font-bold">How would you like to connect?</span>
 
-                    <div className="w-full flex flex-col justify-center items-center gap-4 p-4 md:flex-row text-white">
+                    <div className="w-full flex flex-col md:flex-row gap-4">
                         {contactusactions.map((item, index) => {
                             const Icon = item.icon;
 
@@ -70,7 +70,7 @@ export default function ContactUs({ isOpen, onClose }: ContactUsProps) {
                                     <button
                                         key={index}
                                         onClick={openGoogleCalendarPopup}
-                                        className="w-full md:w-1/2 min-h-[187px] flex-shrink-0 bg-[#343C52] border flex flex-col gap-3 text-left justify-start items-start border-[#152133] px-3 py-4 md:px-4 md:py-6 rounded-xl cursor-pointer transition-all hover:bg-[#3c465f] active:scale-[0.98]"
+                                        className="w-full md:w-1/2 min-h-[187px] bg-[#343C52] border border-[#152133] px-4 py-6 rounded-xl cursor-pointer transition-all hover:bg-[#3c465f] active:scale-[0.98] flex flex-col gap-3 text-left justify-start items-start"
                                         style={{
                                             backdropFilter: 'blur(70px)',
                                             WebkitBackdropFilter: 'blur(70px)',
@@ -80,7 +80,7 @@ export default function ContactUs({ isOpen, onClose }: ContactUsProps) {
                                             <Icon className="w-5 h-5 text-[#343C52]" />
                                         </div>
                                         <span className="text-base font-medium">{item.title}</span>
-                                        <span className="text-sm font-normal">{item.description}</span>
+                                        <span className="text-sm font-normal text-gray-300">{item.description}</span>
                                     </button>
                                 );
                             }
@@ -90,7 +90,7 @@ export default function ContactUs({ isOpen, onClose }: ContactUsProps) {
                                     <button
                                         key={index}
                                         onClick={handleEmailClick}
-                                        className="w-full md:w-1/2 min-h-[187px] flex-shrink-0 bg-[#343C52] border flex flex-col gap-3 text-left justify-start items-start border-[#152133] px-3 py-4 md:px-4 md:py-6 rounded-xl no-underline cursor-pointer"
+                                        className="w-full md:w-1/2 min-h-[187px] bg-[#343C52] border border-[#152133] px-4 py-6 rounded-xl cursor-pointer transition-all hover:bg-[#3c465f] active:scale-[0.98] flex flex-col gap-3 text-left justify-start items-start"
                                         style={{
                                             backdropFilter: 'blur(70px)',
                                             WebkitBackdropFilter: 'blur(70px)',
@@ -100,7 +100,7 @@ export default function ContactUs({ isOpen, onClose }: ContactUsProps) {
                                             <Icon className="w-5 h-5 text-[#343C52]" />
                                         </div>
                                         <span className="text-base font-medium">{item.title}</span>
-                                        <span className="text-sm font-normal">{item.description}</span>
+                                        <span className="text-sm font-normal text-gray-300">{item.description}</span>
                                     </button>
                                 );
                             }
@@ -109,10 +109,15 @@ export default function ContactUs({ isOpen, onClose }: ContactUsProps) {
                         })}
                     </div>
 
-                    <span className="text-gray-50 text-sm font-normal">
-                        Are you a Builder or industry professional?
-                        <Link className="underline text-primary" href="/builders">
-                            &nbsp;Visit our Builder page
+                    <span className="text-gray-400 text-sm font-normal mt-4 text-center">
+                        Are you a Builder or industry professional?{' '}
+                        <Link
+                            href="/builders"
+                            className="text-primary font-bold underline hover:text-blue-400 transition-colors"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Visit our Builder page
                         </Link>
                     </span>
                 </div>

@@ -1,17 +1,18 @@
 'use client';
-
 import React from 'react';
 import Image from 'next/image';
+import { useMediaQuery } from 'react-responsive';
 import stars from '@/../public/image/stars.png';
 import { chosenItems } from '@/constants/chooseData';
 
 export default function ChooseInfraFund() {
+  const isMobile = useMediaQuery({ query: '(max-width: 640px)' });
+
   return (
     <section className="relative w-full flex flex-col items-center justify-center px-6 sm:px-10 md:px-20 py-20 gap-16 md:gap-20 overflow-hidden">
       <h2 className=" text-3xl sm:text-4xl md:text-[42px] text-white font-bold text-center">
         Why Choose InfraFund?
       </h2>
-
       <div className="absolute inset-0 flex justify-end items-center pointer-events-none">
         <div className="relative w-[600px] sm:w-[800px] md:w-[1000px] h-[400px] md:h-[600px]">
           <Image
@@ -35,7 +36,8 @@ export default function ChooseInfraFund() {
           <div
             key={index}
             style={{
-              marginBottom: item.bottom || '0px',
+              // شرطی: در موبایل، marginBottom رو 0 کن (bottom رو نادیده بگیر)
+              marginBottom: !isMobile && item.bottom ? item.bottom : '0px',
             }}
             className="flex items-start sm:items-center gap-5 sm:gap-6"
           >
