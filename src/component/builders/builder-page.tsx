@@ -17,7 +17,13 @@ export default function BuilderPage() {
   return (
     <>
       <div className="w-full h-fit flex flex-col justify-center items-center py-[175px] sm:py-0">
-        <div className="fade-in w-full h-[1024px] relative flex justify-start items-center overflow-hidden bg-[url('/image/builders-hero.jpg')] bg-cover bg-no-repeat max-lg:h-auto max-lg:py-20 max-md:flex-col max-md:text-center max-md:px-6 max-md:bg-none max-sm:h-auto max-sm:py-12">
+        <div className="fade-in w-full h-[1024px] relative flex justify-start items-center overflow-hidden bg-[url('/image/builder-hero-2.png')] bg-center bg-cover bg-no-repeat sm:bg-cover sm:bg-no-repeat max-lg:h-auto max-lg:py-20 max-md:flex-col max-md:text-center max-md:px-6 max-sm:h-auto max-sm:py-12">
+          <div
+            className="absolute inset-0 z-0"
+            style={{
+              background: 'linear-gradient(244.83deg, rgba(13, 16, 24, 0) 9.61%, #0D1018 71.18%)',
+            }}
+          />
           <div className="space-y-12 absolute z-10 px-[90px] max-md:static max-md:px-6">
             <h1 className="text-[64px] text-white font-bold max-md:text-4xl">
               Stop Pitching Banks.
@@ -25,17 +31,18 @@ export default function BuilderPage() {
               Start Building Your Future
             </h1>
             <h2 className="text-2xl text-white font-normal max-md:text-base">
-              InfraFund provides the full-stack toolkit to fund your NetZero
-              project,
+              InfraFund provides the full-stack toolkit to fund your NetZero project,
               <br className="max-md:hidden" />
               from tokenisation to global distribution.
             </h2>
-            <CustomButton
-              variant="filled"
-              className="w-fit h-12 px-4 flex justify-center items-center text-sm sm:text-lg  rounded-lg "
-            >
-              Start Your Project Application
-            </CustomButton>
+            <div className='w-full h-fit flex justify-center items-center md:justify-start md:items-center'>
+              <CustomButton
+                variant="filled"
+                className="w-fit h-12 px-4 flex justify-center items-center text-sm sm:text-lg rounded-lg"
+              >
+                Start Your Project Application
+              </CustomButton>
+            </div>
           </div>
         </div>
         <section className="fade-in w-full">
@@ -51,7 +58,7 @@ export default function BuilderPage() {
         <section className="fade-in">
           <div className="fade-in py-24 flex flex-col relative justify-center items-center gap-6 max-md:py-12">
             <div
-              className="absolute inset-0 rounded-full blur-[300px]"
+              className="absolute inset-0 -z-10 rounded-full blur-[300px]"
               style={{
                 background:
                   'radial-gradient(50% 50% at 50% 50%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)',

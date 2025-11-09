@@ -88,12 +88,12 @@ offshore wind farms in Europe...`,
           </div>
         </div>
       ) : (
-        <div className="flex flex-col justify-end items-center gap-10 md:gap-16 min-h-screen py-[179px]  sm:px-4">
+        <div className="flex relative flex-col justify-end items-center gap-10 md:gap-16 min-h-screen py-[179px]  sm:px-4">
           <div
-            className="hidden sm:left-0 sm:w-[800px] md:w-[1000px] h-[300px] sm:h-[500px] md:h-[588px] rounded-full absolute -z-10 top-[10%] sm:-bottom-[100%]"
+            className="hidden md:block w-[1000px] h-[588px] rounded-full absolute -z-10  bottom-[40%] left-1/2 -translate-x-1/2"
             style={{
               background:
-                'radial-gradient(50% 50% at 50% 100%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)',
+              'radial-gradient(50% 50% at 50% 100%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)',
               filter: 'blur(400px)',
             }}
           />

@@ -101,24 +101,31 @@ export default function AboutUs() {
             }}
           />
           <div
-            className="w-full lg:w-1/2 gap-8 lg:gap-28 h-full flex flex-col justify-center 
-              items-start px-4 lg:px-8 xl:px-16 text-white 
-              max-lg:w-full max-lg:items-center max-lg:text-center max-lg:gap-6"
+            className="w-full lg:w-1/2 h-full flex flex-col justify-center items-start 
+  text-white px-6 sm:px-8 md:px-12 lg:px-14 xl:px-20 
+  gap-10 sm:gap-12 md:gap-16 lg:gap-20 
+  max-lg:w-full max-lg:items-center max-lg:text-center"
           >
-            <h2 className="text-[100px] w-full max-xl:text-7xl max-lg:text-5xl max-md:text-3xl mb-8 leading-tight">
+            <h2 className="text-[100px] leading-tight mb-8 
+    max-2xl:text-8xl max-xl:text-7xl max-lg:text-5xl max-md:text-3xl">
               Our Story
             </h2>
 
-            <div className="w-full md:px-6 xl:px-12 h-fit flex justify-start items-center">
-              <p className="text-[17px] font-normal max-w-[533px] w-full 
-                 max-lg:max-w-full max-md:text-sm leading-relaxed text-justify">
-                Our story begins not with a company, but with a conviction: the mission to reach Net Zero is being stalled
-                by a broken financial system. Our founder, Iman Alibeigi, drawing on his master&apos;s thesis and
+            <div className="w-full md:px-4 lg:px-6 xl:px-10 h-fit flex justify-start items-center">
+              <p
+                className="text-[17px] font-normal leading-relaxed text-justify 
+      max-w-[550px] w-full max-lg:max-w-[600px] max-md:text-sm"
+              >
+                Our story begins not with a company, but with a conviction: the mission
+                to reach Net Zero is being stalled by a broken financial system. Our
+                founder, Iman Alibeigi, drawing on his master&apos;s thesis and
                 experience managing a $2B construction portfolio, saw a{" "}
-                <strong>$3.5 trillion annual investment gap</strong> and a system that locked out the very communities it
-                was meant to serve. With the support of the <strong>University of Exeter</strong>, the UK&apos;s first
-                Climate Action Impact University, and the top-ranked <strong>SETsquared Partnership</strong>, this
-                conviction was forged into a venture: <strong>InfraFund</strong>.
+                <strong>$3.5 trillion annual investment gap</strong> and a system that
+                locked out the very communities it was meant to serve. With the support
+                of the <strong>University of Exeter</strong>, the UK&apos;s first Climate
+                Action Impact University, and the top-ranked{" "}
+                <strong>SETsquared Partnership</strong>, this conviction was forged into
+                a venture: <strong>InfraFund</strong>.
               </p>
             </div>
           </div>
