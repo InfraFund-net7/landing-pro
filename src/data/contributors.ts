@@ -18,7 +18,7 @@ export const contributors = [
     img: ImanAlibeigi,
     name: 'Iman Alibeigi',
     linkedin: 'https://www.linkedin.com/in/iman-alibeigi/',
-    role: 'Founder & CEO',
+    role: 'Founder',
     description:
       "A seasoned construction engineer conceptualised InfraFund from his master's thesis on blockchain-based project finance.",
   },
