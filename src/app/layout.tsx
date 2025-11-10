@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Footer from '@/component/footer';
 import PathnameWrapper from './PathnameWrapper';
+import { ParticleConnectProvider } from '@/lib/particle-config';
 
 export const metadata: Metadata = {
   title: 'InfraFund',
@@ -14,7 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <PathnameWrapper>{children}</PathnameWrapper>
+        <ParticleConnectProvider>
+          <PathnameWrapper>{children}</PathnameWrapper>
+        </ParticleConnectProvider>
         <Footer />
       </body>
     </html>
