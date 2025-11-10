@@ -1,66 +1,64 @@
-import React from "react";
-import UnlockPrivate from "@/../public/svg/unlock-private.svg";
-import FinanceSpeed from "@/../public/svg/finance.svg";
-import InvestConfidence from "@/../public/svg/invest.svg";
-import ShapeFuture from "@/../public/svg/shape-future.svg";
-import Image from "next/image";
+'use client';
+import React from 'react';
+import Image from 'next/image';
+import { useMediaQuery } from 'react-responsive';
+import stars from '@/../public/image/stars.png';
+import { chosenItems } from '@/constants/chooseData';
 
 export default function ChooseInfraFund() {
-  const chosenItems = [
-    {
-      title: "Unlock the Private Market",
-      icon: UnlockPrivate,
-      bottom: "170px",
-      description:
-        "Gain direct access to vetted, high-impact renewable energy infrastructure—an asset class previously reserved for institutional players.",
-    },
-    {
-      title: "Finance at the Speed of a Click",
-      icon: FinanceSpeed,
-      description:
-        "Our platform connects you directly to project builders, removing costly intermediaries and cutting fundraising timelines from years to weeks.",
-    },
-    {
-      title: "Invest with Confidence",
-      icon: InvestConfidence,
-      bottom: "170px",
-      description:
-        "Monitor project progress and financial transactions in real-time.  Our AI-driven Digital Twin provides unparalleled transparency into asset performance.",
-    },
-    {
-      title: "Shape the Future",
-      icon: ShapeFuture,
-      description:
-        "Participate in key project decisions through our DAO-based governance model. Your investment gives you a voice.",
-    },
-  ];
+  const isMobile = useMediaQuery({ query: '(max-width: 640px)' });
 
   return (
-    <div className="w-full h-fit px-20 flex flex-col justify-center items-center gap-20 mb-28 ">
-      <h2 className="text-[42px] text-white font-bold">
+    <section className="relative w-full flex flex-col items-center justify-center px-6 sm:px-10 md:px-20 py-20 gap-16 md:gap-20 overflow-hidden">
+      <h2 className=" text-3xl sm:text-4xl md:text-[42px] text-white font-bold text-center">
         Why Choose InfraFund?
       </h2>
-      <div className="w-full h-fit px-[88px] grid grid-cols-2 justify-center items-center">
+      <div className="absolute inset-0 flex justify-end items-center pointer-events-none">
+        <div className="relative w-[600px] sm:w-[800px] md:w-[1000px] h-[400px] md:h-[600px]">
+          <Image
+            src={stars}
+            width={588}
+            height={588}
+            alt="stars"
+            className="absolute top-[5%] right-[10%] opacity-80"
+          />
+          <div
+            className="absolute inset-0 rounded-full blur-[300px]"
+            style={{
+              background:
+                'radial-gradient(50% 50% at 50% 50%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)',
+            }}
+          />
+        </div>
+      </div>
+      <div className="relative -z-10 grid grid-cols-1 sm:grid-cols-2 gap-12 sm:gap-x-16 sm:gap-y-20 w-full max-w-[1100px]">
         {chosenItems.map((item, index) => (
           <div
             key={index}
             style={{
-              marginBottom: item.bottom || "0px",
+              // شرطی: در موبایل، marginBottom رو 0 کن (bottom رو نادیده بگیر)
+              marginBottom: !isMobile && item.bottom ? item.bottom : '0px',
             }}
-            className="w-fit h-fit flex justify-center items-center gap-3.5 "
+            className="flex items-start sm:items-center gap-5 sm:gap-6"
           >
-            <Image src={item.icon} alt={item.title} width={135} height={135} />
-            <div className="flex flex-col gap-3.5">
-              <h3 className="text-white font-semibold text-2xl">
+            <Image
+              src={item.icon}
+              alt={item.title}
+              width={100}
+              height={100}
+              className="w-[80px] sm:w-[100px] md:w-[135px] h-auto"
+            />
+            <div className="flex flex-col gap-2 sm:gap-3 max-w-[400px]">
+              <h3 className="text-white font-semibold text-xl sm:text-2xl leading-snug">
                 {item.title}
               </h3>
-              <p className="text-white text-lg max-w-[400px]">
+              <p className="text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed">
                 {item.description}
               </p>
             </div>
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

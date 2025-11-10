@@ -1,26 +1,66 @@
-import { headers } from "next/headers";
-import Header from "@/component/header";
-import HeaderHeroWrapper from "@/component/HeaderHeroWrapper";
+'use client';
+import { ReactNode, useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
+import Header from '@/component/header';
+import Hero from '@/component/hero';
+import PartnersSection from '@/component/partner';
+import { useFadeInScroll } from '@/hooks/useFadeInScroll';
 
-export default async function PathnameWrapper({
+export default function HeaderHeroWrapper({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
-  const headersList = await headers();
-  const pathname = headersList.get("x-custom-pathname") || "/";
-  console.log("Pathname:", pathname);
+  const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useFadeInScroll();
+
+  useEffect(() => {
+    if (mounted) {
+      console.log(
+        '%c[GSAP] Wrapper Mounted, activating FadeIn',
+        'color: violet'
+      );
+    }
+  }, [mounted]);
+
+  if (!mounted) return null;
+
+  if (pathname !== '/') {
+    return (
+      <>
+        <Header />
+        {children}
+      </>
+    );
+  }
 
   return (
     <>
-      {pathname === "/" ? (
-        <HeaderHeroWrapper>{children}</HeaderHeroWrapper>
-      ) : (
-        <>
-          <Header />
-          {children}
-        </>
-      )}
+      <div
+        className="relative w-full h-screen sm:h-[90vh] md:h-screen overflow-hidden bg-[url('/image/hero-home.png')] bg-no-repeat bg-cover"
+        style={{ backgroundPosition: 'center 60%' }}
+      >
+
+        <div className="relative z-10 flex flex-col w-full h-full">
+          <div className="relative z-50">
+            <Header />
+          </div>
+          <Hero />
+          <div className="relative z-10 border-t border-white w-full h-[100px] sm:h-[120px] md:h-[136px] backdrop-blur-[3px] sm:backdrop-blur-[4px] md:backdrop-blur-[5px]">
+            <PartnersSection />
+          </div>
+        </div>
+      </div>
+
+      <main className="w-full flex flex-col">
+        <section className="fade-in">{children}</section>
+      </main>
     </>
   );
 }

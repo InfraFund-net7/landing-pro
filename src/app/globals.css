@@ -1,15 +1,46 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0c0c0d;
+  --foreground: #0c0c0d;
+  --border-gradient: linear-gradient(
+    196.23deg,
+    rgba(36, 255, 142, 0.02) 0%,
+    rgba(36, 255, 142, 0.4) 50%,
+    rgba(36, 255, 142, 0.02) 100%
+  );
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@theme {
+  --color-primary: #24ff8e;
+  --color-primary-50: #edfff5;
+  --color-primary-100: #d5ffea;
+  --color-primary-200: #aeffd6;
+  --color-primary-300: #6fffb7;
+  --color-primary-hover: #1ad87a;
+  --color-primary-pressed: #11b367;
+  --color-primary-disabled: #a2f4cc;
+  --color-primary-selected: #132f21;
+  --color-success: #22c55e;
+  --color-warning: #facc15;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+  --color-gray-50: #f5f6f8;
+  --color-gray-100: #edeef2;
+  --color-gray-200: #dee0e7;
+  --color-gray-300: #c7cad5;
+  --color-gray-400: #b3b6c6;
+  --color-gray-500: #9fa1b5;
+  --color-gray-600: #8a89a2;
+  --color-gray-700: #77768c;
+  --color-gray-800: #616172;
+  --color-gray-900: #51515e;
+  --color-card-bg: #151e2f80;
+  --color-card-bg-border: #152133;
+  --color-card-border: #ffffff1a;
+  --color-card-selected-bg: #1f2a40;
+  --color-card-cancel: #1c2332;
+  --breakpoint-surface: 900px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,25 +51,27 @@
 }
 
 @font-face {
-  font-family: "Satoshi";
-  src: url("../../public/font/Satoshi-Regular.woff2") format("woff2"),
-    url("../../public/font/Satoshi-Regular.woff") format("woff");
+  font-family: 'Satoshi';
+  src:
+    url('../../public/font/Satoshi-Regular.woff2') format('woff2'),
+    url('../../public/font/Satoshi-Regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Satoshi";
-  src: url("../../public/font/Satoshi-Bold.woff2") format("woff2"),
-    url("../../public/font/Satoshi-Bold.woff") format("woff");
+  font-family: 'Satoshi';
+  src:
+    url('../../public/font/Satoshi-Bold.woff2') format('woff2'),
+    url('../../public/font/Satoshi-Bold.woff') format('woff');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
 body {
-  font-family: "Satoshi", sans-serif;
+  font-family: 'Satoshi', sans-serif;
   background: var(--background);
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
@@ -57,7 +90,7 @@ body {
 .animate-slide-infinite {
   display: flex;
   animation: slide-infinite 30s linear infinite;
-  width: calc(100% * 2);
+  width: max-content;
   gap: 2rem;
 }
 
@@ -84,4 +117,48 @@ body {
 
 .animate-fadeIn {
   animation: fadeIn 0.7s ease-in-out;
+}
+@supports (-webkit-overflow-scrolling: touch) {
+  .radial-fix {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+}
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #24ff8e;
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #1fff7a;
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #24ff8e transparent;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE و Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
 }

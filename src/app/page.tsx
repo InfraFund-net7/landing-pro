@@ -1,21 +1,30 @@
-import { AnimatedCounter } from "@/component/animated-counter";
-import ChooseInfraFund from "@/component/choose-infrafund";
-import ContactUs from "@/component/contact-us";
-import FundingSection from "@/component/funding-section";
-import InvestmentPlatform from "@/component/projects";
-import Tokenization from "@/component/tokenization";
-import TrustedSection from "@/component/trusted-section";
+"use client"
+import { AnimatedCounter } from '@/component/animated-counter';
+import ChooseInfraFund from '@/component/choose-infrafund';
+import ContactUsPage from '@/component/contact-us';
+import FundingSection from '@/component/funding-section';
+import InvestmentPlatform from '@/component/projects';
+import TrustedSection from '@/component/trusted-section';
+import { useFadeInScroll } from '@/hooks/useFadeInScroll';
 
 export default function Home() {
+  useFadeInScroll();
   return (
-    <main className="w-full min-h-screen flex flex-col">
-      <AnimatedCounter />
-      <ChooseInfraFund />
-      <FundingSection />
-      <InvestmentPlatform />
-      {/* <Tokenization /> */}
-      <TrustedSection />
-      <ContactUs />
-    </main>
+    <>
+      {/* <section className="fade-in"><AnimatedCounter /></section> */}
+      <section className="fade-in">
+        <ChooseInfraFund />
+      </section>
+      <section className="fade-in">
+        <InvestmentPlatform />
+      </section>
+      <section className="fade-in">
+        <FundingSection />
+      </section>
+      <section className="fade-in">
+        <TrustedSection />
+      </section>
+      <ContactUsPage />
+    </>
   );
 }
