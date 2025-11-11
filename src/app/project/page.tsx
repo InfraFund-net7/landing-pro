@@ -1,6 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import ProjectPage from '@/component/project-page';
+import AuthFlow from '@/component/AuthFlow';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://infrafund.io';
 
@@ -49,5 +50,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <ProjectPage />;
+  return <AuthFlow />;
 }
