@@ -16,7 +16,7 @@ export default function FundingSection() {
     },
     {
       background: SecurityBase,
-      title: 'Security-Based',
+      title: 'Equity-Based',
       icon: ChartSpline,
       description:
         'For accredited investors. Purchase digital tokens that represent a direct equity or debt stake in a project, offering traditional financial returns.',
@@ -43,7 +43,7 @@ export default function FundingSection() {
         Flexible Funding for a Diverse Market
       </h2>
 
-      <div className="hidden md:flex w-full h-[720px]">
+      <div className="hidden md:flex w-full h-[500px]">
         {fundingitems.map((item, index) => (
           <div
             key={index}
@@ -70,18 +70,21 @@ export default function FundingSection() {
                 group-hover:bg-black/40
               "
             />
-            <div className="relative z-0 flex flex-col justify-between gap-6 px-6 h-full">
-              <div className="flex flex-col gap-2">
+            <div className="relative z-0 flex flex-col justify-between  gap-6 px-6 h-full">
+              <div className="flex flex-col gap-2 ">
                 <item.icon className="text-white" size={32} />
                 <h3 className="text-white text-xl font-semibold">
                   {item.title}
                 </h3>
               </div>
-              <p className="text-white text-sm leading-relaxed"
+              <div className='w-full h-[100px] flex justify-start items-start '>
+
+              <p className="text-white text-sm"
                 style={{ hyphens: 'auto', textAlign: 'justify' }}
               >
                 {item.description}
               </p>
+              </div>
             </div>
           </div>
         ))}

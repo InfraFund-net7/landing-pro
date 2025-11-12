@@ -6,7 +6,7 @@ import stars from '@/../public/image/stars.png';
 
 export default function TrustedSection() {
   return (
-    <div className="w-full h-fit flex flex-col justify-between items-center py-12 gap-20 md:gap-32 mb-20 relative overflow-hidden">
+    <div className="w-full h-fit flex flex-col justify-between items-center py-12 gap-20 md:gap-10 mb-20 relative overflow-hidden">
       <h2 className="text-[28px] sm:text-[36px] md:text-[42px] text-white font-bold text-center px-4">
         Trusted by Leaders in Innovation
       </h2>
