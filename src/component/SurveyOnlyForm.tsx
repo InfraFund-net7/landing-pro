@@ -1,4 +1,3 @@
-// src/components/SurveyOnlyForm.tsx
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
@@ -11,14 +10,12 @@ import invest from "@/../public/svg/Invest-flow.svg";
 import infafund from "@/../public/svg/infrafund.svg";
 import Individual from "@/../public/svg/Individual.svg";
 import organization from "@/../public/svg/organization.svg";
-import apiService from "@/services/apiService";
 import { Modal } from "./ui/modal";
 import { CustomButton } from "./ui/custom-button";
 import { Check } from "lucide-react";
 import { FormInput } from "./ui/form-input";
 import Link from "next/link";
 
-// Types
 type SurveyData = {
     role: string;
     type: "individual" | "organization";
@@ -164,17 +161,14 @@ export default function SurveyOnlyForm({
                 email: data.email || "",
                 contact_fullname: data.type === "organization" ? data.contact_fullname || "" : "",
                 company_name: data.type === "organization" ? data.company_name || "" : "",
+                country: "uk"
             };
-
-            console.log(`📤 Survey data ready (no API call):`, payload);
-
             const setDomainCookie = (name: string, value: any, minutes = 10) => {
                 const expires = new Date(Date.now() + minutes * 60 * 1000).toUTCString();
                 const encoded = encodeURIComponent(JSON.stringify(value));
                 document.cookie = `${name}=${encoded}; Path=/; Domain=.infrafund.test; Max-Age=${minutes * 60}; SameSite=Lax`;
-                console.log(`🍪 Cookie set: ${name} (expires in ${minutes} min)`);
+                console.log(`Cookie set: ${name} (expires in ${minutes} min)`);
             };
-
             setDomainCookie("survey_data", payload, 15);
 
             setSubmitSuccess(true);
@@ -185,10 +179,10 @@ export default function SurveyOnlyForm({
             }, 800);
 
         } catch (err: any) {
-            console.error("❌ Client-side error:", err);
-            const error = new Error("خطا در ذخیره اطلاعات — لطفاً دوباره تلاش کنید");
+            console.error("Client-side error:", err);
+            const error = new Error("Failed to stored the data try again");
             onError?.(error);
-            alert(`❌ خطا:\n${error.message}`);
+            alert(`error:\n${error.message}`);
         } finally {
             setSubmitting(false);
         }
@@ -209,7 +203,6 @@ export default function SurveyOnlyForm({
         setSubmitSuccess(false);
     };
 
-    // --- Renderers ---
     const renderStep1 = () => (
         <>
             <div className="w-full h-fit flex flex-col justify-center items-start gap-1">
@@ -235,21 +228,23 @@ export default function SurveyOnlyForm({
                     </div>
                 ))}
             </div>
-            <CustomButton
-                variant="outlined"
-                className="w-full bg-gray-600 text-white rounded-md hover:bg-gray-500 transition-colors disabled:opacity-50 md:w-auto md:px-8"
-                disabled={!selectedAction}
-                onClick={() => selectedAction && setCurrentStep(2)}
-            >
-                Continue
-            </CustomButton>
+            <div className="w-full h-fit flex justify-center items-center">
+                <CustomButton
+                    variant="filled"
+                    className="w-full bg-gray-600 text-white rounded-md hover:bg-gray-500 transition-colors disabled:opacity-50"
+                    disabled={!selectedAction}
+                    onClick={() => selectedAction && setCurrentStep(2)}
+                >
+                    Continue
+                </CustomButton>
+            </div>
         </>
     );
 
     const renderStep2 = () => (
         <>
             <span className="text-2xl text-white font-semibold">Are you an Individual or Organization?</span>
-            <div className="flex justify-between items-center w-full bg-blue-500">
+            <div className="flex justify-between items-center w-full  gap-5">
                 <div
                     className={` rounded-lg p-4 w-[241px] flex flex-col items-center justify-center cursor-pointer  hover:bg-gray-700 transition-colors md:p-6   ${userType === "individual"
                         ? "bg-[#343C52] border border-[#777777] backdrop-blur-[70px]"
@@ -271,13 +266,14 @@ export default function SurveyOnlyForm({
                     <span className="text-white font-medium text-center text-sm md:text-base">Organization</span>
                 </div>
             </div>
-            <button
-                className="w-full py-3 bg-gray-600 text-white rounded-md hover:bg-gray-500 transition-colors disabled:opacity-50 md:w-auto md:px-8"
+            <CustomButton
+                variant="filled"
+                className="w-full bg-gray-600 text-white rounded-md hover:bg-gray-500 transition-colors disabled:opacity-50"
                 disabled={!userType}
                 onClick={() => userType && setCurrentStep(3)}
             >
                 Continue
-            </button>
+            </CustomButton>
         </>
     );
 
@@ -340,7 +336,7 @@ export default function SurveyOnlyForm({
                     </>
                 ) : (
                     <>
-                        <label className="flex items-center space-x-3 cursor-pointer">
+                        <label className="flex items-center gap-4 bg-slate-700 rounded-2xl p-6 cursor-pointer hover:bg-slate-650 transition-colors group">
                             <div className="relative flex-shrink-0">
                                 <input
                                     type="checkbox"
@@ -356,7 +352,7 @@ export default function SurveyOnlyForm({
                             </div>
                             <span className="text-white text-sm">Our company is based in UK.</span>
                         </label>
-                        <label className="flex items-center space-x-3 cursor-pointer">
+                        <label className="flex items-center gap-4 bg-slate-700 rounded-2xl p-6 cursor-pointer hover:bg-slate-650 transition-colors group">
                             <div className="relative flex-shrink-0">
                                 <input
                                     type="checkbox"
@@ -372,7 +368,7 @@ export default function SurveyOnlyForm({
                             </div>
                             <span className="text-white text-sm">We have a valid UK company house number.</span>
                         </label>
-                        <label className="flex items-center space-x-3 cursor-pointer">
+                        <label className="flex items-center gap-4 bg-slate-700 rounded-2xl p-6 cursor-pointer hover:bg-slate-650 transition-colors group">
                             <div className="relative flex-shrink-0">
                                 <input
                                     type="checkbox"
@@ -391,28 +387,42 @@ export default function SurveyOnlyForm({
                     </>
                 )}
             </div>
-            <button
-                className="w-full py-3 bg-green-600 text-white rounded-md hover:bg-green-500 transition-colors md:w-auto md:px-8"
+
+            <CustomButton
+                variant="filled"
+                className="w-full py-3 bg-green-600 text-white rounded-md hover:bg-green-500 transition-colors md:w-full md:px-8"
                 onClick={handleConfirmContinue}
             >
                 Continue
-            </button>
+            </CustomButton>
         </div>
     );
 
     const renderStep4 = () => (
-        <div className="text-center">
-            <Image priority src={infafund} alt="infafund" width={172} height={42} className="mx-auto mb-4" />
-            <span className="text-2xl text-white font-semibold mb-4 block">Not Eligible</span>
-            <p className="text-white text-sm mb-6">
-                We’re sorry, but at this time we only support UK residents and UK-based organizations.
-            </p>
-            <button
-                className="w-full py-3 bg-gray-600 text-white rounded-md hover:bg-gray-500 transition-colors md:w-auto md:px-8"
-                onClick={resetFlow}
-            >
-                Back to Start
-            </button>
+        <div className="flex flex-col gap-12 justify-center items-start">
+            <span className="text-2xl text-white font-semibold block">Contact Form</span>
+            <div className="flex flex-col gap-6 text-left">
+                <p className="text-white text-sm">
+                    Unfortunately, at this point in time, we cannot accept investments from people who are not UK residents or don`&apos;`t have a valid  UK national insurance number.
+                </p>
+                <p className="text-white text-sm">
+                    If you would like to be notified when we are able to accept investments from your country, complete the form below.
+                </p>
+            </div>
+            <div className="w-full text-left flex flex-col gap-3">
+                <FormInput label="First Name" placeholder="First Name" type="text" />
+                <FormInput label="Last Name" placeholder="Last Name" type="text" />
+                <FormInput label="Country" placeholder="Country" />
+                <FormInput label="Email" placeholder="Email" type="text" />
+            </div>
+            <div className="w-full h-fit flex justify-center items-center">
+                <button
+                    className="w-full py-3 bg-gray-600 text-white rounded-md hover:bg-gray-500 transition-colors md:w-auto md:px-8"
+                    onClick={resetFlow}
+                >
+                    Back to Start
+                </button>
+            </div>
         </div>
     );
 
@@ -454,17 +464,17 @@ export default function SurveyOnlyForm({
             </div>
             <div className="flex space-x-2">
                 <button
-                    className="flex-1 py-3 bg-gray-600 text-white rounded-md hover:bg-gray-500 transition-colors"
+                    className="flex-1 py-3 bg-gray-600 text-white rounded-md hover:text-primary transition-colors cursor-pointer"
                     onClick={() => setCurrentStep(3)}
                 >
                     Back
                 </button>
-                <button
-                    className="flex-1 py-3 bg-green-600 text-white rounded-md hover:bg-green-500 transition-colors"
+                <CustomButton
                     onClick={() => setCurrentStep(5 + 1)}
-                >
+                    variant="filled"
+                    className="w-full py-3 bg-green-600 text-white rounded-md hover:bg-green-500 transition-colors md:flex-1">
                     Continue
-                </button>
+                </CustomButton>
             </div>
         </div>
     );
@@ -478,12 +488,19 @@ export default function SurveyOnlyForm({
                         onChange={(e) => handleAccountChange("email", e.target.value)} />
                 </div>
                 <label className="flex items-center space-x-3 cursor-pointer">
-                    <input
-                        type="checkbox"
-                        className="w-5 h-5 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500"
-                        checked={accountForm.termsAgreed}
-                        onChange={(e) => handleAccountChange("termsAgreed", e.target.checked)}
-                    />
+                    <div className="relative flex-shrink-0">
+                        <input
+                            type="checkbox"
+                            className="peer sr-only"
+                            checked={orgConfirmations.companyHouse}
+                            onChange={(e) => handleOrgConfirm("companyHouse", e.target.checked)}
+                        />
+                        <div className="w-8 h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
+                            <Check
+                                className="w-3 h-3 text-[#2B3146] peer-checked:text-black transition-colors duration-300"
+                            />
+                        </div>
+                    </div>
                     <span className="text-white text-sm">
                         By creating an account, I agree to InFraFund&apos;s{" "}
                         <Link href="/terms" className="text-green-400 hover:text-primary">Terms of Service and Privacy Notice</Link>.
@@ -492,22 +509,24 @@ export default function SurveyOnlyForm({
             </div>
             <div className="flex space-x-2">
                 <button
-                    className="flex-1 py-3 bg-gray-600 text-white rounded-md hover:bg-gray-500 transition-colors"
+                    className="flex-1 py-3 bg-gray-600 text-white rounded-md hover:text-primary transition-colors cursor-pointer"
                     onClick={() => setCurrentStep(5)}
                 >
                     Back
                 </button>
-                <button
-                    className="flex-1 py-3 bg-green-600 text-white rounded-md hover:bg-green-500 transition-colors disabled:opacity-50"
-                    disabled={!accountForm.email || !accountForm.termsAgreed || submitting}
+                <CustomButton
                     onClick={handleSubmitSurvey}
-                >
+                    disabled={!accountForm.email || !accountForm.termsAgreed || submitting}
+                    variant="filled"
+                    className="w-full py-3 bg-green-600 text-white rounded-md hover:bg-green-500 transition-colors md:flex-1">
                     {submitting ? "Submitting..." : submitSuccess ? "✅ Submitted!" : "Submit Survey"}
-                </button>
+
+                </CustomButton>
             </div>
             {submitSuccess && (
                 <div className="mt-4 p-3 bg-green-900/30 border border-green-500 rounded text-center text-green-300 text-sm">
-                    Survey submitted successfully. Thank you!
+                    Survey submitted successfully. Thank you! <br />
+                    You will be redirected to your personal dashboard shortly.
                 </div>
             )}
         </div>
