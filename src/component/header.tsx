@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import gsap from 'gsap';
 import { CustomButton } from './ui/custom-button';
 import Waitlistmodal from './waitlistmodal';
+import SurveyOnlyForm from './SurveyOnlyForm';
 
 
 export default function Header() {
@@ -16,6 +17,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [createaccount, setCreateAccount] = useState(false);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
@@ -122,6 +124,7 @@ export default function Header() {
             </button>
             <CustomButton
               variant="filled"
+              onClick={() => setCreateAccount(true)}
               className="w-[184px] h-full text-sm flex justify-center items-center font-bold"
             >
               Create Account
@@ -189,6 +192,7 @@ export default function Header() {
           </button>
         </div>
       </div>
+      <SurveyOnlyForm isModalOpen={createaccount} setIsModalOpen={setCreateAccount} />
       <Waitlistmodal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
     </>
   );
