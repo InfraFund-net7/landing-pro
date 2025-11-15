@@ -13,7 +13,7 @@ services:
       - traefik-net
     labels:
       - 'traefik.enable=true'
-      - "traefik.http.routers.${APP_NAME}.rule=Host(`infrafund.net`) || Host(`www.infrafund.net`)"
+      - "traefik.http.routers.${APP_NAME}.rule=${HOSTS}"
       - 'traefik.http.routers.${APP_NAME}.entrypoints=websecure'
 
         # Apply the redirect middleware to this router
