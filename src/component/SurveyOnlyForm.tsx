@@ -103,25 +103,25 @@ export default function SurveyOnlyForm({
 
     const survey = [
         {
-            roles: "Raise Fund",
+            roles: ["client"],
             name: "Raise Funds (Project Developer)",
             icon: fund,
             description: "I am a project owner or developer seeking capital for a renewable energy infrastructure or NetZero project.",
         },
         {
-            roles: "Invest",
+            roles: ["investor"],
             name: "Invest in Assets (Investor)",
             icon: invest,
             description: "I want to discover, fund, and track high-impact, transparent green project.",
         },
         {
-            roles: "Contract",
+            roles: ["contractor"],
             name: "Manage Construction (Contractor)",
             icon: contract,
             description: "I am an EPC or General Contractor to build a project and will be reporting on milestone progress.",
         },
         {
-            roles: "Audit",
+            roles: ["auditor"],
             name: "Audit & Verify (Auditor)",
             icon: audit,
             description: "I am an independent third-party verifier responsible for validating project milestones, quality, and data.",
@@ -247,9 +247,9 @@ export default function SurveyOnlyForm({
             setDomainCookie("survey_data", payload, 15);
             setSubmitSuccess(true);
             onSuccess?.(data);
-            setTimeout(() => {
-                window.location.href = "http://dash.infrafund.test:3001";
-            }, 800);
+            // setTimeout(() => {
+            //     window.location.href = "http://dash.infrafund.test:3001/login";
+            // }, 800);
         } catch (err: unknown) {
             console.error("Client-side error:", err);
             const error = new Error("Failed to stored the data try again");
@@ -307,13 +307,13 @@ export default function SurveyOnlyForm({
                 {survey.map((item, index) => (
                     <div
                         key={index}
-                        onClick={() => handleActionSelect(item.name)}
-                        className={`w-full h-fit py-4 px-6 flex justify-start items-center gap-4 rounded-[12px] cursor-pointer transition-all duration-200 ${selectedItem === item.name
+                        onClick={() => handleActionSelect(item.roles[0])}
+                        className={`w-full h-fit py-4 px-6 flex justify-start items-center gap-4 rounded-[12px] cursor-pointer transition-all duration-200 ${selectedItem === item.roles[0]
                             ? "bg-[#343C52] border border-[#777777] backdrop-blur-[70px]"
                             : "bg-[#131C2F]"
                             }`}
                     >
-                        <Image src={item.icon} width={48} height={48} alt={item.roles} />
+                        <Image src={item.icon} width={48} height={48} alt={item.name} />
                         <div className="flex flex-col gap-2 justify-center text-left">
                             <span className="text-lg text-white font-medium">{item.name}</span>
                             <span className="text-xs text-[#A3A3A3] font-normal">{item.name}</span>
