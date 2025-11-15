@@ -19,8 +19,8 @@ jobs:
           port: ${{ secrets.VPS_SSH_PORT }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
-          script_stop: true
           script: |
+            set -e
             APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/main
             mkdir -p $APP_PATH
             cd $APP_PATH
@@ -44,8 +44,8 @@ jobs:
           port: ${{ secrets.VPS_SSH_PORT }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
-          script_stop: true
           script: |
+            set -e
             APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/main
             cd $APP_PATH
             echo "APP_NAME=main" > .env

@@ -21,8 +21,8 @@ jobs:
           port: ${{ secrets.VPS_SSH_PORT }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
-          script_stop: true
           script: |
+            set -e
             APP_NAME=pr-${{ github.event.pull_request.number }}
             APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/$APP_NAME
             mkdir -p $APP_PATH
@@ -51,8 +51,8 @@ jobs:
           port: ${{ secrets.VPS_SSH_PORT }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
-          script_stop: true
           script: |
+            set -e
             APP_NAME=pr-${{ github.event.pull_request.number }}
             APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/$APP_NAME
             cd $APP_PATH
@@ -83,8 +83,8 @@ jobs:
           port: ${{ secrets.VPS_SSH_PORT }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
-          script_stop: true
           script: |
+            set -e
             APP_NAME=pr-${{ github.event.pull_request.number }}
             APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/$APP_NAME
             cd $APP_PATH
