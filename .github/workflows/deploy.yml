@@ -20,6 +20,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           script: |
+            set -e
             APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/main
             mkdir -p $APP_PATH
             cd $APP_PATH
@@ -44,8 +45,10 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           script: |
+            set -e
             APP_PATH=${{ secrets.VPS_PROJECT_ROOT }}/main
             cd $APP_PATH
             echo "APP_NAME=main" > .env
+            echo "HOSTS=Host(\`infrafund.net\`) || Host(\`www.infrafund.net\`)" >> .env
             docker-compose -f docker-compose.traefik.yml up -d --build --remove-orphans
             docker image prune -f
