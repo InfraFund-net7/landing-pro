@@ -296,78 +296,81 @@ export default function SurveyOnlyForm({
     };
 
     const renderStep1 = () => (
-        <>
-            <div className="w-full h-fit flex flex-col justify-center items-start gap-1">
-                <span className="text-base text-white block">Let’s Get Started</span>
-                <span className="text-2xl text-white font-semibold">
-                    What do you want to do with InFraFund?
-                </span>
-            </div>
-            <div className="space-y-4 w-full">
+        <div className="w-full h-full flex flex-col gap-2 justify-center items-start ">
+            <span className="text-base text-white block">Let’s Get Started</span>
+            <span className="text-2xl text-white font-semibold">
+                What brings you to InfraFund?
+            </span>
+            <div className="w-full flex flex-col gap-4">
                 {survey.map((item, index) => (
                     <div
                         key={index}
                         onClick={() => handleActionSelect(item.roles[0])}
-                        className={`w-full h-fit py-4 px-6 flex justify-start items-center gap-4 rounded-[12px] cursor-pointer transition-all duration-200 ${selectedItem === item.roles[0]
+                        className={`w-full h-fit py-4 px-6 flex justify-start items-center gap-4 rounded-[12px] cursor-pointer transition-all duration-300 ${selectedItem === item.roles[0]
                             ? "bg-[#343C52] border border-[#777777] backdrop-blur-[70px]"
-                            : "bg-[#131C2F]"
+                            : "bg-[#131C2F] hover:bg-[#1E283D] border border-transparent"
                             }`}
                     >
                         <Image src={item.icon} width={48} height={48} alt={item.name} />
                         <div className="flex flex-col gap-2 justify-center text-left">
                             <span className="text-lg text-white font-medium">{item.name}</span>
-                            <span className="text-xs text-[#A3A3A3] font-normal">{item.name}</span>
+                            <span className="text-xs text-[#A3A3A3] font-normal">{item.description || item.name}</span>
                         </div>
                     </div>
                 ))}
             </div>
-            <div className="w-full h-fit flex justify-center items-center">
-                <CustomButton
-                    variant="filled"
-                    className="w-full bg-gray-600 text-white rounded-md hover:bg-gray-500 transition-colors disabled:opacity-50"
-                    disabled={!selectedAction}
-                    onClick={() => selectedAction && setCurrentStep(2)}
-                >
-                    Continue
-                </CustomButton>
-            </div>
-        </>
-    );
 
-    const renderStep2 = () => (
-        <>
-            <span className="text-2xl text-white font-semibold">
-                Are you an Individual or Organization?
-            </span>
-            <div className="flex justify-between items-center w-full gap-5">
-                <div
-                    className={`rounded-lg p-4 w-[241px] flex flex-col items-center justify-center cursor-pointer hover:bg-gray-700 transition-colors md:p-6 ${userType === "individual"
-                        ? "bg-[#343C52] border border-[#777777] backdrop-blur-[70px]"
-                        : "bg-[#131C2F]"
-                        }`}
-                    onClick={() => handleTypeSelect("individual")}
-                >
-                    <Image src={Individual} width={64} height={64} alt="Individual" />
-                    <span className="text-white font-medium text-center text-sm md:text-base">
-                        Individual
-                    </span>
-                </div>
-                <div
-                    className={`rounded-lg p-4 w-[241px] flex flex-col items-center justify-center cursor-pointer hover:bg-gray-700 transition-colors md:p-6 ${userType === "organization"
-                        ? "bg-[#343C52] border border-[#777777] backdrop-blur-[70px]"
-                        : "bg-[#131C2F]"
-                        }`}
-                    onClick={() => handleTypeSelect("organization")}
-                >
-                    <Image src={organization} width={64} height={64} alt="organization" />
-                    <span className="text-white font-medium text-center text-sm md:text-base">
-                        Organization
-                    </span>
-                </div>
-            </div>
             <CustomButton
                 variant="filled"
-                className="w-full bg-gray-600 text-white rounded-md hover:bg-gray-500 transition-colors disabled:opacity-50"
+                disabled={!selectedAction}
+                onClick={() => selectedAction && setCurrentStep(2)}
+                className="w-full"
+            >
+                Continue
+            </CustomButton>
+        </div>
+    );
+    const renderStep2 = () => (
+        <>
+            <div className="flex flex-col gap-12 mb-12 w-full max-w-3xl">
+                <span className="text-2xl text-white font-semibold text-center">
+                    Are you an Individual or Organization?
+                </span>
+
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-5">
+                    <div
+                        className={`rounded-xl p-5 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 
+                        ${userType === "individual"
+                                ? "bg-[#343C52] border border-[#777777] backdrop-blur-[70px]"
+                                : "bg-[#131C2F] hover:bg-gray-700"
+                            }`}
+                        onClick={() => handleTypeSelect("individual")}
+                    >
+                        <Image src={Individual} width={64} height={64} alt="Individual" className="mb-4" />
+                        <span className="text-white font-medium text-center text-base">
+                            Individual
+                        </span>
+                    </div>
+
+                    <div
+                        className={`rounded-xl p-5 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 
+                        ${userType === "organization"
+                                ? "bg-[#343C52] border border-[#777777] backdrop-blur-[70px]"
+                                : "bg-[#131C2F] hover:bg-gray-700"
+                            }`}
+                        onClick={() => handleTypeSelect("organization")}
+                    >
+                        <Image src={organization} width={64} height={64} alt="Organization" className="mb-4" />
+                        <span className="text-white font-medium text-center text-base">
+                            Organization
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <CustomButton
+                variant="filled"
+                className="w-full py-4 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition-colors disabled:opacity-50"
                 disabled={!userType}
                 onClick={() => userType && setCurrentStep(3)}
             >
@@ -377,117 +380,137 @@ export default function SurveyOnlyForm({
     );
 
     const renderStep3 = () => (
-        <div className="w-full space-y-4">
-            <span className="text-2xl text-white font-semibold text-left block">
-                First, please confirm the following.
-            </span>
-            <div className="space-y-4">
-                {userType === "individual" ? (
-                    <>
-                        <label className="flex items-center gap-4 bg-slate-700 rounded-2xl p-6 cursor-pointer hover:bg-slate-600 transition-colors">
-                            <div className="relative flex-shrink-0">
-                                <input
-                                    type="checkbox"
-                                    className="peer sr-only"
-                                    checked={confirmations.ukResident}
-                                    onChange={(e) => handleIndividualConfirm("ukResident", e.target.checked)}
-                                />
-                                <div className="w-8 h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
-                                    <Check className="w-5 h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
-                                </div>
-                            </div>
-                            <span className="text-white font-mono">I am currently a UK resident</span>
-                        </label>
-                        <label className="flex items-center gap-4 bg-slate-700 rounded-2xl p-6 cursor-pointer hover:bg-slate-650 transition-colors group">
-                            <div className="relative flex-shrink-0">
-                                <input
-                                    type="checkbox"
-                                    className="peer sr-only"
-                                    checked={confirmations.niNumber}
-                                    onChange={(e) => handleIndividualConfirm("niNumber", e.target.checked)}
-                                />
-                                <div className="w-8 h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
-                                    <Check className="w-5 h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
-                                </div>
-                            </div>
-                            <span className="text-white font-mono">I have a valid UK national insurance number</span>
-                        </label>
-                        <label className="flex items-center gap-4 bg-slate-700 rounded-2xl p-6 cursor-pointer hover:bg-slate-650 transition-colors group">
-                            <div className="relative flex-shrink-0">
-                                <input
-                                    type="checkbox"
-                                    className="peer sr-only"
-                                    checked={confirmations.over18}
-                                    onChange={(e) => handleIndividualConfirm("over18", e.target.checked)}
-                                />
-                                <div className="w-8 h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
-                                    <Check className="w-5 h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
-                                </div>
-                            </div>
-                            <span className="text-white font-mono">I am at least 18 years old</span>
+        <div className="w-full space-y-6">
+            <div className="space-y-6">
+                <span className="text-xl md:text-2xl text-white font-semibold block text-center md:text-left">
+                    First, please confirm the following.
+                </span>
 
-                        </label>
-                    </>
-                ) : (
-                    <>
-                        <label className="flex items-center gap-4 bg-slate-700 rounded-2xl p-6 cursor-pointer hover:bg-slate-650 transition-colors group">
-                            <div className="relative flex-shrink-0">
-                                <input
-                                    type="checkbox"
-                                    className="peer sr-only"
-                                    checked={orgConfirmations.ukBased}
-                                    onChange={(e) => handleOrgConfirm("ukBased", e.target.checked)}
-                                />
-                                <div className="w-8 h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
-                                    <Check className="w-5 h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
+                <div className="space-y-4">
+                    {userType === "individual" ? (
+                        <>
+                            <label className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-700 rounded-xl p-4 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors">
+                                <div className="relative flex-shrink-0">
+                                    <input
+                                        type="checkbox"
+                                        className="peer sr-only"
+                                        checked={confirmations.ukResident}
+                                        onChange={(e) => handleIndividualConfirm("ukResident", e.target.checked)}
+                                    />
+                                    <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
+                                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
+                                    </div>
                                 </div>
-                            </div>
-                            <span className="text-white text-sm">Our company is based in UK.</span>
-                        </label>
-                        <label className="flex items-center gap-4 bg-slate-700 rounded-2xl p-6 cursor-pointer hover:bg-slate-650 transition-colors group">
-                            <div className="relative flex-shrink-0">
-                                <input
-                                    type="checkbox"
-                                    className="peer sr-only"
-                                    checked={orgConfirmations.companyHouse}
-                                    onChange={(e) => handleOrgConfirm("companyHouse", e.target.checked)}
-                                />
-                                <div className="w-8 h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
-                                    <Check className="w-5 h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
+                                <span className="text-white text-base text-left flex-1">
+                                    I am currently a UK resident
+                                </span>
+                            </label>
+
+                            <label className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-700 rounded-xl p-4 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors">
+                                <div className="relative flex-shrink-0">
+                                    <input
+                                        type="checkbox"
+                                        className="peer sr-only"
+                                        checked={confirmations.niNumber}
+                                        onChange={(e) => handleIndividualConfirm("niNumber", e.target.checked)}
+                                    />
+                                    <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
+                                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
+                                    </div>
                                 </div>
-                            </div>
-                            <span className="text-white text-sm">We have a valid UK company house number.</span>
-                        </label>
-                        <label className="flex items-center gap-4 bg-slate-700 rounded-2xl p-6 cursor-pointer hover:bg-slate-650 transition-colors group">
-                            <div className="relative flex-shrink-0">
-                                <input
-                                    type="checkbox"
-                                    className="peer sr-only"
-                                    checked={orgConfirmations.active}
-                                    onChange={(e) => handleOrgConfirm("active", e.target.checked)}
-                                />
-                                <div className="w-8 h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
-                                    <Check className="w-5 h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
+                                <span className="text-white text-base text-left flex-1">
+                                    I have a valid UK national insurance number
+                                </span>
+                            </label>
+
+                            <label className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-700 rounded-xl p-4 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors">
+                                <div className="relative flex-shrink-0">
+                                    <input
+                                        type="checkbox"
+                                        className="peer sr-only"
+                                        checked={confirmations.over18}
+                                        onChange={(e) => handleIndividualConfirm("over18", e.target.checked)}
+                                    />
+                                    <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
+                                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
+                                    </div>
                                 </div>
-                            </div>
-                            <span className="text-white text-sm">Our company is currently active.</span>
-                        </label>
-                    </>
+                                <span className="text-white text-base text-left flex-1">
+                                    I am at least 18 years old
+                                </span>
+                            </label>
+                        </>
+                    ) : (
+                        <>
+                            <label className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-700 rounded-xl p-4 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors">
+                                <div className="relative flex-shrink-0">
+                                    <input
+                                        type="checkbox"
+                                        className="peer sr-only"
+                                        checked={orgConfirmations.ukBased}
+                                        onChange={(e) => handleOrgConfirm("ukBased", e.target.checked)}
+                                    />
+                                    <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
+                                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
+                                    </div>
+                                </div>
+                                <span className="text-white text-base text-left flex-1">
+                                    Our company is based in UK.
+                                </span>
+                            </label>
+
+                            <label className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-700 rounded-xl p-4 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors">
+                                <div className="relative flex-shrink-0">
+                                    <input
+                                        type="checkbox"
+                                        className="peer sr-only"
+                                        checked={orgConfirmations.companyHouse}
+                                        onChange={(e) => handleOrgConfirm("companyHouse", e.target.checked)}
+                                    />
+                                    <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
+                                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
+                                    </div>
+                                </div>
+                                <span className="text-white text-base text-left flex-1">
+                                    We have a valid UK company house number.
+                                </span>
+                            </label>
+
+                            <label className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-700 rounded-xl p-4 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors">
+                                <div className="relative flex-shrink-0">
+                                    <input
+                                        type="checkbox"
+                                        className="peer sr-only"
+                                        checked={orgConfirmations.active}
+                                        onChange={(e) => handleOrgConfirm("active", e.target.checked)}
+                                    />
+                                    <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
+                                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
+                                    </div>
+                                </div>
+                                <span className="text-white text-base text-left flex-1">
+                                    Our company is currently active.
+                                </span>
+                            </label>
+                        </>
+                    )}
+                </div>
+
+                {showUnder18Warning && (
+                    <p className="text-red-400 text-sm text-center md:text-left px-1">
+                        We do not provide services to individuals under 18 years old.
+                    </p>
                 )}
             </div>
-            {showUnder18Warning && (
-                <p className="text-red-300 text-sm text-left">
-                    We do not provide services to individuals under 18 years old.
-                </p>
-            )}
+
             <CustomButton
                 variant="filled"
-                className="w-full py-3 bg-green-600 text-white rounded-md hover:bg-green-500 transition-colors md:w-full md:px-8"
+                className="w-full py-3.5 md:py-3 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
                 onClick={handleConfirmContinue}
                 disabled={
                     userType === "individual"
                         ? !(confirmations.ukResident && confirmations.niNumber && confirmations.over18)
-                        : !(orgConfirmations.ukBased && orgConfirmations.companyHouse)
+                        : !(orgConfirmations.ukBased && orgConfirmations.companyHouse && orgConfirmations.active)
                 }
             >
                 Continue
@@ -527,145 +550,149 @@ export default function SurveyOnlyForm({
 
     const renderStep5 = () => (
         <div className="w-full text-left">
-            <span className="text-2xl text-white font-semibold mb-6 block">
-                Great! Let&apos;s get started.
-            </span>
-            <div className="space-y-4 mb-8">
-                {userType === "individual" ? (
-                    <>
-                        <div className="w-full">
-                            <FormInput
-                                label="First Name"
-                                placeholder="First Name"
-                                type="text"
-                                value={personalForm.firstName}
-                                onChange={(e) => handlePersonalChange("firstName", e.target.value)}
-                            />
-                        </div>
-                        <div className="w-full">
-                            <FormInput
-                                label="Last Name"
-                                placeholder="Last Name"
-                                type="text"
-                                value={personalForm.lastName}
-                                onChange={(e) => handlePersonalChange("lastName", e.target.value)}
-                            />
-                        </div>
-                        <div className="w-full">
-                            <FormInput
-                                label="Phone Number"
-                                placeholder="+44 (XXX) XXX-XXXX"
-                                type="tel"
-                                value={personalForm.phoneNumber}
-                                onChange={(e) => handlePersonalChange("phoneNumber", e.target.value)}
-                            />
-                        </div>
-                    </>
-                ) : (
-                    <>
-                        <div className="w-full">
-                            <FormInput
-                                label="Contact Full Name"
-                                placeholder="Contact Full Name"
-                                type="text"
-                                value={orgForm.contactFullName}
-                                onChange={(e) => handlePersonalChange("contactFullName", e.target.value, true)}
-                            />
-                        </div>
-                        <div className="w-full">
-                            <FormInput
-                                label="Company Name"
-                                placeholder="Company Name"
-                                type="text"
-                                value={orgForm.companyName}
-                                onChange={(e) => handlePersonalChange("companyName", e.target.value, true)}
-                            />
-                        </div>
-                        <div className="w-full">
-                            <FormInput
-                                label="Phone Number"
-                                placeholder="+44 (XXX) XXX-XXXX"
-                                type="tel"
-                                value={orgForm.phoneNumber}
-                                onChange={(e) => handlePersonalChange("phoneNumber", e.target.value, true)}
-                            />
-                        </div>
-                    </>
-                )}
+            <div className="mb-40">
+                <span className="text-2xl text-white font-semibold mb-6 block">
+                    Great! Let&apos;s get started.
+                </span>
+                <div className="space-y-4 mb-8">
+                    {userType === "individual" ? (
+                        <>
+                            <div className="w-full">
+                                <FormInput
+                                    label="First Name"
+                                    placeholder="First Name"
+                                    type="text"
+                                    value={personalForm.firstName}
+                                    onChange={(e) => handlePersonalChange("firstName", e.target.value)}
+                                />
+                            </div>
+                            <div className="w-full">
+                                <FormInput
+                                    label="Last Name"
+                                    placeholder="Last Name"
+                                    type="text"
+                                    value={personalForm.lastName}
+                                    onChange={(e) => handlePersonalChange("lastName", e.target.value)}
+                                />
+                            </div>
+                            <div className="w-full">
+                                <FormInput
+                                    label="Phone Number"
+                                    placeholder="+44 (XXX) XXX-XXXX"
+                                    type="tel"
+                                    value={personalForm.phoneNumber}
+                                    onChange={(e) => handlePersonalChange("phoneNumber", e.target.value)}
+                                />
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="w-full">
+                                <FormInput
+                                    label="Contact Full Name"
+                                    placeholder="Contact Full Name"
+                                    type="text"
+                                    value={orgForm.contactFullName}
+                                    onChange={(e) => handlePersonalChange("contactFullName", e.target.value, true)}
+                                />
+                            </div>
+                            <div className="w-full">
+                                <FormInput
+                                    label="Company Name"
+                                    placeholder="Company Name"
+                                    type="text"
+                                    value={orgForm.companyName}
+                                    onChange={(e) => handlePersonalChange("companyName", e.target.value, true)}
+                                />
+                            </div>
+                            <div className="w-full">
+                                <FormInput
+                                    label="Phone Number"
+                                    placeholder="+44 (XXX) XXX-XXXX"
+                                    type="tel"
+                                    value={orgForm.phoneNumber}
+                                    onChange={(e) => handlePersonalChange("phoneNumber", e.target.value, true)}
+                                />
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
             <div className="flex space-x-2">
                 <button
-                    className="flex-1 py-3 bg-gray-600 text-white rounded-md hover:text-primary transition-colors cursor-pointer"
+                    className="flex-1 w-1/2 py-3 bg-[#1C2332] text-primary rounded-md transition-colors cursor-pointer"
                     onClick={() => setCurrentStep(3)}
                 >
                     Back
                 </button>
-                <CustomButton
+                <button
                     onClick={() => setCurrentStep(6)}
-                    variant="filled"
-                    className="w-full py-3 bg-green-600 text-white rounded-md hover:bg-green-500 transition-colors md:flex-1"
+                    className="sm:w-full w-1/2 py-3 bg-[#C7CAD5] text-black rounded-md cursor-pointer  transition-colors md:flex-1"
                 >
                     Continue
-                </CustomButton>
+                </button>
             </div>
         </div>
     );
 
     const renderStep6 = () => (
         <div className="w-full text-left">
-            <span className="text-2xl text-white font-semibold mb-6 block">
-                Let&apos;s create your account!
-            </span>
-            <div className="space-y-4 mb-8">
-                <div className="w-full">
-                    <FormInput
-                        label="Email"
-                        placeholder="Email"
-                        type="text"
-                        value={accountForm.email}
-                        onChange={(e) => handleAccountChange("email", e.target.value)}
-                    />
-                </div>
-                <label className="flex items-center space-x-3 cursor-pointer">
-                    <div className="relative flex-shrink-0">
-                        <input
-                            type="checkbox"
-                            className="peer sr-only"
-                            checked={accountForm.termsAgreed}
-                            onChange={(e) => handleAccountChange("termsAgreed", e.target.checked)}
+            <div className="mb-40">
+
+                <span className="text-2xl text-white font-semibold mb-6 block">
+                    Let&apos;s create your account!
+                </span>
+                <div className="space-y-4 mb-8">
+                    <div className="w-full">
+                        <FormInput
+                            label="Email"
+                            placeholder="Email"
+                            type="text"
+                            value={accountForm.email}
+                            onChange={(e) => handleAccountChange("email", e.target.value)}
                         />
-                        <div className="w-8 h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
-                            <Check className="w-3 h-3 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
-                        </div>
                     </div>
-                    <span className="text-white text-sm">
-                        By creating an account, I agree to InFraFund&apos;s{" "}
-                        <Link href="/terms" className="text-green-400 hover:text-primary">
-                            Terms of Service and Privacy Notice
-                        </Link>
-                        .
-                    </span>
-                </label>
+                    <label className="flex items-center space-x-3 cursor-pointer">
+                        <div className="relative flex-shrink-0">
+                            <input
+                                type="checkbox"
+                                className="peer sr-only"
+                                checked={orgConfirmations.ukBased}
+                                onChange={(e) => handleOrgConfirm("ukBased", e.target.checked)}
+                            />
+                            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
+                                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
+                            </div>
+                        </div>
+                        <span className="text-white text-sm">
+                            By creating an account, I agree to InFraFund&apos;s{" "}
+                            <Link href="/terms" className="text-green-400 hover:text-primary">
+                                Terms of Service and Privacy Notice
+                            </Link>
+                            .
+                        </span>
+                    </label>
+                </div>
             </div>
             <div className="flex space-x-2">
                 <button
-                    className="flex-1 py-3 bg-gray-600 text-white rounded-md hover:text-primary transition-colors cursor-pointer"
+                    className="flex-1 w-1/2 py-3 bg-[#1C2332] text-primary rounded-md transition-colors cursor-pointer"
                     onClick={() => setCurrentStep(5)}
                 >
                     Back
                 </button>
-                <CustomButton
+                <button
                     onClick={handleSubmitSurvey}
                     disabled={!accountForm.email || !accountForm.termsAgreed || submitting}
-                    variant="filled"
-                    className="w-full py-3 bg-green-600 text-white rounded-md hover:bg-green-500 transition-colors md:flex-1"
+                    className="sm:w-full w-1/2 py-3 bg-[#C7CAD5] text-black rounded-md cursor-pointer  transition-colors md:flex-1"
+
                 >
                     {submitting
                         ? "Submitting..."
                         : submitSuccess
                             ? "Go to Dashboard"
                             : "Submit Survey"}
-                </CustomButton>
+                </button>
             </div>
             {submitSuccess && (
                 <div className="mt-4 p-3 bg-green-900/30 border border-green-500 rounded text-center text-green-300 text-sm">
@@ -678,8 +705,8 @@ export default function SurveyOnlyForm({
 
     return (
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} showCloseButton={false}>
-            <div className="w-full h-full flex flex-col justify-center items-center gap-8">
-                {currentStep !== 4 && <Image priority src={infafund} alt="infrafund" width={172} height={42} />}
+            <div className="w-full h-full flex flex-col justify-between items-center">
+                {currentStep !== 4 && <Image priority src={infafund} alt="infrafund" width={172} height={42} className="mb-1" />}
                 {currentStep === 1 && renderStep1()}
                 {currentStep === 2 && renderStep2()}
                 {currentStep === 3 && renderStep3()}

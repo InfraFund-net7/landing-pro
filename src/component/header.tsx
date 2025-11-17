@@ -187,7 +187,9 @@ export default function Header() {
           <button className="w-full h-10 bg-white text-black rounded-md font-medium">
             Login
           </button>
-          <button className="w-full h-10 bg-[#24FF8E] text-black rounded-md font-medium">
+          <button
+            onClick={() => setCreateAccount(true)}
+            className="w-full h-10 bg-[#24FF8E] text-black rounded-md font-medium">
             Create Account
           </button>
         </div>

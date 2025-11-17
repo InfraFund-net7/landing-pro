@@ -3,6 +3,7 @@ import { AnimatedCounter } from '@/component/animated-counter';
 import ChooseInfraFund from '@/component/choose-infrafund';
 import ContactUsPage from '@/component/contact-us';
 import FundingSection from '@/component/funding-section';
+import OperatingSystem from '@/component/operating-system';
 import InvestmentPlatform from '@/component/projects';
 import TrustedSection from '@/component/trusted-section';
 import { useFadeInScroll } from '@/hooks/useFadeInScroll';
@@ -17,6 +18,9 @@ export default function Home() {
       </section>
       <section className="fade-in">
         <InvestmentPlatform />
+      </section>
+      <section className="fade-in">
+        <OperatingSystem />
       </section>
       <section className="fade-in">
         <FundingSection />

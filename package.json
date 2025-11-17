@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "build-start": "npm run build && npm run start",
     "format": "npm run format:lint && npm run format:prettier && npm run format:cspell && npm run format:knip",
     "format:lint": "eslint",
     "format:prettier": "prettier . --check",

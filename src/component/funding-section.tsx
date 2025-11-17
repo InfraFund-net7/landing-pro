@@ -38,7 +38,7 @@ export default function FundingSection() {
   ];
 
   return (
-    <div className="flex flex-col gap-16 w-full h-fit items-center">
+    <div className="flex flex-col gap-16 w-full h-fit items-center mb-10">
       <h2 className="text-white font-bold text-4xl md:text-5xl text-center px-4">
         Flexible Funding for a Diverse Market
       </h2>
