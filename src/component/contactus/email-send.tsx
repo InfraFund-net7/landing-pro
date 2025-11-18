@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { FormInput } from '../ui/form-input';
 import Link from 'next/link';
 import apiService from '@/services/apiService';
+import { CustomButton } from '../ui/custom-button';
 
 interface EmailSendProps {
     onBack?: () => void;
@@ -142,7 +143,8 @@ export default function EmailSend({ onBack }: EmailSendProps) {
                         Back
                     </button>
 
-                    <button
+                    <CustomButton
+                        variant='filled'
                         type="submit"
                         disabled={status === 'loading'}
                         className='w-full sm:w-1/2 cursor-pointer h-12 flex justify-center items-center text-black bg-gray-300 hover:bg-gray-400 rounded-md transition-colors disabled:opacity-70 disabled:cursor-not-allowed font-medium'
@@ -155,7 +157,7 @@ export default function EmailSend({ onBack }: EmailSendProps) {
                         ) : (
                             'Send'
                         )}
-                    </button>
+                    </CustomButton>
                 </div>
             </form>
         </div>

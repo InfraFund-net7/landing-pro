@@ -83,7 +83,7 @@ export default function Header() {
             InfraFund&apos;s INF token is launching soon. Join the
             <button
               onClick={() => setIsModalOpen(true)}
-              className="text-[#24FF8E] underline ml-1"
+              className="text-[#24FF8E] underline ml-1 cursor-pointer"
             >
               Waitlist{""} {""}{""}!
             </button>
@@ -119,7 +119,7 @@ export default function Header() {
           </div>
 
           <div className="hidden lg:flex justify-center items-center gap-6 h-12">
-            <button className="w-[110px] h-full bg-white flex justify-center items-center text-black rounded-[4px] border border-white font-bold">
+            <button className="w-[110px] h-full cursor-pointer bg-white flex justify-center items-center text-black rounded-[4px] border border-white font-bold">
               Login
             </button>
             <CustomButton

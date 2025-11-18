@@ -14,13 +14,13 @@ export default function Home() {
     <>
       {/* <section className="fade-in"><AnimatedCounter /></section> */}
       <section className="fade-in">
+        <OperatingSystem />
+      </section>
+      <section className="fade-in">
         <ChooseInfraFund />
       </section>
       <section className="fade-in">
         <InvestmentPlatform />
-      </section>
-      <section className="fade-in">
-        <OperatingSystem />
       </section>
       <section className="fade-in">
         <FundingSection />

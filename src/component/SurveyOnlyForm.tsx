@@ -13,7 +13,7 @@ import { CustomButton } from "./ui/custom-button";
 import { Check } from "lucide-react";
 import { FormInput } from "./ui/form-input";
 import Link from "next/link";
-
+import { individualStep5Schema, orgStep5Schema } from "@/schema/survey.schema";
 type SurveyData = {
     role: string;
     type: "individual" | "organization";
@@ -100,6 +100,43 @@ export default function SurveyOnlyForm({
         }
         return formatted;
     };
+    React.useEffect(() => {
+        if (!isModalOpen) {
+            setCurrentStep(1);
+            setSelectedAction("");
+            setSelectedItem(null);
+            setUserType(null);
+            setConfirmations({
+                ukResident: true,
+                niNumber: true,
+                over18: true,
+            });
+            setOrgConfirmations({
+                ukBased: true,
+                companyHouse: true,
+                active: true,
+            });
+            setPersonalForm({
+                firstName: "",
+                lastName: "",
+                phoneNumber: "",
+            });
+            setOrgForm({
+                contactFullName: "",
+                companyName: "",
+                phoneNumber: "",
+            });
+            setAccountForm({
+                email: "",
+                termsAgreed: false,
+            });
+            setErrors({});
+            setSubmitting(false);
+            setSubmitSuccess(false);
+            setShowUnder18Warning(false);
+            surveyDataRef.current = null;
+        }
+    }, [isModalOpen]);
 
     const survey = [
         {
@@ -197,6 +234,28 @@ export default function SurveyOnlyForm({
         setCurrentStep(5);
     };
 
+
+    const validateStep5 = () => {
+        const result = userType === "individual"
+            ? individualStep5Schema.safeParse(personalForm)
+            : orgStep5Schema.safeParse(orgForm);
+
+        if (result.success) {
+            setErrors({});
+            return true;
+        }
+
+        const formatted: Record<string, string> = {};
+        result.error.issues.forEach((issue) => {
+            const key = issue.path[0] as string;
+            if (key) formatted[key] = issue.message;
+        });
+
+        setErrors(formatted);
+        return false;
+    };
+
+
     const handlePersonalChange = (key: string, value: string, isOrg = false) => {
         if (key === "phoneNumber") {
             value = formatPhoneNumber(value);
@@ -261,6 +320,7 @@ export default function SurveyOnlyForm({
     };
 
     const resetFlow = () => {
+        setIsModalOpen(false)
         setCurrentStep(1);
         surveyDataRef.current = null;
         setSelectedAction("");
@@ -370,7 +430,7 @@ export default function SurveyOnlyForm({
 
             <CustomButton
                 variant="filled"
-                className="w-full py-4 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition-colors disabled:opacity-50"
+                className="w-full py-4 bg-gray-600  rounded-lg hover:bg-gray-500 transition-colors disabled:opacity-50"
                 disabled={!userType}
                 onClick={() => userType && setCurrentStep(3)}
             >
@@ -502,19 +562,26 @@ export default function SurveyOnlyForm({
                     </p>
                 )}
             </div>
-
-            <CustomButton
-                variant="filled"
-                className="w-full py-3.5 md:py-3 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
-                onClick={handleConfirmContinue}
-                disabled={
-                    userType === "individual"
-                        ? !(confirmations.ukResident && confirmations.niNumber && confirmations.over18)
-                        : !(orgConfirmations.ukBased && orgConfirmations.companyHouse && orgConfirmations.active)
-                }
-            >
-                Continue
-            </CustomButton>
+            <div className="flex space-x-2">
+                <button
+                    className="flex-1 w-1/2 py-3 bg-[#1C2332] text-primary rounded-md transition-colors cursor-pointer"
+                    onClick={() => setCurrentStep(2)}
+                >
+                    Back
+                </button>
+                <CustomButton
+                    variant="filled"
+                    className="w-1/2 py-3.5 md:py-3 bg-green-600  rounded-lg hover:bg-green-500 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                    onClick={handleConfirmContinue}
+                    disabled={
+                        userType === "individual"
+                            ? !(confirmations.ukResident && confirmations.niNumber && confirmations.over18)
+                            : !(orgConfirmations.ukBased && orgConfirmations.companyHouse && orgConfirmations.active)
+                    }
+                >
+                    Continue
+                </CustomButton>
+            </div>
         </div>
     );
 
@@ -542,19 +609,19 @@ export default function SurveyOnlyForm({
                     className="w-full py-3 bg-gray-600 text-white rounded-md hover:bg-gray-500 transition-colors md:w-auto md:px-8"
                     onClick={resetFlow}
                 >
-                    Back to Start
+                    Submit
                 </button>
             </div>
         </div>
     );
 
     const renderStep5 = () => (
-        <div className="w-full text-left">
-            <div className="mb-40">
+        <div className="w-full text-left flex flex-col h-full">
+            <div className="flex-1 overflow-y-auto pb-6">
                 <span className="text-2xl text-white font-semibold mb-6 block">
                     Great! Let&apos;s get started.
                 </span>
-                <div className="space-y-4 mb-8">
+                <div className="space-y-4">
                     {userType === "individual" ? (
                         <>
                             <div className="w-full">
@@ -564,6 +631,7 @@ export default function SurveyOnlyForm({
                                     type="text"
                                     value={personalForm.firstName}
                                     onChange={(e) => handlePersonalChange("firstName", e.target.value)}
+                                    error={errors.firstName}
                                 />
                             </div>
                             <div className="w-full">
@@ -573,6 +641,7 @@ export default function SurveyOnlyForm({
                                     type="text"
                                     value={personalForm.lastName}
                                     onChange={(e) => handlePersonalChange("lastName", e.target.value)}
+                                    error={errors.lastName}
                                 />
                             </div>
                             <div className="w-full">
@@ -582,6 +651,7 @@ export default function SurveyOnlyForm({
                                     type="tel"
                                     value={personalForm.phoneNumber}
                                     onChange={(e) => handlePersonalChange("phoneNumber", e.target.value)}
+                                    error={errors.phoneNumber}
                                 />
                             </div>
                         </>
@@ -594,6 +664,7 @@ export default function SurveyOnlyForm({
                                     type="text"
                                     value={orgForm.contactFullName}
                                     onChange={(e) => handlePersonalChange("contactFullName", e.target.value, true)}
+                                    error={errors.contactFullName}
                                 />
                             </div>
                             <div className="w-full">
@@ -603,6 +674,7 @@ export default function SurveyOnlyForm({
                                     type="text"
                                     value={orgForm.companyName}
                                     onChange={(e) => handlePersonalChange("companyName", e.target.value, true)}
+                                    error={errors.companyName}
                                 />
                             </div>
                             <div className="w-full">
@@ -612,13 +684,15 @@ export default function SurveyOnlyForm({
                                     type="tel"
                                     value={orgForm.phoneNumber}
                                     onChange={(e) => handlePersonalChange("phoneNumber", e.target.value, true)}
+                                    error={errors.phoneNumber}
                                 />
                             </div>
                         </>
                     )}
                 </div>
             </div>
-            <div className="flex space-x-2">
+
+            <div className="flex space-x-2 pt-4 border-t border-[#2B3146]">
                 <button
                     className="flex-1 w-1/2 py-3 bg-[#1C2332] text-primary rounded-md transition-colors cursor-pointer"
                     onClick={() => setCurrentStep(3)}
@@ -626,8 +700,12 @@ export default function SurveyOnlyForm({
                     Back
                 </button>
                 <button
-                    onClick={() => setCurrentStep(6)}
-                    className="sm:w-full w-1/2 py-3 bg-[#C7CAD5] text-black rounded-md cursor-pointer  transition-colors md:flex-1"
+                    onClick={() => {
+                        if (validateStep5()) {
+                            setCurrentStep(6);
+                        }
+                    }}
+                    className="sm:w-full w-1/2 py-3 bg-[#C7CAD5] text-black rounded-md cursor-pointer transition-colors md:flex-1"
                 >
                     Continue
                 </button>
@@ -657,19 +735,36 @@ export default function SurveyOnlyForm({
                             <input
                                 type="checkbox"
                                 className="peer sr-only"
-                                checked={orgConfirmations.ukBased}
-                                onChange={(e) => handleOrgConfirm("ukBased", e.target.checked)}
+                                checked={accountForm.termsAgreed}
+                                onChange={(e) => handleAccountChange("termsAgreed", e.target.checked)}
                             />
-                            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
-                                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
+                            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#2B3146] rounded-xl flex items-center justify-center 
+            transition-colors duration-300 peer-checked:bg-[#00FF87]">
+                                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#2B3146] peer-checked:text-black 
+                transition-colors duration-300" />
                             </div>
                         </div>
                         <span className="text-white text-sm">
-                            By creating an account, I agree to InFraFund&apos;s{" "}
-                            <Link href="/terms" className="text-green-400 hover:text-primary">
-                                Terms of Service and Privacy Notice
-                            </Link>
-                            .
+                            By creating an account, I agree to InfraFund’s{" "}
+                            <a
+                                href="/terms"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-green-400 hover:text-primary"
+                            >
+                                Terms of Service
+                            </a>
+                            {" "}
+                            and{" "}
+                            <a
+                                href="/privacy"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-green-400 hover:text-primary"
+                            >
+                                Privacy Policy
+                            </a>.
+
                         </span>
                     </label>
                 </div>
@@ -684,27 +779,23 @@ export default function SurveyOnlyForm({
                 <button
                     onClick={handleSubmitSurvey}
                     disabled={!accountForm.email || !accountForm.termsAgreed || submitting}
-                    className="sm:w-full w-1/2 py-3 bg-[#C7CAD5] text-black rounded-md cursor-pointer  transition-colors md:flex-1"
+                    className={`sm:w-full w-1/2 py-3 ${accountForm.termsAgreed ? "bg-primary" : "bg-[#C7CAD5]"} text-black rounded-md cursor-pointer  transition-colors md:flex-1`}
 
                 >
                     {submitting
-                        ? "Submitting..."
+                        ? "Countine"
                         : submitSuccess
-                            ? "Go to Dashboard"
-                            : "Submit Survey"}
+                            ? "Countine"
+                            : "Countine"}
                 </button>
             </div>
-            {submitSuccess && (
-                <div className="mt-4 p-3 bg-green-900/30 border border-green-500 rounded text-center text-green-300 text-sm">
-                    Survey submitted successfully. Thank you! <br />
-                    You will be moved to your personal dashboard shortly.
-                </div>
-            )}
         </div>
     );
 
     return (
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} showCloseButton={false}>
+        <Modal isOpen={isModalOpen} onClose={() => {
+            setIsModalOpen(false);
+        }} showCloseButton={true}>
             <div className="w-full h-full flex flex-col justify-between items-center">
                 {currentStep !== 4 && <Image priority src={infafund} alt="infrafund" width={172} height={42} className="mb-1" />}
                 {currentStep === 1 && renderStep1()}

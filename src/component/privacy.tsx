@@ -1042,7 +1042,7 @@ This Notice should therefore be read together with our Cookie Notice, which prov
 export default function Privacy() {
   return (
     <div className="flex flex-col justify-center items-start text-white gap-8 py-[175px] px-4 md:px-6 lg:px-12 xl:px-[90px]">
-      <h1 className="text-5xl font-bold">Privacy Notice - InfraFund</h1>
+      <h1 className="text-5xl font-bold">Privacy Policy</h1>
 
       <div className="text-base font-normal space-y-6">
         <p>Last updated: {privacyContent.lastUpdated}</p>
