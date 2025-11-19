@@ -36,10 +36,10 @@ export default function PartnersSection() {
   const filteredPartners = partners.filter((p) => p.name !== 'CompaniesHouse');
 
   return (
-    <section className="w-full bg-[#00000066] py-8 sm:py-10 md:py-12 px-2 sm:px-4 overflow-hidden">
-      <div className="max-w-7xl mx-auto">
+    <section className="w-full bg-[#00000066] py-8 px-2 sm:px-4 overflow-hidden">
+      <div className="max-w-7xl mx-auto  flex justify-center items-center h-full">
         <div
-          className="flex gap-6 sm:gap-8 md:gap-10 flex-shrink-0"
+          className="flex gap-6  sm:gap-8 md:gap-10 flex-shrink-0"
           ref={sliderRef}
         >
           {[...filteredPartners, ...filteredPartners].map((partner, index) => (

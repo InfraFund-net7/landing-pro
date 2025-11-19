@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "build-start": "npm run build && npm run start",
     "format": "npm run format:lint && npm run format:prettier && npm run format:cspell && npm run format:knip",
     "format:lint": "eslint",
     "format:prettier": "prettier . --check",
@@ -24,6 +25,7 @@
     "@fullcalendar/daygrid": "^6.1.19",
     "@fullcalendar/interaction": "^6.1.19",
     "@fullcalendar/react": "^6.1.19",
+    "axios": "^1.13.2",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "gsap": "^3.13.0",
@@ -32,7 +34,8 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-responsive": "^10.0.1",
-    "recharts": "^3.3.0"
+    "recharts": "^3.3.0",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",

@@ -7,7 +7,7 @@ export const chosenItems = [
   {
     title: 'Unlock the Private Market',
     icon: UnlockPrivate,
-    bottom: '170px',
+    bottom: '70px',
     description:
       'Gain direct access to vetted, high-impact renewable energy infrastructure—an asset class previously reserved for institutional players.',
   },
@@ -20,7 +20,7 @@ export const chosenItems = [
   {
     title: 'Invest with Confidence',
     icon: InvestConfidence,
-    bottom: '170px',
+    bottom: '70px',
     description:
       'Monitor project progress and financial transactions in real-time.  Our AI-driven Digital Twin provides unparalleled transparency into asset performance.',
   },

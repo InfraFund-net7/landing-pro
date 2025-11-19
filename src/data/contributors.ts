@@ -34,7 +34,7 @@ export const contributors = [
     img: AkbarJavadi,
     name: 'Prof. Akbar Javadi',
     linkedin: 'https://www.linkedin.com/in/akbar-javadi-fice-ceng-12164616',
-    role: 'Director and Digital Twin & NetZero Adviser',
+    role: 'Director - Digital Twin & NetZero Adviser',
     description:
       'A Professor of Engineering with deep expertise in Digital Twins and NetZero projects.',
   },
@@ -44,7 +44,7 @@ export const contributors = [
     linkedin: 'https://www.linkedin.com/in/homayounh',
     role: 'Technical Lead',
     description:
-      'Technical Lead, a Blockchain Engineer and full-stack developer with over 15 years of experience delivering scalable software solutions.',
+      'A Blockchain Engineer and full-stack developer with over 15 years of experience delivering scalable software solutions.',
   },
   {
     img: JedDahlke,

@@ -86,19 +86,14 @@ export default function InvestmentPlatform() {
         </div>
       </div>
     </div>,
-    document.body 
+    document.body
   );
 
   return (
     <>
       {modal}
 
-      <div className="min-h-screen overflow-hidden mt-10 relative mb-15">
-        <Image
-          src={projectbg}
-          alt="project-bg"
-          className="absolute left-0 top-0 bottom-0 -z-10"
-        />
+      <div className="min-h-screen overflow-hidden relative mb-15">
         <div className="z-10 flex flex-col items-center justify-center min-h-screen px-4 py-12">
           <div className="text-[42px] lg:text-6xl font-bold text-white text-center mb-16 max-w-4xl">
             Invest in the Future, Today

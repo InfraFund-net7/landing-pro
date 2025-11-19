@@ -1,5 +1,5 @@
 'use client';
-import { ChevronRight, X, Menu } from 'lucide-react';
+import { X, Menu } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import InfraFund from '@/../public/svg/infrafund.svg';
@@ -7,11 +7,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import gsap from 'gsap';
 import { CustomButton } from './ui/custom-button';
-import { Modal } from './ui/modal';
-import infrafund from "@/../public/svg/infrafund.svg"
-import { waitlistdata } from '@/data/waitlist';
-import greentik from "@/../public/svg/green-tik.svg"
-import { FormInput } from './ui/form-input';
+import Waitlistmodal from './waitlistmodal';
+import SurveyOnlyForm from './SurveyOnlyForm';
+
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -19,6 +17,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [createaccount, setCreateAccount] = useState(false);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
@@ -84,7 +83,7 @@ export default function Header() {
             InfraFund&apos;s INF token is launching soon. Join the
             <button
               onClick={() => setIsModalOpen(true)}
-              className="text-[#24FF8E] underline ml-1"
+              className="text-[#24FF8E] underline ml-1 cursor-pointer"
             >
               Waitlist{""} {""}{""}!
             </button>
@@ -120,11 +119,12 @@ export default function Header() {
           </div>
 
           <div className="hidden lg:flex justify-center items-center gap-6 h-12">
-            <button className="w-[110px] h-full bg-white flex justify-center items-center text-black rounded-[4px] border border-white font-bold">
+            <button className="w-[110px] h-full cursor-pointer bg-white flex justify-center items-center text-black rounded-[4px] border border-white font-bold">
               Login
             </button>
             <CustomButton
               variant="filled"
+              onClick={() => setCreateAccount(true)}
               className="w-[184px] h-full text-sm flex justify-center items-center font-bold"
             >
               Create Account
@@ -187,98 +187,15 @@ export default function Header() {
           <button className="w-full h-10 bg-white text-black rounded-md font-medium">
             Login
           </button>
-          <button className="w-full h-10 bg-[#24FF8E] text-black rounded-md font-medium">
+          <button
+            onClick={() => setCreateAccount(true)}
+            className="w-full h-10 bg-[#24FF8E] text-black rounded-md font-medium">
             Create Account
           </button>
         </div>
       </div>
-
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} showCloseButton={false}>
-        <div className="text-center flex flex-col justify-start items-center w-full h-fit px-2 gap-3 sm:gap-4">
-          <div className="flex flex-col justify-center items-center w-full gap-1.5 sm:gap-2">
-            <Image
-              src={infrafund || "/placeholder.svg"}
-              width={199}
-              height={48}
-              alt="infrafund"
-              className="w-full max-w-[160px] sm:max-w-[199px] h-auto"
-            />
-            <span
-              className="text-xs sm:text-sm"
-              style={{
-                color: "#f5f6f8",
-                WebkitTextFillColor: "#f5f6f8",
-              }}
-            >
-              The OS for Green Infrastructure Tokenization
-            </span>
-          </div>
-          <div className="flex justify-center items-center w-full">
-            <span
-              className="text-xl sm:text-2xl lg:text-3xl font-bold text-center leading-tight"
-              style={{
-                color: "#ffffff",
-                WebkitTextFillColor: "#ffffff",
-              }}
-            >
-              Finance the NetZero
-              <br />
-              Transition
-            </span>
-          </div>
-          <div className="flex justify-center text-white items-center w-full">
-            <span className="text-xs sm:text-sm lg:text-base text-center leading-relaxed">
-              Join the waiting list for the InfraFund Token launch.
-              <br />
-              Be the first to invest in a tokenized, sustainable future.
-            </span>
-          </div>
-          <div className="flex flex-col justify-center items-center w-full gap-3 sm:gap-4">
-            <FormInput placeholder="Enter Your Email" />
-            <CustomButton
-              className="w-full h-[48px] sm:h-[52px] text-black text-sm sm:text-base"
-              variant="filled"
-              type="button"
-            >
-              Get Early Access
-            </CustomButton>
-          </div>
-          <div className="flex flex-col justify-center items-center gap-2 sm:gap-3 w-full border-t border-[#37415180] pt-3 sm:pt-4">
-            <span
-              className="text-sm sm:text-base font-bold"
-              style={{
-                color: "#ffffff",
-                WebkitTextFillColor: "#ffffff",
-              }}
-            >
-              By joining, you&apos;ll get:
-            </span>
-            {waitlistdata.map((item, index) => (
-              <div
-                className="w-full flex justify-start items-start text-white gap-2 text-xs sm:text-sm lg:text-base text-left"
-                key={index}
-              >
-                <Image
-                  src={greentik || "/placeholder.svg"}
-                  width={16}
-                  height={16}
-                  alt="green-tik"
-                  className="flex-shrink-0 mt-0.5"
-                />
-                <p className="leading-snug">
-                  <span className="font-bold">{item.title}</span>:
-                  <span className="font-normal">{item.description}</span>
-                </p>
-              </div>
-            ))}
-          </div>
-          <div className="w-full h-auto py-2 flex justify-center items-center">
-            <span className="text-[#6B7280] font-normal text-[10px] sm:text-xs lg:text-sm text-center px-2">
-              © 2025 InfraNetZero LTD. All rights reserved.
-            </span>
-          </div>
-        </div>
-      </Modal>
+      <SurveyOnlyForm isModalOpen={createaccount} setIsModalOpen={setCreateAccount} />
+      <Waitlistmodal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
     </>
   );
 }

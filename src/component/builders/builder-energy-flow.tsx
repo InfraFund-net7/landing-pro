@@ -58,7 +58,7 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
           Month: <span className="font-semibold">{month}</span>
         </p>
         <p className="text-green-400 text-sm">
-          Energy: <span className="font-semibold">{energy}</span>
+          Performance: <span className="font-semibold">{energy}</span>
         </p>
       </div>
     );

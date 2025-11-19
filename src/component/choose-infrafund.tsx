@@ -31,15 +31,14 @@ export default function ChooseInfraFund() {
           />
         </div>
       </div>
-      <div className="relative -z-10 grid grid-cols-1 sm:grid-cols-2 gap-12 sm:gap-x-16 sm:gap-y-20 w-full max-w-[1100px]">
+      <div className="relative -z-10 grid grid-cols-1  sm:grid-cols-2 gap-12 sm:gap-x-16 sm:gap-y-16 w-full max-w-[1100px]">
         {chosenItems.map((item, index) => (
           <div
             key={index}
             style={{
-              // شرطی: در موبایل، marginBottom رو 0 کن (bottom رو نادیده بگیر)
               marginBottom: !isMobile && item.bottom ? item.bottom : '0px',
             }}
-            className="flex items-start sm:items-center gap-5 sm:gap-6"
+            className="flex items-start  sm:items-center gap-5 sm:gap-6"
           >
             <Image
               src={item.icon}
