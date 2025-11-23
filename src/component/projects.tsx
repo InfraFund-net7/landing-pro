@@ -7,6 +7,7 @@ import { Project } from '@/types/types';
 import { ChevronLeft } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import Link from 'next/link';
 
 export default function InvestmentPlatform() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -105,9 +106,9 @@ export default function InvestmentPlatform() {
               onSelectProject={setSelectedProject}
             />
           </div>
-          <button className="bg-transparent border border-gray-600 hover:border-gray-400 text-white px-8 py-3 rounded-lg mt-10">
+          <Link href="/project" className="bg-transparent border cursor-pointer border-gray-600 hover:border-gray-400 text-white px-8 py-3 rounded-lg mt-10">
             Explore All Projects
-          </button>
+          </Link>
         </div>
       </div>
     </>
