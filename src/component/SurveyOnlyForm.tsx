@@ -637,7 +637,7 @@ export default function SurveyOnlyForm({
 
     const renderStep5 = () => (
         <div className="w-full text-left flex flex-col h-full">
-            <div className="flex-1 overflow-y-auto px-6 bg-yellow-500">
+            <div className="flex-1 overflow-y-auto">
                 <span className="text-2xl text-white font-semibold mb-6 block">Great! Let&apos;s get started.</span>
                 <div className="space-y-4">
                     {userType === "individual" ? (
