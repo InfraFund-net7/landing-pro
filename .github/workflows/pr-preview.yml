@@ -58,6 +58,7 @@ jobs:
             cd $APP_PATH
             echo "APP_NAME=$APP_NAME" > .env
             echo "HOSTS=Host(\`${APP_NAME}.app.dev.infrafund.net\`)" >> .env
+            echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.DEV_API_BASE_URL }}" >> .env
             docker-compose -f docker-compose.traefik.yml up -d --build --remove-orphans
             docker image prune -f
 

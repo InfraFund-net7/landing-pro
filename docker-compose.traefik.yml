@@ -8,6 +8,9 @@ services:
     environment:
       - PORT=${PORT:-8080}
       - NODE_ENV=production
+      - APP_NAME=${APP_NAME}
+      - HOSTS=${HOSTS}
+      - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
     restart: unless-stopped
     networks:
       - traefik-net
