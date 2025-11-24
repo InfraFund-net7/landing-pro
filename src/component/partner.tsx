@@ -10,12 +10,11 @@ export default function PartnersSection() {
   useEffect(() => {
     if (!sliderRef.current) return;
     const slider = sliderRef.current;
-
     const totalWidth = slider.scrollWidth / 2;
 
     const tween = gsap.to(slider, {
       x: `-${totalWidth}px`,
-      duration: 50,
+      duration: 100,
       ease: 'linear',
       repeat: -1,
     });
@@ -34,15 +33,16 @@ export default function PartnersSection() {
   }, []);
 
   const filteredPartners = partners.filter((p) => p.name !== 'CompaniesHouse');
+  const repeatedPartners = [...filteredPartners, ...filteredPartners];
 
   return (
     <section className="w-full bg-[#00000066] py-8 px-2 sm:px-4 overflow-hidden">
-      <div className="max-w-7xl mx-auto  flex justify-center items-center h-full">
+      <div className="max-w-7xl mx-auto flex justify-center items-center h-full">
         <div
-          className="flex gap-6  sm:gap-8 md:gap-10 flex-shrink-0"
+          className="flex gap-6 sm:gap-8 md:gap-10 flex-shrink-0"
           ref={sliderRef}
         >
-          {[...filteredPartners, ...filteredPartners].map((partner, index) => (
+          {[...repeatedPartners, ...repeatedPartners].map((partner, index) => (
             <div
               key={index}
               className="flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity duration-300 ease-in-out flex-shrink-0"
