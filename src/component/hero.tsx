@@ -25,12 +25,12 @@ export default function Hero() {
           </h2>
 
           <div className="flex flex-col sm:flex-row justify-start items-center gap-3 sm:gap-4 md:justify-end">
-            <CustomButton
+            {/* <CustomButton
               variant="filled"
               className="w-full sm:w-[176px] h-[44px] sm:h-[48px] rounded-[4px] flex justify-center items-center text-lg font-bold"
             >
               Launch App
-            </CustomButton>
+            </CustomButton> */}
             <button
               onClick={() => setShowVideo(true)}
               className="w-full sm:w-[176px] h-[44px] sm:h-[48px] sm:cursor-pointer flex justify-center items-center text-white rounded-[4px] border border-white font-bold gap-2"

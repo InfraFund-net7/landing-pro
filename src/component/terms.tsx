@@ -2775,22 +2775,10 @@ It is your responsibility to determine whether any investment, investment strate
             in clause ‎15.3.
           </p>
           <p>
-            <strong>InfraFund, we, our or us</strong> means Nest Services
-            Limited (a company incorporated under the laws of the Republic of
-            Seychelles with registration number 238045 and address at House of
-            Francis, Room 303, Ile Du Port, Mahe, Seychelles).
-          </p>
-          <p>
             <strong>InfraFund Account</strong> means any accounts (including
             Corporate InfraFund Accounts) or sub-accounts (including any
             InfraFund Sub-Account), which are opened by InfraFund for you to
             record your use of InfraFund Services.
-          </p>
-          <p>
-            <strong>InfraFund Affiliates</strong> means with respect to Nest
-            Services Limited: any other person which, directly or indirectly,
-            Controls, is Controlled by, or is under common Control with, Nest
-            Services Limited.
           </p>
           <p>
             <strong>InfraFund API</strong> means an API made available by a

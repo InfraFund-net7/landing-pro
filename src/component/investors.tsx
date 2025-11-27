@@ -7,11 +7,11 @@ import { infradiffrence, invest, Investfaqs } from '@/constants/investorData';
 import { CustomButton } from './ui/custom-button';
 import FaqList from './ui/FaqList';
 import ContactUs from './contactus/contactus';
-export default function Investors() {
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+import SurveyOnlyForm from './SurveyOnlyForm';
 
-  const openContactModal = () => setIsContactModalOpen(true);
-  const closeContactModal = () => setIsContactModalOpen(false);
+export default function Investors() {
+  const [createaccount, setCreateAccount] = useState(false);
+
   return (
     <div className="fade-in flex flex-col justify-center items-center gap-12">
       <div
@@ -31,7 +31,6 @@ export default function Investors() {
             zIndex: 0,
           }}
         ></div>
-
         <div
           className="relative z-10 w-full h-full flex justify-start items-center px-[90px] 
                     max-lg:px-12 max-md:px-6 max-md:py-12 max-md:justify-center"
@@ -54,12 +53,14 @@ export default function Investors() {
               variant="filled"
               className="w-fit h-12 flex justify-center items-center px-6 text-base font-semibold
              max-md:w-[130px] max-md:h-10 max-md:text-[13px] max-md:px-3 max-md:font-medium"
+              onClick={() => setCreateAccount(true)}
             >
               Get Started
             </CustomButton>
           </div>
         </div>
       </div>
+
       <section className="fade-in">
         <div className="fade-in w-full h-fit flex flex-col justify-center items-center px-[90px] py-12 gap-24 max-lg:px-12 max-md:px-6 max-md:gap-12">
           <h2 className="text-[42px] text-white font-bold max-md:text-[28px]">
@@ -142,6 +143,7 @@ export default function Investors() {
           />
         </div>
       </section>
+
       <section className="fade-in">
         <div className="w-full h-fit relative max-md:px-4">
           <div className="fade-in py-24 flex flex-col justify-center items-center gap-6 max-md:py-12">
@@ -149,10 +151,16 @@ export default function Investors() {
               FAQs
             </h2>
             <div className="space-y-4 w-[834px] max-lg:w-[90%] max-md:w-full">
-              <FaqList faqs={Investfaqs} />
+              <FaqList faqs={Investfaqs} allowMultiple />
             </div>
           </div>
-          <ContactUs isOpen={isContactModalOpen} onClose={closeContactModal} />
+
+          <SurveyOnlyForm
+            isModalOpen={createaccount}
+            setIsModalOpen={setCreateAccount}
+            initialRole="investor"
+          />
+
           <div className="fade-in w-full py-36 flex flex-col justify-center items-center gap-20 max-md:py-16 max-md:gap-10">
             <h2 className="text-5xl font-bold text-white max-md:text-3xl text-center">
               Ready to build your impact portfolio?
@@ -161,7 +169,7 @@ export default function Investors() {
               variant="filled"
               className="w-fit h-12 flex justify-center items-center px-6 text-base font-semibold
              max-md:w-[130px] max-md:h-10 max-md:text-[13px] max-md:px-3 max-md:font-medium"
-              onClick={openContactModal}
+              onClick={() => setCreateAccount(true)}
             >
               Get Started
             </CustomButton>

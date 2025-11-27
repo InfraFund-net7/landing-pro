@@ -7,12 +7,11 @@ import { CustomButton } from '../ui/custom-button';
 import FaqList from '../ui/FaqList';
 import { useFadeInScroll } from '@/hooks/useFadeInScroll';
 import ContactUs from '../contactus/contactus';
+import SurveyOnlyForm from '../SurveyOnlyForm';
 
 export default function BuilderPage() {
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [createaccount, setCreateAccount] = useState(false);
 
-  const openContactModal = () => setIsContactModalOpen(true);
-  const closeContactModal = () => setIsContactModalOpen(false);
   useFadeInScroll();
   return (
     <>
@@ -38,6 +37,7 @@ export default function BuilderPage() {
             <div className='w-full h-fit flex justify-center items-center md:justify-start md:items-center'>
               <CustomButton
                 variant="filled"
+                onClick={() => setCreateAccount(true)}
                 className="w-fit h-12 px-4 flex justify-center items-center text-sm sm:text-lg rounded-lg"
               >
                 Start Your Project Application
@@ -68,11 +68,10 @@ export default function BuilderPage() {
               FAQs
             </h2>
             <div className="space-y-4 w-[834px] max-lg:w-[90%] max-md:w-full max-md:px-4">
-              <FaqList faqs={Builderfaqs} />
+              <FaqList faqs={Builderfaqs} allowMultiple />
             </div>
           </div>
         </section>
-        <ContactUs isOpen={isContactModalOpen} onClose={closeContactModal} />
         <section className="fade-in">
           <div className="fade-in w-full py-36 flex flex-col justify-center items-center gap-20 max-md:py-16 max-md:gap-10">
             <h2 className="text-5xl font-bold text-white max-md:text-3xl text-center">
@@ -81,14 +80,14 @@ export default function BuilderPage() {
             <CustomButton
               variant="filled"
               className="w-fit h-12 px-4 flex justify-center items-center text-sm sm:text-lg rounded-lg "
-              onClick={openContactModal}
-
+              onClick={() => setCreateAccount(true)}
             >
               Apply to list your project
             </CustomButton>
           </div>
         </section>
       </div>
+      <SurveyOnlyForm isModalOpen={createaccount} setIsModalOpen={setCreateAccount} />
     </>
   );
 }

@@ -10,7 +10,8 @@ export default function ProjectPage() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [bgImage, setBgImage] = useState<string | null>(null);
   const bgRef = useRef<HTMLDivElement>(null);
-
+  const [showLoadMore, setShowLoadMore] = useState(true);
+  const [hideAnimation, setHideAnimation] = useState(false);
   type TabName = 'Overview' | 'Financials' | 'Technical' | 'Documents';
   const [activeTab, setActiveTab] = useState<TabName>('Overview');
 
@@ -35,6 +36,14 @@ offshore wind farms in Europe...`,
       setBgImage(null);
     }
   }, [selectedProject]);
+
+  const handleLoadMoreClick = () => {
+    setHideAnimation(true);
+    setTimeout(() => {
+      setShowLoadMore(false);
+    }, 300);
+  };
+
 
   return (
     <div className="w-full min-h-screen text-white ">
@@ -93,7 +102,7 @@ offshore wind farms in Europe...`,
             className="hidden md:block w-[1000px] h-[588px] rounded-full absolute -z-10  bottom-[40%] left-1/2 -translate-x-1/2"
             style={{
               background:
-              'radial-gradient(50% 50% at 50% 100%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)',
+                'radial-gradient(50% 50% at 50% 100%, rgba(52, 82, 142, 0.4) 8.17%, rgba(89, 120, 186, 0.4) 100%)',
               filter: 'blur(400px)',
             }}
           />
@@ -113,9 +122,15 @@ offshore wind farms in Europe...`,
             ))}
           </div>
           <div className="w-full flex justify-center items-center">
-            <button className="bg-transparent border border-gray-600 hover:border-gray-400 text-white px-8 py-3 rounded-lg mt-10">
-              Load More Projects
-            </button>
+            {showLoadMore && (
+              <button
+                onClick={handleLoadMoreClick}
+                className={`bg-transparent cursor-pointer border border-gray-600 hover:border-gray-400 text-white px-8 py-3 rounded-lg mt-10 transition-opacity duration-300 ${hideAnimation ? 'opacity-0' : 'opacity-100'
+                  }`}
+              >
+                Load More Projects
+              </button>
+            )}
           </div>
         </div>
       )}
