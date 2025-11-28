@@ -895,7 +895,7 @@ export default function SurveyOnlyForm({
             showCloseButton={true}
             closeOnBackdropClick={false}
         >
-            <div className="w-full h-[650px] flex flex-col justify-between items-center">
+            <div className="w-full sm:h-[650px] flex flex-col justify-between items-center">
                 {currentStep !== 4 && <Image priority src={infafund} alt="infrafund" width={262} height={64} className="mb-1" />}
                 {currentStep === 1 && renderStep1()}
                 {currentStep === 2 && renderStep2()}
