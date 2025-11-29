@@ -12,7 +12,6 @@ import { Modal } from "./ui/modal";
 import { CustomButton } from "./ui/custom-button";
 import { Check } from "lucide-react";
 import { FormInput } from "./ui/form-input";
-import Link from "next/link";
 import { individualStep5Schema, orgStep5Schema } from "@/schema/survey.schema";
 
 type SurveyData = {
@@ -34,6 +33,7 @@ export interface SurveyOnlyFormProps {
     onError?: (error: Error) => void;
     isModalOpen: boolean;
     setIsModalOpen: (isOpen: boolean) => void;
+    initialRole?: string;
 }
 
 export default function SurveyOnlyForm({
@@ -41,82 +41,99 @@ export default function SurveyOnlyForm({
     onError,
     isModalOpen,
     setIsModalOpen,
+    initialRole,
 }: SurveyOnlyFormProps) {
     const [currentStep, setCurrentStep] = useState<Step>(1);
     const [selectedAction, setSelectedAction] = useState("");
     const [userType, setUserType] = useState<"individual" | "organization" | null>(null);
-
     const [confirmations, setConfirmations] = useState({
         ukResident: true,
         niNumber: true,
         over18: true,
     });
-
     const [orgConfirmations, setOrgConfirmations] = useState({
         ukBased: true,
         companyHouse: true,
         active: true,
     });
-
     const [individualErrors, setIndividualErrors] = useState<Record<keyof typeof confirmations, string | null>>({
         ukResident: null,
         niNumber: null,
         over18: null,
     });
-
-    const [orgErrors, setOrgErrors] = useState<Record<"ukBased" | "companyHouse", string | null>>({
+    const [orgErrors, setOrgErrors] = useState<Record<"ukBased" | "companyHouse" | "active", string | null>>({
         ukBased: null,
         companyHouse: null,
+        active: null,
     });
-
+    const [step4Form, setStep4Form] = useState({
+        firstName: "",
+        lastName: "",
+        country: "",
+        email: "",
+    });
     const [personalForm, setPersonalForm] = useState({
         firstName: "",
         lastName: "",
         phoneNumber: "",
     });
-
     const [orgForm, setOrgForm] = useState({
         contactFullName: "",
         companyName: "",
         phoneNumber: "",
     });
-
     const [accountForm, setAccountForm] = useState({
         email: "",
         termsAgreed: false,
     });
-
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [submitting, setSubmitting] = useState(false);
     const [submitSuccess, setSubmitSuccess] = useState(false);
     const [selectedItem, setSelectedItem] = useState<string | null>(null);
-
     const surveyDataRef = useRef<SurveyData | null>(null);
 
     const formatPhoneNumber = (value: string): string => {
-        let digits = "";
-        if (value.startsWith("+44")) {
-            digits = value.slice(3).replace(/\D/g, "");
-        } else {
-            digits = value.replace(/\D/g, "");
-            if (digits.startsWith("0")) {
-                digits = digits.slice(1);
+        let cleaned = value.replace(/[^+\d]/g, "");
+        if (!cleaned.startsWith("+44")) {
+            if (cleaned.startsWith("44")) {
+                cleaned = "+" + cleaned;
+            } else if (cleaned.startsWith("+")) {
+                cleaned = "+44" + cleaned.slice(1);
+            } else {
+                cleaned = "+44" + cleaned;
             }
         }
-        const length = digits.length;
-        if (length === 0) return "+44 ";
+        const digits = cleaned.slice(3);
+        const len = digits.length;
         let formatted = "+44 ";
-        if (length < 3) {
+        if (len === 0) return formatted;
+        if (len <= 3) {
             formatted += `(${digits}`;
-        } else if (length < 6) {
-            formatted += `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
-        } else if (length < 10) {
-            formatted += `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
         } else {
-            formatted += `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+            formatted += `(${digits.slice(0, 3)})`;
+            if (len > 3) {
+                const part2 = digits.slice(3, 6);
+                if (part2) formatted += ` ${part2}`;
+            }
+            if (len > 6) {
+                const part3 = digits.slice(6, 10);
+                if (part3) formatted += `-${part3}`;
+            }
         }
         return formatted;
     };
+
+    const handleStep4Change = (key: keyof typeof step4Form, value: string) => {
+        setStep4Form((prev) => ({ ...prev, [key]: value }));
+    };
+
+    useEffect(() => {
+        if (isModalOpen && initialRole && currentStep === 1) {
+            setSelectedAction(initialRole);
+            setSelectedItem(initialRole);
+            setCurrentStep(2);
+        }
+    }, [isModalOpen, initialRole]);
 
     useEffect(() => {
         if (!isModalOpen) {
@@ -141,6 +158,7 @@ export default function SurveyOnlyForm({
             });
             setOrgErrors({
                 ukBased: null,
+                active: null,
                 companyHouse: null,
             });
             setPersonalForm({
@@ -208,7 +226,6 @@ export default function SurveyOnlyForm({
             const newConf = { ...prev, [key]: checked };
             return newConf;
         });
-
         if (!checked) {
             const errorMsg =
                 key === "ukResident"
@@ -220,7 +237,6 @@ export default function SurveyOnlyForm({
         } else {
             setIndividualErrors((prev) => ({ ...prev, [key]: null }));
         }
-
         if (currentStep === 3 && (key === "ukResident" || key === "niNumber") && !checked) {
             setCurrentStep(4);
         }
@@ -231,19 +247,26 @@ export default function SurveyOnlyForm({
             const newConf = { ...prev, [key]: checked };
             return newConf;
         });
-
-        if ((key === "ukBased" || key === "companyHouse") && !checked) {
-            const errorMsg =
-                key === "ukBased"
-                    ? "We are currently only accepting investments from UK-based companies."
-                    : "A valid UK Companies House number is required.";
+        if (key === "ukBased" || key === "companyHouse" || key === "active") {
+            let errorMsg: string | null = null;
+            if (!checked) {
+                if (key === "ukBased") {
+                    errorMsg = "We are currently only accepting investments from UK-based companies.";
+                } else if (key === "companyHouse") {
+                    errorMsg = "A valid UK Companies House number is required.";
+                } else if (key === "active") {
+                    errorMsg = "We only accept applications from currently active companies.";
+                }
+            }
             setOrgErrors((prev) => ({ ...prev, [key]: errorMsg }));
-        } else if (key === "ukBased" || key === "companyHouse") {
-            setOrgErrors((prev) => ({ ...prev, [key]: null }));
         }
-
-        if (currentStep === 3 && key === "ukBased" && !checked) {
+        if (!checked) {
             setCurrentStep(4);
+            return;
+        }
+        const newConf = { ...orgConfirmations, [key]: true };
+        if (newConf.ukBased && newConf.companyHouse && newConf.active) {
+            setCurrentStep(3);
         }
     };
 
@@ -264,6 +287,28 @@ export default function SurveyOnlyForm({
                 phone_number: orgForm.phoneNumber,
             }),
     });
+
+    const isStep5Valid = () => {
+        if (userType === "individual") {
+            if (!personalForm.firstName.trim() || !personalForm.lastName.trim() || !personalForm.phoneNumber.trim()) {
+                return false;
+            }
+            if (!isPhoneNumberComplete(personalForm.phoneNumber)) {
+                return false;
+            }
+            const result = individualStep5Schema.safeParse(personalForm);
+            return result.success;
+        } else {
+            if (!orgForm.contactFullName.trim() || !orgForm.companyName.trim() || !orgForm.phoneNumber.trim()) {
+                return false;
+            }
+            if (!isPhoneNumberComplete(orgForm.phoneNumber)) {
+                return false;
+            }
+            const result = orgStep5Schema.safeParse(orgForm);
+            return result.success;
+        }
+    };
 
     const handleConfirmContinue = () => {
         if (userType === "individual") {
@@ -291,13 +336,16 @@ export default function SurveyOnlyForm({
                 setCurrentStep(4);
                 return;
             }
-            const newOrgErrors: Record<"ukBased" | "companyHouse", string | null> = {
+            const newOrgErrors: Record<"ukBased" | "companyHouse" | "active", string | null> = {
                 ukBased: orgConfirmations.ukBased
                     ? null
                     : "We are currently only accepting investments from UK-based companies.",
                 companyHouse: orgConfirmations.companyHouse
                     ? null
                     : "A valid UK Companies House number is required.",
+                active: orgConfirmations.active
+                    ? null
+                    : "We only accept applications from currently active companies.",
             };
             setOrgErrors(newOrgErrors);
             const hasErrors = Object.values(newOrgErrors).some((e) => e !== null);
@@ -311,12 +359,10 @@ export default function SurveyOnlyForm({
             userType === "individual"
                 ? individualStep5Schema.safeParse(personalForm)
                 : orgStep5Schema.safeParse(orgForm);
-
         if (result.success) {
             setErrors({});
             return true;
         }
-
         const formatted: Record<string, string> = {};
         result.error.issues.forEach((issue) => {
             const key = issue.path[0] as string;
@@ -332,7 +378,6 @@ export default function SurveyOnlyForm({
         }
         if (isOrg) setOrgForm((prev) => ({ ...prev, [key]: value }));
         else setPersonalForm((prev) => ({ ...prev, [key]: value }));
-
         if (errors[key]) setErrors((prev) => ({ ...prev, [key]: "" }));
     };
 
@@ -380,6 +425,13 @@ export default function SurveyOnlyForm({
         }
     };
 
+    const isPhoneNumberComplete = (phone: string): boolean => {
+        const cleaned = phone.replace(/\D/g, "");
+        if (!cleaned.startsWith("44")) return false;
+        const digitsAfter44 = cleaned.slice(2);
+        return digitsAfter44.length === 10;
+    };
+
     const renderStep1 = () => (
         <div className="w-full h-full flex flex-col gap-2 justify-center items-start">
             <span className="text-base text-white block">Let’s Get Started</span>
@@ -402,19 +454,24 @@ export default function SurveyOnlyForm({
                     </div>
                 ))}
             </div>
-            <CustomButton variant="filled" disabled={!selectedAction} onClick={() => selectedAction && setCurrentStep(2)} className="w-full">
+            <CustomButton
+                variant="filled"
+                disabled={!selectedAction}
+                onClick={() => selectedAction && setCurrentStep(2)}
+                className="w-full"
+            >
                 Continue
             </CustomButton>
         </div>
     );
 
     const renderStep2 = () => (
-        <>
+        <div className="w-full h-full flex flex-col justify-between items-center py-2">
             <div className="flex flex-col gap-12 mb-12 w-full max-w-3xl">
                 <span className="text-2xl text-white font-semibold text-center">Are you an Individual or Organization?</span>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-5">
                     <div
-                        className={`rounded-xl p-5 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 ${userType === "individual"
+                        className={`rounded-xl p-5 flex flex-col h-[242px] items-center justify-center cursor-pointer transition-colors duration-200 ${userType === "individual"
                                 ? "bg-[#343C52] border border-[#777777] backdrop-blur-[70px]"
                                 : "bg-[#131C2F] hover:bg-gray-700"
                             }`}
@@ -424,7 +481,7 @@ export default function SurveyOnlyForm({
                         <span className="text-white font-medium text-center text-base">Individual</span>
                     </div>
                     <div
-                        className={`rounded-xl p-5 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 ${userType === "organization"
+                        className={`rounded-xl p-5 flex flex-col h-[242px] items-center justify-center cursor-pointer transition-colors duration-200 ${userType === "organization"
                                 ? "bg-[#343C52] border border-[#777777] backdrop-blur-[70px]"
                                 : "bg-[#131C2F] hover:bg-gray-700"
                             }`}
@@ -443,26 +500,23 @@ export default function SurveyOnlyForm({
             >
                 Continue
             </CustomButton>
-        </>
+        </div>
     );
 
     const renderStep3 = () => {
         const canContinue =
-            userType === "individual"
-                ? confirmations.over18
-                : orgConfirmations.ukBased && orgConfirmations.companyHouse;
+            userType === "individual" ? confirmations.over18 : orgConfirmations.ukBased && orgConfirmations.companyHouse;
 
         return (
-            <div className="w-full space-y-6">
+            <div className="w-full space-y-6 h-full flex flex-col justify-between py-2">
                 <div className="space-y-6">
                     <span className="text-xl md:text-2xl text-white font-semibold block text-center md:text-left">
                         First, please confirm the following.
                     </span>
-
                     <div className="space-y-4">
                         {userType === "individual" ? (
                             <>
-                                <div className="space-y-1">
+                                <div className="space-y-1 text-left">
                                     <label className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-700 rounded-xl p-4 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors w-full">
                                         <div className="relative flex-shrink-0">
                                             <input
@@ -478,13 +532,10 @@ export default function SurveyOnlyForm({
                                         <span className="text-white text-base text-left flex-1">I am currently a UK resident</span>
                                     </label>
                                     {individualErrors.ukResident && (
-                                        <p className="text-red-400 text-sm animate-fadeIn pl-11 sm:pl-0">
-                                            {individualErrors.ukResident}
-                                        </p>
+                                        <p className="text-red-400 text-sm animate-fadeIn pl-11 sm:pl-0">{individualErrors.ukResident}</p>
                                     )}
                                 </div>
-
-                                <div className="space-y-1">
+                                <div className="space-y-1 text-left">
                                     <label className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-700 rounded-xl p-4 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors w-full">
                                         <div className="relative flex-shrink-0">
                                             <input
@@ -500,13 +551,10 @@ export default function SurveyOnlyForm({
                                         <span className="text-white text-base text-left flex-1">I have a valid UK national insurance number</span>
                                     </label>
                                     {individualErrors.niNumber && (
-                                        <p className="text-red-400 text-sm animate-fadeIn pl-11 sm:pl-0">
-                                            {individualErrors.niNumber}
-                                        </p>
+                                        <p className="text-red-400 text-sm animate-fadeIn pl-11 sm:pl-0">{individualErrors.niNumber}</p>
                                     )}
                                 </div>
-
-                                <div className="space-y-1">
+                                <div className="space-y-1 text-left">
                                     <label className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-700 rounded-xl p-4 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors w-full">
                                         <div className="relative flex-shrink-0">
                                             <input
@@ -522,15 +570,13 @@ export default function SurveyOnlyForm({
                                         <span className="text-white text-base text-left flex-1">I am at least 18 years old</span>
                                     </label>
                                     {individualErrors.over18 && (
-                                        <p className="text-red-400 text-sm animate-fadeIn pl-11 sm:pl-0">
-                                            {individualErrors.over18}
-                                        </p>
+                                        <p className="text-red-400 text-sm animate-fadeIn pl-11 sm:pl-0">{individualErrors.over18}</p>
                                     )}
                                 </div>
                             </>
                         ) : (
                             <>
-                                <div className="space-y-1">
+                                <div className="space-y-1 text-left">
                                     <label className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-700 rounded-xl p-4 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors">
                                         <div className="relative flex-shrink-0">
                                             <input
@@ -549,8 +595,7 @@ export default function SurveyOnlyForm({
                                         <p className="text-red-400 text-sm animate-fadeIn pl-11 sm:pl-0">{orgErrors.ukBased}</p>
                                     )}
                                 </div>
-
-                                <div className="space-y-1">
+                                <div className="space-y-1 text-left">
                                     <label className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-700 rounded-xl p-4 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors">
                                         <div className="relative flex-shrink-0">
                                             <input
@@ -569,21 +614,25 @@ export default function SurveyOnlyForm({
                                         <p className="text-red-400 text-sm text-left animate-fadeIn pl-11 sm:pl-0">{orgErrors.companyHouse}</p>
                                     )}
                                 </div>
-
-                                <label className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-700 rounded-xl p-4 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors">
-                                    <div className="relative flex-shrink-0">
-                                        <input
-                                            type="checkbox"
-                                            className="peer sr-only"
-                                            checked={orgConfirmations.active}
-                                            onChange={(e) => handleOrgConfirm("active", e.target.checked)}
-                                        />
-                                        <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
-                                            <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
+                                <div className="space-y-1 text-left">
+                                    <label className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-700 rounded-xl p-4 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors">
+                                        <div className="relative flex-shrink-0">
+                                            <input
+                                                type="checkbox"
+                                                className="peer sr-only"
+                                                checked={orgConfirmations.active}
+                                                onChange={(e) => handleOrgConfirm("active", e.target.checked)}
+                                            />
+                                            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
+                                                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <span className="text-white text-base text-left flex-1">Our company is currently active.</span>
-                                </label>
+                                        <span className="text-white text-base text-left flex-1">Our company is currently active.</span>
+                                    </label>
+                                    {orgErrors.active && (
+                                        <p className="text-red-400 text-sm animate-fadeIn pl-11 sm:pl-0">{orgErrors.active}</p>
+                                    )}
+                                </div>
                             </>
                         )}
                     </div>
@@ -597,9 +646,10 @@ export default function SurveyOnlyForm({
                     </button>
                     <CustomButton
                         variant="filled"
-                        className="w-1/2 py-3.5 md:py-3 bg-green-600 rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={!canContinue}
-                        onClick={handleConfirmContinue}
+                        className={`w-1/2 py-3.5 md:py-3 rounded-lg transition-colors ${canContinue ? "bg-green-600 hover:bg-green-500 cursor-pointer" : "bg-green-600/50 cursor-not-allowed"
+                            }`}
+                        onClick={canContinue ? handleConfirmContinue : undefined}
                     >
                         Continue
                     </CustomButton>
@@ -612,22 +662,50 @@ export default function SurveyOnlyForm({
         <div className="flex flex-col gap-12 justify-center items-start">
             <span className="text-2xl text-white font-semibold block">Contact Form</span>
             <div className="flex flex-col gap-6 text-left">
-                <p className="text-white text-sm">We are currently only accepting investments from UK residents.</p>
                 <p className="text-white text-sm">
-                    If you would like to be notified when we are able to accept investments from your country, complete
-                    the form below.
+                    Unfortunately, at this point in time, we cannot accept investments from people who are not UK residents or don&apos;t have a valid UK national insurance number.
+                </p>
+                <p className="text-white text-sm">
+                    If you would like to be notified when we are able to accept investments from your country, complete the form below.
                 </p>
             </div>
             <div className="w-full text-left flex flex-col gap-3">
-                <FormInput label="First Name" placeholder="First Name" type="text" />
-                <FormInput label="Last Name" placeholder="Last Name" type="text" />
-                <FormInput label="Country" placeholder="Country" />
-                <FormInput label="Email" placeholder="Email" type="text" />
+                <FormInput
+                    label="First Name"
+                    placeholder="First Name"
+                    type="text"
+                    value={step4Form.firstName}
+                    onChange={(e) => handleStep4Change("firstName", e.target.value)}
+                />
+                <FormInput
+                    label="Last Name"
+                    placeholder="Last Name"
+                    type="text"
+                    value={step4Form.lastName}
+                    onChange={(e) => handleStep4Change("lastName", e.target.value)}
+                />
+                <FormInput
+                    label="Country"
+                    placeholder="Country"
+                    value={step4Form.country}
+                    onChange={(e) => handleStep4Change("country", e.target.value)}
+                />
+                <FormInput
+                    label="Email"
+                    placeholder="Email"
+                    type="email"
+                    value={step4Form.email}
+                    onChange={(e) => handleStep4Change("email", e.target.value)}
+                />
             </div>
             <div className="w-full h-fit flex justify-center items-center">
                 <button
                     className="w-full py-3 bg-gray-600 text-white rounded-md hover:bg-gray-500 transition-colors md:w-auto md:px-8"
-                    onClick={() => setCurrentStep(3)}
+                    onClick={() => {
+                        console.log("Step 4 Form Data:", step4Form);
+                        alert("Thank you! We’ll notify you when available in your region.");
+                        setIsModalOpen(false);
+                    }}
                 >
                     Submit
                 </button>
@@ -635,159 +713,174 @@ export default function SurveyOnlyForm({
         </div>
     );
 
-    const renderStep5 = () => (
-        <div className="w-full text-left flex flex-col h-full">
-            <div className="flex-1 overflow-y-auto">
-                <span className="text-2xl text-white font-semibold mb-6 block">Great! Let&apos;s get started.</span>
-                <div className="space-y-4">
-                    {userType === "individual" ? (
-                        <>
-                            <div className="w-full">
-                                <FormInput
-                                    label="First Name"
-                                    placeholder="First Name"
-                                    type="text"
-                                    value={personalForm.firstName}
-                                    onChange={(e) => handlePersonalChange("firstName", e.target.value)}
-                                    error={errors.firstName}
-                                />
-                            </div>
-                            <div className="w-full">
-                                <FormInput
-                                    label="Last Name"
-                                    placeholder="Last Name"
-                                    type="text"
-                                    value={personalForm.lastName}
-                                    onChange={(e) => handlePersonalChange("lastName", e.target.value)}
-                                    error={errors.lastName}
-                                />
-                            </div>
-                            <div className="w-full">
-                                <FormInput
-                                    label="Phone Number"
-                                    placeholder="+44 (XXX) XXX-XXXX"
-                                    type="tel"
-                                    value={personalForm.phoneNumber}
-                                    onChange={(e) => handlePersonalChange("phoneNumber", e.target.value)}
-                                    error={errors.phoneNumber}
-                                />
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <div className="w-full">
-                                <FormInput
-                                    label="Contact Full Name"
-                                    placeholder="Contact Full Name"
-                                    type="text"
-                                    value={orgForm.contactFullName}
-                                    onChange={(e) => handlePersonalChange("contactFullName", e.target.value, true)}
-                                    error={errors.contactFullName}
-                                />
-                            </div>
-                            <div className="w-full">
-                                <FormInput
-                                    label="Company Name"
-                                    placeholder="Company Name"
-                                    type="text"
-                                    value={orgForm.companyName}
-                                    onChange={(e) => handlePersonalChange("companyName", e.target.value, true)}
-                                    error={errors.companyName}
-                                />
-                            </div>
-                            <div className="w-full">
-                                <FormInput
-                                    label="Phone Number"
-                                    placeholder="+44 (XXX) XXX-XXXX"
-                                    type="tel"
-                                    value={orgForm.phoneNumber}
-                                    onChange={(e) => handlePersonalChange("phoneNumber", e.target.value, true)}
-                                    error={errors.phoneNumber}
-                                />
-                            </div>
-                        </>
-                    )}
-                </div>
-            </div>
-            <div className="flex space-x-2 pt-4 border-t border-[#2B3146]">
-                <button
-                    className="flex-1 w-1/2 py-3 bg-[#1C2332] text-primary rounded-md transition-colors cursor-pointer"
-                    onClick={() => setCurrentStep(3)}
-                >
-                    Back
-                </button>
-                <button
-                    onClick={() => {
-                        if (validateStep5()) {
-                            setCurrentStep(6);
-                        }
-                    }}
-                    className="sm:w-full w-1/2 py-3 bg-[#C7CAD5] text-black rounded-md cursor-pointer transition-colors md:flex-1"
-                >
-                    Continue
-                </button>
-            </div>
-        </div>
-    );
-
-    const renderStep6 = () => (
-        <div className="w-full text-left">
-            <div className="mb-40">
-                <span className="text-2xl text-white font-semibold mb-6 block">Let&apos;s create your account!</span>
-                <div className="space-y-4 mb-8">
-                    <div className="w-full">
-                        <FormInput
-                            label="Email"
-                            placeholder="Email"
-                            type="text"
-                            value={accountForm.email}
-                            onChange={(e) => handleAccountChange("email", e.target.value)}
-                        />
+    const renderStep5 = () => {
+        const isValid = isStep5Valid();
+        return (
+            <div className="w-full text-left flex flex-col h-full">
+                <div className="flex-1 overflow-y-auto">
+                    <span className="text-2xl text-white font-semibold mb-6 block">Great! Let&apos;s get started.</span>
+                    <div className="space-y-4 px-1">
+                        {userType === "individual" ? (
+                            <>
+                                <div className="w-full">
+                                    <FormInput
+                                        label="First Name"
+                                        placeholder="First Name"
+                                        type="text"
+                                        value={personalForm.firstName}
+                                        onChange={(e) => handlePersonalChange("firstName", e.target.value)}
+                                        error={errors.firstName}
+                                    />
+                                </div>
+                                <div className="w-full">
+                                    <FormInput
+                                        label="Last Name"
+                                        placeholder="Last Name"
+                                        type="text"
+                                        value={personalForm.lastName}
+                                        onChange={(e) => handlePersonalChange("lastName", e.target.value)}
+                                        error={errors.lastName}
+                                    />
+                                </div>
+                                <div className="w-full">
+                                    <FormInput
+                                        label="Phone Number"
+                                        placeholder="+44 (XXX) XXX-XXXX"
+                                        type="tel"
+                                        value={personalForm.phoneNumber}
+                                        onChange={(e) => handlePersonalChange("phoneNumber", e.target.value)}
+                                        error={errors.phoneNumber}
+                                    />
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <div className="w-full">
+                                    <FormInput
+                                        label="Contact Full Name"
+                                        placeholder="Contact Full Name"
+                                        type="text"
+                                        value={orgForm.contactFullName}
+                                        onChange={(e) => handlePersonalChange("contactFullName", e.target.value, true)}
+                                        error={errors.contactFullName}
+                                    />
+                                </div>
+                                <div className="w-full">
+                                    <FormInput
+                                        label="Company Name"
+                                        placeholder="Company Name"
+                                        type="text"
+                                        value={orgForm.companyName}
+                                        onChange={(e) => handlePersonalChange("companyName", e.target.value, true)}
+                                        error={errors.companyName}
+                                    />
+                                </div>
+                                <div className="w-full">
+                                    <FormInput
+                                        label="Phone Number"
+                                        placeholder="+44 (XXX) XXX-XXXX"
+                                        type="tel"
+                                        value={orgForm.phoneNumber}
+                                        onChange={(e) => handlePersonalChange("phoneNumber", e.target.value, true)}
+                                        error={errors.phoneNumber}
+                                    />
+                                </div>
+                            </>
+                        )}
                     </div>
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                        <div className="relative flex-shrink-0">
-                            <input
-                                type="checkbox"
-                                className="peer sr-only"
-                                checked={accountForm.termsAgreed}
-                                onChange={(e) => handleAccountChange("termsAgreed", e.target.checked)}
-                            />
-                            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
-                                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
-                            </div>
-                        </div>
-                        <span className="text-white text-sm">
-                            By creating an account, I agree to InfraFund’s{" "}
-                            <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-green-400 hover:text-primary">
-                                Terms of Service
-                            </a>{" "}
-                            and{" "}
-                            <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-green-400 hover:text-primary">
-                                Privacy Policy
-                            </a>
-                            .
-                        </span>
-                    </label>
+                </div>
+                <div className="flex space-x-2 pt-4 border-t border-[#2B3146]">
+                    <button
+                        className="flex-1 w-1/2 py-3 bg-[#1C2332] text-primary rounded-md transition-colors cursor-pointer"
+                        onClick={() => setCurrentStep(3)}
+                    >
+                        Back
+                    </button>
+                    <button
+                        onClick={() => {
+                            if (validateStep5()) {
+                                setCurrentStep(6);
+                            }
+                        }}
+                        disabled={!isValid}
+                        className={`sm:w-full w-1/2 py-3 rounded-md cursor-pointer transition-colors md:flex-1 ${isValid
+                                ? "bg-primary text-black hover:bg-green-500"
+                                : "bg-[#C7CAD5] text-black opacity-80 cursor-not-allowed"
+                            }`}
+                    >
+                        Continue
+                    </button>
                 </div>
             </div>
-            <div className="flex space-x-2">
-                <button
-                    className="flex-1 w-1/2 py-3 bg-[#1C2332] text-primary rounded-md transition-colors cursor-pointer"
-                    onClick={() => setCurrentStep(5)}
-                >
-                    Back
-                </button>
-                <button
-                    onClick={handleSubmitSurvey}
-                    disabled={!accountForm.email || !accountForm.termsAgreed || submitting}
-                    className={`sm:w-full w-1/2 py-3 ${accountForm.termsAgreed ? "bg-primary" : "bg-[#C7CAD5]"
-                        } text-black rounded-md cursor-pointer transition-colors md:flex-1`}
-                >
-                    {submitting ? "Submitting..." : "Continue"}
-                </button>
+        );
+    };
+
+    const renderStep6 = () => {
+        const canSubmit = accountForm.email.trim() !== "" && accountForm.termsAgreed && !submitting;
+        return (
+            <div className="w-full text-left h-full flex flex-col justify-between py-1.5">
+                <div>
+                    <span className="text-2xl text-white font-semibold mb-6 block">Let&apos;s create your account!</span>
+                    <div className="space-y-4 mb-8">
+                        <div className="w-full">
+                            <FormInput
+                                label="Email"
+                                placeholder="Email"
+                                type="text"
+                                value={accountForm.email}
+                                onChange={(e) => handleAccountChange("email", e.target.value)}
+                            />
+                        </div>
+                        <label className="flex items-center space-x-3 cursor-pointer">
+                            <div className="relative flex-shrink-0">
+                                <input
+                                    type="checkbox"
+                                    className="peer sr-only"
+                                    checked={accountForm.termsAgreed}
+                                    onChange={(e) => handleAccountChange("termsAgreed", e.target.checked)}
+                                />
+                                <div
+                                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center transition-colors duration-300 ${accountForm.termsAgreed ? "bg-[#00FF87]" : "bg-[#2B3146]"
+                                        }`}
+                                >
+                                    {accountForm.termsAgreed && <Check className="w-4 h-4 sm:w-5 sm:h-5 text-black" />}
+                                </div>
+                            </div>
+                            <span className="text-white text-sm">
+                                By creating an account, I agree to InfraFund’s{" "}
+                                <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-green-400 hover:text-primary">
+                                    Terms of Service
+                                </a>{" "}
+                                and{" "}
+                                <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-green-400 hover:text-primary">
+                                    Privacy Policy
+                                </a>
+                                .
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <div className="flex space-x-2">
+                    <button
+                        className="flex-1 w-1/2 py-3 bg-[#1C2332] text-primary rounded-md transition-colors cursor-pointer"
+                        onClick={() => setCurrentStep(5)}
+                    >
+                        Back
+                    </button>
+                    <button
+                        onClick={canSubmit ? handleSubmitSurvey : undefined}
+                        disabled={!canSubmit}
+                        className={`sm:w-full w-1/2 py-3 rounded-md cursor-pointer transition-colors md:flex-1 ${canSubmit
+                                ? "bg-primary text-black hover:bg-green-500"
+                                : "bg-[#C7CAD5] text-black opacity-80 cursor-not-allowed"
+                            }`}
+                    >
+                        {submitting ? "Submitting..." : "Continue"}
+                    </button>
+                </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     return (
         <Modal
@@ -800,9 +893,10 @@ export default function SurveyOnlyForm({
                 }
             }}
             showCloseButton={true}
+            closeOnBackdropClick={false}
         >
-            <div className="w-full h-full flex flex-col justify-between items-center">
-                {currentStep !== 4 && <Image priority src={infafund} alt="infrafund" width={172} height={42} className="mb-1" />}
+            <div className="w-full sm:h-[650px] flex flex-col justify-between items-center">
+                {currentStep !== 4 && <Image priority src={infafund} alt="infrafund" width={262} height={64} className="mb-1" />}
                 {currentStep === 1 && renderStep1()}
                 {currentStep === 2 && renderStep2()}
                 {currentStep === 3 && renderStep3()}

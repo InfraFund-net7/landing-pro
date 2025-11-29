@@ -9,8 +9,8 @@ export default function OperatingSystem() {
     return (
         <main className="w-full h-fit  overflow-hidden ">
             <div className="px-4 py-16">
-                <div className="text-center max-w-5xl mx-auto relative -z-10 ">
-                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
+                <div className="text-center max-w-5xl mx-auto relative -z-10">
+                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-relaxed">
                         The Single Operating System for Real-World Energy Asset Tokenization
                     </h1>
                     <p className="text-lg md:text-xl text-gray-300">

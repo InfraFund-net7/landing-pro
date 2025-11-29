@@ -14,6 +14,7 @@ interface ModalProps {
   ModalTitle?: string
   className?: string
   showCloseButton?: boolean
+  closeOnBackdropClick?: boolean
 }
 
 export function Modal({
@@ -25,6 +26,7 @@ export function Modal({
   height = "auto",
   className = "",
   showCloseButton = true,
+  closeOnBackdropClick = true,
 }: ModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null)
   const modalRef = useRef<HTMLDivElement>(null)
@@ -66,7 +68,7 @@ export function Modal({
   }, [isOpen])
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
+    if (closeOnBackdropClick && e.target === e.currentTarget) {
       onClose()
     }
   }

@@ -32,7 +32,7 @@ export default function FooterHome() {
           relative gap-10 lg:gap-0
         "
       >
-        <div className="absolute bottom-4 right-4 -z-10 w-[200px] sm:w-[300px] lg:w-auto opacity-70">
+        <div className="hidden sm:block absolute bottom-4 right-4 -z-10 w-[200px] sm:w-[300px] lg:w-auto opacity-70">
           <Image src={world} alt="world-footer" className="w-full h-auto" />
           <Image
             src={Uk}
