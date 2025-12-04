@@ -1,83 +1,95 @@
 'use client';
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import { partners } from '@/data/partners';
 import Image from 'next/image';
 import gsap from 'gsap';
 
 export default function PartnersSection() {
   const sliderRef = useRef<HTMLDivElement>(null);
-  const firstSetRef = useRef<HTMLDivElement>(null); // New ref for exact set width
-  const [isLoaded, setIsLoaded] = useState(false); // Track image loads for robust init
+  const firstSetRef = useRef<HTMLDivElement>(null);
+  const [imagesLoadedCount, setImagesLoadedCount] = useState(0);
+  const totalImages = partners.filter((p) => p.name !== 'CompaniesHouse').length * 2;
+
+  const filteredPartners = partners.filter((p) => p.name !== 'CompaniesHouse');
+
+  const calculateSetWidth = useCallback(() => {
+    if (!firstSetRef.current) return 0;
+    const rect = firstSetRef.current.getBoundingClientRect();
+    return rect.width;
+  }, []);
 
   useEffect(() => {
-    if (!sliderRef.current || !firstSetRef.current) return;
+    if (!sliderRef.current) return;
 
-    const slider = sliderRef.current;
     let tween: gsap.core.Tween | null = null;
 
-    const setupAnimation = () => {
-      if (tween) tween.kill();
-      if (!firstSetRef.current) return;
-
-      // **THE FIX**: Measure EXACT width of one set (including internal gaps)
-      const setWidth = firstSetRef.current.getBoundingClientRect().width;
-
-      // Robustness: Retry if width is 0 (images not loaded yet)
-      if (setWidth === 0 && !isLoaded) {
-        setTimeout(setupAnimation, 100);
+    const initAnimation = () => {
+      const setWidth = calculateSetWidth();
+      if (setWidth <= 0) {
+        setTimeout(initAnimation, 50);
         return;
       }
 
-      tween = gsap.to(slider, {
-        x: `-${setWidth}px`, // Animate exactly one set's width
-        duration: 40, // Faster loop (adjust as needed; 100s was too slow for seamlessness)
+      tween = gsap.to(sliderRef.current, {
+        x: `-${setWidth}px`,
+        duration: 35,
         ease: 'linear',
-        repeat: -1, // Infinite loop — now truly seamless!
+        repeat: -1,
+        paused: false,
       });
     };
 
-    // Initial setup after a tick (for DOM readiness)
-    const timeoutId = setTimeout(setupAnimation, 0);
+    if (imagesLoadedCount >= totalImages && sliderRef.current) {
+      const id = setTimeout(initAnimation, 10);
+      return () => clearTimeout(id);
+    }
 
     const handleMouseEnter = () => tween?.pause();
     const handleMouseLeave = () => tween?.resume();
 
+    const slider = sliderRef.current;
     slider.addEventListener('mouseenter', handleMouseEnter);
     slider.addEventListener('mouseleave', handleMouseLeave);
-    window.addEventListener('resize', setupAnimation);
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (tween) {
+        tween.kill();
+        initAnimation();
+      }
+    });
+
+    if (firstSetRef.current) {
+      resizeObserver.observe(firstSetRef.current);
+    }
 
     return () => {
-      clearTimeout(timeoutId);
       slider.removeEventListener('mouseenter', handleMouseEnter);
       slider.removeEventListener('mouseleave', handleMouseLeave);
-      window.removeEventListener('resize', setupAnimation);
+      resizeObserver.disconnect();
       if (tween) tween.kill();
     };
-  }, [isLoaded]); // Re-run when all images are loaded
+  }, [imagesLoadedCount, totalImages, calculateSetWidth]);
 
-  const filteredPartners = partners.filter((p) => p.name !== 'CompaniesHouse');
-
-  // Track loads for all images in the first set
   const handleImageLoad = () => {
-    // Simple counter? Or just set true after all (you can enhance with a counter if many logos)
-    setIsLoaded(true);
+    setImagesLoadedCount((prev) => prev + 1);
   };
 
   return (
     <section className="w-full bg-[#00000066] py-8 px-2 sm:px-4 overflow-hidden">
-      <div className="max-w-7xl mx-auto flex justify-center items-center h-full">
+      <div className="max-w-7xl mx-auto">
         <div
-          className="flex flex-shrink-0" // No gap here — gaps are per-set now
+          className="flex flex-nowrap"
           ref={sliderRef}
+          style={{ willChange: 'transform' }}
         >
-          {/* First set — ref for measurement */}
           <div
             ref={firstSetRef}
             className="flex gap-6 sm:gap-8 md:gap-10 flex-shrink-0"
+            aria-hidden="true"
           >
             {filteredPartners.map((partner, index) => (
               <div
-                key={`first-${index}`}
+                key={`set1-${index}`}
                 className="flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity duration-300 ease-in-out flex-shrink-0"
               >
                 <Image
@@ -86,17 +98,17 @@ export default function PartnersSection() {
                   width={100}
                   height={32}
                   className="h-6 sm:h-8 md:h-10 w-auto object-contain"
-                  loading="lazy"
-                  onLoad={handleImageLoad} // Track loads
+                  loading="eager"
+                  onLoad={handleImageLoad}
+                  unoptimized
                 />
               </div>
             ))}
           </div>
-          {/* Second set — identical, no ref needed */}
           <div className="flex gap-6 sm:gap-8 md:gap-10 flex-shrink-0">
             {filteredPartners.map((partner, index) => (
               <div
-                key={`second-${index}`}
+                key={`set2-${index}`}
                 className="flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity duration-300 ease-in-out flex-shrink-0"
               >
                 <Image
@@ -107,6 +119,7 @@ export default function PartnersSection() {
                   className="h-6 sm:h-8 md:h-10 w-auto object-contain"
                   loading="lazy"
                   onLoad={handleImageLoad}
+                  unoptimized
                 />
               </div>
             ))}

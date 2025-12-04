@@ -67,10 +67,12 @@ export default function SurveyOnlyForm({
         active: null,
     });
     const [step4Form, setStep4Form] = useState({
-        firstName: "",
-        lastName: "",
         country: "",
         email: "",
+        firstName: "",
+        lastName: "",
+        contactFullName: "",
+        companyName: "",
     });
     const [personalForm, setPersonalForm] = useState({
         firstName: "",
@@ -433,23 +435,23 @@ export default function SurveyOnlyForm({
     };
 
     const renderStep1 = () => (
-        <div className="w-full h-full flex flex-col gap-2 justify-center items-start">
-            <span className="text-base text-white block">Let’s Get Started</span>
-            <span className="text-2xl text-white font-semibold">What brings you to InfraFund?</span>
-            <div className="w-full flex flex-col gap-4">
+        <div className="w-full h-full flex flex-col gap-2 sm:gap-2 justify-center items-start">
+            <span className="text-sm sm:text-base text-white block">Let’s Get Started</span>
+            <span className="text-xl sm:text-2xl text-white font-semibold">What brings you to InfraFund?</span>
+            <div className="w-full flex flex-col gap-3 sm:gap-4">
                 {survey.map((item, index) => (
                     <div
                         key={index}
                         onClick={() => handleActionSelect(item.roles[0])}
-                        className={`w-full h-fit py-4 px-6 flex justify-start items-center gap-4 rounded-[12px] cursor-pointer transition-all duration-300 ${selectedItem === item.roles[0]
-                                ? "bg-[#343C52] border border-[#777777] backdrop-blur-[70px]"
-                                : "bg-[#131C2F] hover:bg-[#1E283D] border border-transparent"
+                        className={`w-full h-fit py-3 sm:py-4 px-3 sm:px-6 flex justify-start items-center gap-3 sm:gap-4 rounded-[12px] cursor-pointer transition-all duration-300 ${selectedItem === item.roles[0]
+                            ? "bg-[#343C52] border border-[#777777] backdrop-blur-[70px]"
+                            : "bg-[#131C2F] hover:bg-[#1E283D] border border-transparent"
                             }`}
                     >
-                        <Image src={item.icon} width={48} height={48} alt={item.name} />
-                        <div className="flex flex-col gap-2 justify-center text-left">
-                            <span className="text-lg text-white font-medium">{item.name}</span>
-                            <span className="text-xs text-[#A3A3A3] font-normal">{item.description}</span>
+                        <Image src={item.icon} width={40} height={40} alt={item.name} className="w-10 h-10 sm:w-12 sm:h-12" />
+                        <div className="flex flex-col gap-1 sm:gap-2 justify-center text-left">
+                            <span className="text-base sm:text-lg text-white font-medium">{item.name}</span>
+                            <span className="text-xs sm:text-xs text-[#A3A3A3] font-normal">{item.description}</span>
                         </div>
                     </div>
                 ))}
@@ -458,7 +460,7 @@ export default function SurveyOnlyForm({
                 variant="filled"
                 disabled={!selectedAction}
                 onClick={() => selectedAction && setCurrentStep(2)}
-                className="w-full"
+                className="w-full mt-2"
             >
                 Continue
             </CustomButton>
@@ -466,35 +468,35 @@ export default function SurveyOnlyForm({
     );
 
     const renderStep2 = () => (
-        <div className="w-full h-full flex flex-col justify-between items-center py-2">
-            <div className="flex flex-col gap-12 mb-12 w-full max-w-3xl">
-                <span className="text-2xl text-white font-semibold text-center">Are you an Individual or Organization?</span>
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-5">
+        <div className="w-full h-full flex flex-col justify-between items-center py-1 sm:py-2">
+            <div className="flex flex-col gap-6 sm:gap-12 mb-6 sm:mb-12 w-full max-w-3xl">
+                <span className="text-xl sm:text-2xl text-white font-semibold text-center">Are you an Individual or Organization?</span>
+                <div className="grid grid-cols-1 gap-4 sm:gap-5 sm:grid-cols-2">
                     <div
-                        className={`rounded-xl p-5 flex flex-col h-[242px] items-center justify-center cursor-pointer transition-colors duration-200 ${userType === "individual"
-                                ? "bg-[#343C52] border border-[#777777] backdrop-blur-[70px]"
-                                : "bg-[#131C2F] hover:bg-gray-700"
+                        className={`rounded-xl p-4 sm:p-5 flex flex-col h-[200px] sm:h-[242px] items-center justify-center cursor-pointer transition-colors duration-200 ${userType === "individual"
+                            ? "bg-[#343C52] border border-[#777777] backdrop-blur-[70px]"
+                            : "bg-[#131C2F] hover:bg-gray-700"
                             }`}
                         onClick={() => handleTypeSelect("individual")}
                     >
-                        <Image src={Individual} width={64} height={64} alt="Individual" className="mb-4" />
-                        <span className="text-white font-medium text-center text-base">Individual</span>
+                        <Image src={Individual} width={48} height={48} alt="Individual" className="mb-3 sm:mb-4" />
+                        <span className="text-white font-medium text-center text-sm sm:text-base">Individual</span>
                     </div>
                     <div
-                        className={`rounded-xl p-5 flex flex-col h-[242px] items-center justify-center cursor-pointer transition-colors duration-200 ${userType === "organization"
-                                ? "bg-[#343C52] border border-[#777777] backdrop-blur-[70px]"
-                                : "bg-[#131C2F] hover:bg-gray-700"
+                        className={`rounded-xl p-4 sm:p-5 flex flex-col h-[200px] sm:h-[242px] items-center justify-center cursor-pointer transition-colors duration-200 ${userType === "organization"
+                            ? "bg-[#343C52] border border-[#777777] backdrop-blur-[70px]"
+                            : "bg-[#131C2F] hover:bg-gray-700"
                             }`}
                         onClick={() => handleTypeSelect("organization")}
                     >
-                        <Image src={organization} width={64} height={64} alt="Organization" className="mb-4" />
-                        <span className="text-white font-medium text-center text-base">Organization</span>
+                        <Image src={organization} width={48} height={48} alt="Organization" className="mb-3 sm:mb-4" />
+                        <span className="text-white font-medium text-center text-sm sm:text-base">Organization</span>
                     </div>
                 </div>
             </div>
             <CustomButton
                 variant="filled"
-                className="w-full py-4 bg-gray-600 rounded-lg hover:bg-gray-500 transition-colors disabled:opacity-50"
+                className="w-full py-3 sm:py-4 bg-gray-600 rounded-lg hover:bg-gray-500 transition-colors disabled:opacity-50"
                 disabled={!userType}
                 onClick={() => userType && setCurrentStep(3)}
             >
@@ -506,18 +508,17 @@ export default function SurveyOnlyForm({
     const renderStep3 = () => {
         const canContinue =
             userType === "individual" ? confirmations.over18 : orgConfirmations.ukBased && orgConfirmations.companyHouse;
-
         return (
-            <div className="w-full space-y-6 h-full flex flex-col justify-between py-2">
-                <div className="space-y-6">
-                    <span className="text-xl md:text-2xl text-white font-semibold block text-center md:text-left">
+            <div className="w-full space-y-4 sm:space-y-6 h-full flex flex-col justify-between py-1 sm:py-2">
+                <div className="space-y-4">
+                    <span className="text-lg sm:text-xl md:text-2xl text-white font-semibold block text-center md:text-left">
                         First, please confirm the following.
                     </span>
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                         {userType === "individual" ? (
                             <>
                                 <div className="space-y-1 text-left">
-                                    <label className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-700 rounded-xl p-4 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors w-full">
+                                    <label className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 bg-slate-700 rounded-xl p-3 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors w-full">
                                         <div className="relative flex-shrink-0">
                                             <input
                                                 type="checkbox"
@@ -525,18 +526,18 @@ export default function SurveyOnlyForm({
                                                 checked={confirmations.ukResident}
                                                 onChange={(e) => handleIndividualConfirm("ukResident", e.target.checked)}
                                             />
-                                            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
-                                                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
+                                            <div className="w-6 h-6 sm:w-7 sm:h-7 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
+                                                <Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
                                             </div>
                                         </div>
-                                        <span className="text-white text-base text-left flex-1">I am currently a UK resident</span>
+                                        <span className="text-white text-sm sm:text-base text-left flex-1">I am currently a UK resident</span>
                                     </label>
                                     {individualErrors.ukResident && (
-                                        <p className="text-red-400 text-sm animate-fadeIn pl-11 sm:pl-0">{individualErrors.ukResident}</p>
+                                        <p className="text-red-400 text-xs sm:text-sm animate-fadeIn pl-9 sm:pl-0">{individualErrors.ukResident}</p>
                                     )}
                                 </div>
                                 <div className="space-y-1 text-left">
-                                    <label className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-700 rounded-xl p-4 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors w-full">
+                                    <label className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 bg-slate-700 rounded-xl p-3 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors w-full">
                                         <div className="relative flex-shrink-0">
                                             <input
                                                 type="checkbox"
@@ -544,18 +545,18 @@ export default function SurveyOnlyForm({
                                                 checked={confirmations.niNumber}
                                                 onChange={(e) => handleIndividualConfirm("niNumber", e.target.checked)}
                                             />
-                                            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
-                                                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
+                                            <div className="w-6 h-6 sm:w-7 sm:h-7 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
+                                                <Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
                                             </div>
                                         </div>
-                                        <span className="text-white text-base text-left flex-1">I have a valid UK national insurance number</span>
+                                        <span className="text-white text-sm sm:text-base text-left flex-1">I have a valid UK national insurance number</span>
                                     </label>
                                     {individualErrors.niNumber && (
-                                        <p className="text-red-400 text-sm animate-fadeIn pl-11 sm:pl-0">{individualErrors.niNumber}</p>
+                                        <p className="text-red-400 text-xs sm:text-sm animate-fadeIn pl-9 sm:pl-0">{individualErrors.niNumber}</p>
                                     )}
                                 </div>
                                 <div className="space-y-1 text-left">
-                                    <label className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-700 rounded-xl p-4 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors w-full">
+                                    <label className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 bg-slate-700 rounded-xl p-3 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors w-full">
                                         <div className="relative flex-shrink-0">
                                             <input
                                                 type="checkbox"
@@ -563,21 +564,21 @@ export default function SurveyOnlyForm({
                                                 checked={confirmations.over18}
                                                 onChange={(e) => handleIndividualConfirm("over18", e.target.checked)}
                                             />
-                                            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
-                                                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
+                                            <div className="w-6 h-6 sm:w-7 sm:h-7 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
+                                                <Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
                                             </div>
                                         </div>
-                                        <span className="text-white text-base text-left flex-1">I am at least 18 years old</span>
+                                        <span className="text-white text-sm sm:text-base text-left flex-1">I am at least 18 years old</span>
                                     </label>
                                     {individualErrors.over18 && (
-                                        <p className="text-red-400 text-sm animate-fadeIn pl-11 sm:pl-0">{individualErrors.over18}</p>
+                                        <p className="text-red-400 text-xs sm:text-sm animate-fadeIn pl-9 sm:pl-0">{individualErrors.over18}</p>
                                     )}
                                 </div>
                             </>
                         ) : (
                             <>
                                 <div className="space-y-1 text-left">
-                                    <label className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-700 rounded-xl p-4 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors">
+                                    <label className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 bg-slate-700 rounded-xl p-3 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors">
                                         <div className="relative flex-shrink-0">
                                             <input
                                                 type="checkbox"
@@ -585,18 +586,18 @@ export default function SurveyOnlyForm({
                                                 checked={orgConfirmations.ukBased}
                                                 onChange={(e) => handleOrgConfirm("ukBased", e.target.checked)}
                                             />
-                                            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
-                                                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
+                                            <div className="w-6 h-6 sm:w-7 sm:h-7 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
+                                                <Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
                                             </div>
                                         </div>
-                                        <span className="text-white text-base text-left flex-1">Our company is based in UK.</span>
+                                        <span className="text-white text-sm sm:text-base text-left flex-1">Our company is based in UK.</span>
                                     </label>
                                     {orgErrors.ukBased && (
-                                        <p className="text-red-400 text-sm animate-fadeIn pl-11 sm:pl-0">{orgErrors.ukBased}</p>
+                                        <p className="text-red-400 text-xs sm:text-sm animate-fadeIn pl-9 sm:pl-0">{orgErrors.ukBased}</p>
                                     )}
                                 </div>
                                 <div className="space-y-1 text-left">
-                                    <label className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-700 rounded-xl p-4 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors">
+                                    <label className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 bg-slate-700 rounded-xl p-3 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors">
                                         <div className="relative flex-shrink-0">
                                             <input
                                                 type="checkbox"
@@ -604,18 +605,18 @@ export default function SurveyOnlyForm({
                                                 checked={orgConfirmations.companyHouse}
                                                 onChange={(e) => handleOrgConfirm("companyHouse", e.target.checked)}
                                             />
-                                            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
-                                                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
+                                            <div className="w-6 h-6 sm:w-7 sm:h-7 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
+                                                <Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
                                             </div>
                                         </div>
-                                        <span className="text-white text-base text-left flex-1">We have a valid UK company house number.</span>
+                                        <span className="text-white text-sm sm:text-base text-left flex-1">We have a valid UK company house number.</span>
                                     </label>
                                     {orgErrors.companyHouse && (
-                                        <p className="text-red-400 text-sm text-left animate-fadeIn pl-11 sm:pl-0">{orgErrors.companyHouse}</p>
+                                        <p className="text-red-400 text-xs sm:text-sm text-left animate-fadeIn pl-9 sm:pl-0">{orgErrors.companyHouse}</p>
                                     )}
                                 </div>
                                 <div className="space-y-1 text-left">
-                                    <label className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-700 rounded-xl p-4 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors">
+                                    <label className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 bg-slate-700 rounded-xl p-3 sm:p-5 cursor-pointer hover:bg-slate-600 transition-colors">
                                         <div className="relative flex-shrink-0">
                                             <input
                                                 type="checkbox"
@@ -623,23 +624,23 @@ export default function SurveyOnlyForm({
                                                 checked={orgConfirmations.active}
                                                 onChange={(e) => handleOrgConfirm("active", e.target.checked)}
                                             />
-                                            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
-                                                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
+                                            <div className="w-6 h-6 sm:w-7 sm:h-7 bg-[#2B3146] rounded-xl flex items-center justify-center transition-colors duration-300 peer-checked:bg-[#00FF87]">
+                                                <Check className="w-3 h-3 sm:w-4 sm:h-4 text-[#2B3146] peer-checked:text-black transition-colors duration-300" />
                                             </div>
                                         </div>
-                                        <span className="text-white text-base text-left flex-1">Our company is currently active.</span>
+                                        <span className="text-white text-sm sm:text-base text-left flex-1">Our company is currently active.</span>
                                     </label>
                                     {orgErrors.active && (
-                                        <p className="text-red-400 text-sm animate-fadeIn pl-11 sm:pl-0">{orgErrors.active}</p>
+                                        <p className="text-red-400 text-xs sm:text-sm animate-fadeIn pl-9 sm:pl-0">{orgErrors.active}</p>
                                     )}
                                 </div>
                             </>
                         )}
                     </div>
                 </div>
-                <div className="flex space-x-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                     <button
-                        className="flex-1 w-1/2 py-3 bg-[#1C2332] text-primary rounded-md transition-colors cursor-pointer"
+                        className="w-full sm:w-1/2 py-2.5 sm:py-3 bg-[#1C2332] text-primary rounded-md transition-colors cursor-pointer"
                         onClick={() => setCurrentStep(2)}
                     >
                         Back
@@ -647,7 +648,7 @@ export default function SurveyOnlyForm({
                     <CustomButton
                         variant="filled"
                         disabled={!canContinue}
-                        className={`w-1/2 py-3.5 md:py-3 rounded-lg transition-colors ${canContinue ? "bg-green-600 hover:bg-green-500 cursor-pointer" : "bg-green-600/50 cursor-not-allowed"
+                        className={`w-full sm:w-1/2 py-2.5 sm:py-3 rounded-lg transition-colors ${canContinue ? "bg-green-600 hover:bg-green-500 cursor-pointer" : "bg-green-600/50 cursor-not-allowed"
                             }`}
                         onClick={canContinue ? handleConfirmContinue : undefined}
                     >
@@ -658,140 +659,177 @@ export default function SurveyOnlyForm({
         );
     };
 
-    const renderStep4 = () => (
-        <div className="flex flex-col gap-12 justify-center items-start">
-            <span className="text-2xl text-white font-semibold block">Contact Form</span>
-            <div className="flex flex-col gap-6 text-left">
-                <p className="text-white text-sm">
-                    Unfortunately, at this point in time, we cannot accept investments from people who are not UK residents or don&apos;t have a valid UK national insurance number.
-                </p>
-                <p className="text-white text-sm">
-                    If you would like to be notified when we are able to accept investments from your country, complete the form below.
-                </p>
+    const renderStep4 = () => {
+        const isIndividual = userType === "individual";
+        const step4Fields = isIndividual
+            ? {
+                firstName: step4Form.firstName,
+                lastName: step4Form.lastName,
+                country: step4Form.country,
+                email: step4Form.email,
+            }
+            : {
+                contactFullName: step4Form.contactFullName || "",
+                companyName: step4Form.companyName || "",
+                country: step4Form.country,
+                email: step4Form.email,
+            };
+
+        const isFormValid = Object.values(step4Fields).every((val) => val.trim() !== "");
+        const disclaimerText = isIndividual
+            ? "Unfortunately, at this point in time, we cannot accept investments from people who are not UK residents or don't have a valid UK national insurance number."
+            : "Unfortunately, at this point in time, we cannot accept investments from organizations who are not in the UK.";
+
+        const handleStep4Change = (key: string, value: string) => {
+            setStep4Form((prev) => ({ ...prev, [key]: value }));
+        };
+
+        return (
+            <div className="flex flex-col gap-6 sm:gap-12 justify-center items-start">
+                <span className="text-xl sm:text-2xl text-white font-semibold block">Contact Form</span>
+                <div className="flex flex-col gap-2 sm:gap-4 text-left">
+                    <p className="text-white text-xs sm:text-sm">{disclaimerText}</p>
+                    <p className="text-white text-xs sm:text-sm font-bold">
+                        If you would like to be notified when we are able to accept investments from your country, complete the form below.
+                    </p>
+                </div>
+                <div className="w-full text-left flex flex-col gap-2 sm:gap-3">
+                    {isIndividual ? (
+                        <>
+                            <FormInput
+                                label="First Name"
+                                placeholder="First Name"
+                                type="text"
+                                value={step4Form.firstName}
+                                onChange={(e) => handleStep4Change("firstName", e.target.value)}
+                            />
+                            <FormInput
+                                label="Last Name"
+                                placeholder="Last Name"
+                                type="text"
+                                value={step4Form.lastName}
+                                onChange={(e) => handleStep4Change("lastName", e.target.value)}
+                            />
+                        </>
+                    ) : (
+                        <>
+                            <FormInput
+                                label="Contact Full Name"
+                                placeholder="Contact Full Name"
+                                type="text"
+                                value={step4Form.contactFullName || ""}
+                                onChange={(e) => handleStep4Change("contactFullName", e.target.value)}
+                            />
+                            <FormInput
+                                label="Company Name"
+                                placeholder="Company Name"
+                                type="text"
+                                value={step4Form.companyName || ""}
+                                onChange={(e) => handleStep4Change("companyName", e.target.value)}
+                            />
+                        </>
+                    )}
+                    <FormInput
+                        label="Country"
+                        placeholder="Country"
+                        value={step4Form.country}
+                        onChange={(e) => handleStep4Change("country", e.target.value)}
+                    />
+                    <FormInput
+                        label={isIndividual ? "Email" : "Work Email"}
+                        placeholder={isIndividual ? "Email" : "Work Email"}
+                        type="email"
+                        value={step4Form.email}
+                        onChange={(e) => handleStep4Change("email", e.target.value)}
+                    />
+                </div>
+                <div className="w-full h-fit flex justify-center items-center">
+                    <button
+                        className={`w-full max-w-[237px] py-2.5 sm:py-3 rounded-md transition-colors ${isFormValid
+                            ? "bg-primary text-black cursor-pointer"
+                            : "bg-gray-300 text-black cursor-not-allowed"
+                            }`}
+                        disabled={!isFormValid}
+                        onClick={() => {
+                            console.log("Step 4 Form Data:", { userType, ...step4Form });
+                            alert("Thank you! We’ll notify you when available in your region.");
+                            setIsModalOpen(false);
+                        }}
+                    >
+                        Submit
+                    </button>
+                </div>
             </div>
-            <div className="w-full text-left flex flex-col gap-3">
-                <FormInput
-                    label="First Name"
-                    placeholder="First Name"
-                    type="text"
-                    value={step4Form.firstName}
-                    onChange={(e) => handleStep4Change("firstName", e.target.value)}
-                />
-                <FormInput
-                    label="Last Name"
-                    placeholder="Last Name"
-                    type="text"
-                    value={step4Form.lastName}
-                    onChange={(e) => handleStep4Change("lastName", e.target.value)}
-                />
-                <FormInput
-                    label="Country"
-                    placeholder="Country"
-                    value={step4Form.country}
-                    onChange={(e) => handleStep4Change("country", e.target.value)}
-                />
-                <FormInput
-                    label="Email"
-                    placeholder="Email"
-                    type="email"
-                    value={step4Form.email}
-                    onChange={(e) => handleStep4Change("email", e.target.value)}
-                />
-            </div>
-            <div className="w-full h-fit flex justify-center items-center">
-                <button
-                    className="w-full py-3 bg-gray-600 text-white rounded-md hover:bg-gray-500 transition-colors md:w-auto md:px-8"
-                    onClick={() => {
-                        console.log("Step 4 Form Data:", step4Form);
-                        alert("Thank you! We’ll notify you when available in your region.");
-                        setIsModalOpen(false);
-                    }}
-                >
-                    Submit
-                </button>
-            </div>
-        </div>
-    );
+        );
+    };
 
     const renderStep5 = () => {
         const isValid = isStep5Valid();
         return (
             <div className="w-full text-left flex flex-col h-full">
                 <div className="flex-1 overflow-y-auto">
-                    <span className="text-2xl text-white font-semibold mb-6 block">Great! Let&apos;s get started.</span>
-                    <div className="space-y-4 px-1">
+                    <span className="text-xl sm:text-2xl text-white font-semibold mb-4 sm:mb-6 block">Great! Let&apos;s get started.</span>
+                    <div className="space-y-3 sm:space-y-4 px-0 sm:px-1">
                         {userType === "individual" ? (
                             <>
-                                <div className="w-full">
-                                    <FormInput
-                                        label="First Name"
-                                        placeholder="First Name"
-                                        type="text"
-                                        value={personalForm.firstName}
-                                        onChange={(e) => handlePersonalChange("firstName", e.target.value)}
-                                        error={errors.firstName}
-                                    />
-                                </div>
-                                <div className="w-full">
-                                    <FormInput
-                                        label="Last Name"
-                                        placeholder="Last Name"
-                                        type="text"
-                                        value={personalForm.lastName}
-                                        onChange={(e) => handlePersonalChange("lastName", e.target.value)}
-                                        error={errors.lastName}
-                                    />
-                                </div>
-                                <div className="w-full">
-                                    <FormInput
-                                        label="Phone Number"
-                                        placeholder="+44 (XXX) XXX-XXXX"
-                                        type="tel"
-                                        value={personalForm.phoneNumber}
-                                        onChange={(e) => handlePersonalChange("phoneNumber", e.target.value)}
-                                        error={errors.phoneNumber}
-                                    />
-                                </div>
+                                <FormInput
+                                    label="First Name"
+                                    placeholder="First Name"
+                                    type="text"
+                                    value={personalForm.firstName}
+                                    onChange={(e) => handlePersonalChange("firstName", e.target.value)}
+                                    error={errors.firstName}
+                                />
+                                <FormInput
+                                    label="Last Name"
+                                    placeholder="Last Name"
+                                    type="text"
+                                    value={personalForm.lastName}
+                                    onChange={(e) => handlePersonalChange("lastName", e.target.value)}
+                                    error={errors.lastName}
+                                />
+                                <FormInput
+                                    label="Phone Number"
+                                    placeholder="+44 (XXX) XXX-XXXX"
+                                    type="tel"
+                                    value={personalForm.phoneNumber}
+                                    onChange={(e) => handlePersonalChange("phoneNumber", e.target.value)}
+                                    error={errors.phoneNumber}
+                                />
                             </>
                         ) : (
                             <>
-                                <div className="w-full">
-                                    <FormInput
-                                        label="Contact Full Name"
-                                        placeholder="Contact Full Name"
-                                        type="text"
-                                        value={orgForm.contactFullName}
-                                        onChange={(e) => handlePersonalChange("contactFullName", e.target.value, true)}
-                                        error={errors.contactFullName}
-                                    />
-                                </div>
-                                <div className="w-full">
-                                    <FormInput
-                                        label="Company Name"
-                                        placeholder="Company Name"
-                                        type="text"
-                                        value={orgForm.companyName}
-                                        onChange={(e) => handlePersonalChange("companyName", e.target.value, true)}
-                                        error={errors.companyName}
-                                    />
-                                </div>
-                                <div className="w-full">
-                                    <FormInput
-                                        label="Phone Number"
-                                        placeholder="+44 (XXX) XXX-XXXX"
-                                        type="tel"
-                                        value={orgForm.phoneNumber}
-                                        onChange={(e) => handlePersonalChange("phoneNumber", e.target.value, true)}
-                                        error={errors.phoneNumber}
-                                    />
-                                </div>
+                                <FormInput
+                                    label="Contact Full Name"
+                                    placeholder="Contact Full Name"
+                                    type="text"
+                                    value={orgForm.contactFullName}
+                                    onChange={(e) => handlePersonalChange("contactFullName", e.target.value, true)}
+                                    error={errors.contactFullName}
+                                />
+                                <FormInput
+                                    label="Company Name"
+                                    placeholder="Company Name"
+                                    type="text"
+                                    value={orgForm.companyName}
+                                    onChange={(e) => handlePersonalChange("companyName", e.target.value, true)}
+                                    error={errors.companyName}
+                                />
+                                <FormInput
+                                    label="Phone Number"
+                                    placeholder="+44 (XXX) XXX-XXXX"
+                                    type="tel"
+                                    value={orgForm.phoneNumber}
+                                    onChange={(e) => handlePersonalChange("phoneNumber", e.target.value, true)}
+                                    error={errors.phoneNumber}
+                                />
                             </>
                         )}
                     </div>
                 </div>
-                <div className="flex space-x-2 pt-4 border-t border-[#2B3146]">
+                <div className="flex flex-col sm:flex-row gap-2 pt-3 sm:pt-4 border-t border-[#2B3146]">
                     <button
-                        className="flex-1 w-1/2 py-3 bg-[#1C2332] text-primary rounded-md transition-colors cursor-pointer"
+                        className="w-full sm:w-1/2 py-2.5 sm:py-3 bg-[#1C2332] text-primary rounded-md transition-colors cursor-pointer"
                         onClick={() => setCurrentStep(3)}
                     >
                         Back
@@ -803,9 +841,9 @@ export default function SurveyOnlyForm({
                             }
                         }}
                         disabled={!isValid}
-                        className={`sm:w-full w-1/2 py-3 rounded-md cursor-pointer transition-colors md:flex-1 ${isValid
-                                ? "bg-primary text-black hover:bg-green-500"
-                                : "bg-[#C7CAD5] text-black opacity-80 cursor-not-allowed"
+                        className={`w-full sm:w-1/2 py-2.5 sm:py-3 rounded-md cursor-pointer transition-colors ${isValid
+                            ? "bg-primary text-black hover:bg-green-500"
+                            : "bg-[#C7CAD5] text-black opacity-80 cursor-not-allowed"
                             }`}
                     >
                         Continue
@@ -818,20 +856,18 @@ export default function SurveyOnlyForm({
     const renderStep6 = () => {
         const canSubmit = accountForm.email.trim() !== "" && accountForm.termsAgreed && !submitting;
         return (
-            <div className="w-full text-left h-full flex flex-col justify-between py-1.5">
+            <div className="w-full text-left h-full flex flex-col justify-between py-1 sm:py-1.5">
                 <div>
-                    <span className="text-2xl text-white font-semibold mb-6 block">Let&apos;s create your account!</span>
-                    <div className="space-y-4 mb-8">
-                        <div className="w-full">
-                            <FormInput
-                                label="Email"
-                                placeholder="Email"
-                                type="text"
-                                value={accountForm.email}
-                                onChange={(e) => handleAccountChange("email", e.target.value)}
-                            />
-                        </div>
-                        <label className="flex items-center space-x-3 cursor-pointer">
+                    <span className="text-xl sm:text-2xl text-white font-semibold mb-4 sm:mb-6 block">Let&apos;s create your account!</span>
+                    <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+                        <FormInput
+                            label="Email"
+                            placeholder="Email"
+                            type="text"
+                            value={accountForm.email}
+                            onChange={(e) => handleAccountChange("email", e.target.value)}
+                        />
+                        <label className="flex items-start sm:items-center space-x-0 sm:space-x-3 space-y-2 sm:space-y-0 flex-col sm:flex-row cursor-pointer">
                             <div className="relative flex-shrink-0">
                                 <input
                                     type="checkbox"
@@ -840,13 +876,13 @@ export default function SurveyOnlyForm({
                                     onChange={(e) => handleAccountChange("termsAgreed", e.target.checked)}
                                 />
                                 <div
-                                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center transition-colors duration-300 ${accountForm.termsAgreed ? "bg-[#00FF87]" : "bg-[#2B3146]"
+                                    className={`w-6 h-6 sm:w-7 sm:h-7 rounded-xl flex items-center justify-center transition-colors duration-300 ${accountForm.termsAgreed ? "bg-[#00FF87]" : "bg-[#2B3146]"
                                         }`}
                                 >
-                                    {accountForm.termsAgreed && <Check className="w-4 h-4 sm:w-5 sm:h-5 text-black" />}
+                                    {accountForm.termsAgreed && <Check className="w-3 h-3 sm:w-4 sm:h-4 text-black" />}
                                 </div>
                             </div>
-                            <span className="text-white text-sm">
+                            <span className="text-white text-xs sm:text-sm text-left flex-1">
                                 By creating an account, I agree to InfraFund’s{" "}
                                 <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-green-400 hover:text-primary">
                                     Terms of Service
@@ -860,9 +896,9 @@ export default function SurveyOnlyForm({
                         </label>
                     </div>
                 </div>
-                <div className="flex space-x-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                     <button
-                        className="flex-1 w-1/2 py-3 bg-[#1C2332] text-primary rounded-md transition-colors cursor-pointer"
+                        className="w-full sm:w-1/2 py-2.5 sm:py-3 bg-[#1C2332] text-primary rounded-md transition-colors cursor-pointer"
                         onClick={() => setCurrentStep(5)}
                     >
                         Back
@@ -870,9 +906,9 @@ export default function SurveyOnlyForm({
                     <button
                         onClick={canSubmit ? handleSubmitSurvey : undefined}
                         disabled={!canSubmit}
-                        className={`sm:w-full w-1/2 py-3 rounded-md cursor-pointer transition-colors md:flex-1 ${canSubmit
-                                ? "bg-primary text-black hover:bg-green-500"
-                                : "bg-[#C7CAD5] text-black opacity-80 cursor-not-allowed"
+                        className={`w-full sm:w-1/2 py-2.5 sm:py-3 rounded-md cursor-pointer transition-colors ${canSubmit
+                            ? "bg-primary text-black hover:bg-green-500"
+                            : "bg-[#C7CAD5] text-black opacity-80 cursor-not-allowed"
                             }`}
                     >
                         {submitting ? "Submitting..." : "Continue"}
@@ -895,8 +931,17 @@ export default function SurveyOnlyForm({
             showCloseButton={true}
             closeOnBackdropClick={false}
         >
-            <div className="w-full sm:h-[650px] flex flex-col justify-between items-center">
-                {currentStep !== 4 && <Image priority src={infafund} alt="infrafund" width={262} height={64} className="mb-1" />}
+            <div className="w-full min-h-[480px] sm:h-[650px] flex flex-col justify-between items-center px-2 sm:px-0">
+                {currentStep !== 4 && (
+                    <Image
+                        priority
+                        src={infafund}
+                        alt="infrafund"
+                        width={262}
+                        height={64}
+                        className="mb-1 w-full max-w-[180px] sm:max-w-[262px] h-auto"
+                    />
+                )}
                 {currentStep === 1 && renderStep1()}
                 {currentStep === 2 && renderStep2()}
                 {currentStep === 3 && renderStep3()}

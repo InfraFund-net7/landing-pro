@@ -3,6 +3,7 @@ import { AnimatedCounter } from '@/component/animated-counter';
 import ChooseInfraFund from '@/component/choose-infrafund';
 import ContactUsPage from '@/component/contact-us';
 import FundingSection from '@/component/funding-section';
+import HeroSection from '@/component/HeroSection';
 import OperatingSystem from '@/component/operating-system';
 import InvestmentPlatform from '@/component/projects';
 import TrustedSection from '@/component/trusted-section';
@@ -17,6 +18,7 @@ export default function Home() {
     <>
       <section className="fade-in"><OperatingSystem /></section>
       <section className="fade-in"><ChooseInfraFund /></section>
+      <section className="fade-in"><HeroSection /></section>
       <section className="fade-in"><InvestmentPlatform /></section>
       <section className="fade-in"><FundingSection /></section>
       <section className="fade-in"><TrustedSection /></section>
