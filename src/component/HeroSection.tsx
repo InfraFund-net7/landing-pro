@@ -27,23 +27,31 @@ export default function HeroSection() {
     ];
 
     const [currentStep, setCurrentStep] = useState(1);
+    const [autoPlay, setAutoPlay] = useState(true);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
     const [indicator, setIndicator] = useState({ left: 0, width: 0 });
     const [fade, setFade] = useState(true);
 
+    // Auto change step every 10s
     useEffect(() => {
+        if (!autoPlay) return; // pause autoplay on hover
+
         const interval = setInterval(() => {
             setFade(false);
-            setTimeout(() => {
+
+            const t = setTimeout(() => {
                 setCurrentStep((prev) => (prev === steps.length ? 1 : prev + 1));
                 setFade(true);
             }, 300);
-        }, 3000);
+
+            return () => clearTimeout(t);
+        }, 10000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [autoPlay]);
 
+    // Indicator movement
     const updateIndicatorToStep = (stepIndex: number) => {
         const container = containerRef.current;
         const btn = buttonRefs.current[stepIndex];
@@ -88,13 +96,18 @@ export default function HeroSection() {
             <div className="w-full flex flex-col lg:flex-row justify-between items-center gap-10">
                 <div className="w-full lg:w-[767px]">
                     <div className="w-full max-w-4xl mx-auto px-2 sm:px-4">
-                        <div className="flex justify-between items-end mb-5 gap-1" ref={containerRef}>
+
+                        {/* STEPS HEADER */}
+                        <div
+                            className="flex justify-between items-end mb-5 gap-1"
+                            ref={containerRef}
+                            onMouseEnter={() => setAutoPlay(false)}
+                            onMouseLeave={() => setAutoPlay(true)}
+                        >
                             {steps.map((step, idx) => (
                                 <button
                                     key={step.id}
-                                    ref={(el) => {
-                                        buttonRefs.current[idx] = el;
-                                    }}
+                                    ref={(el) => (buttonRefs.current[idx] = el)}
                                     onClick={() => {
                                         setFade(false);
                                         setTimeout(() => {
@@ -121,14 +134,16 @@ export default function HeroSection() {
                             />
                         </div>
                         <p
-                            className={`mt-5 text-gray-200 text-sm sm:text-base md:text-xl leading-relaxed transition-opacity duration-500 ${fade ? "opacity-100" : "opacity-0"
-                                }`}
+                            className={`mt-5 text-gray-200 text-sm sm:text-base md:text-xl leading-relaxed transition-opacity duration-500 
+                                ${fade ? "opacity-100" : "opacity-0"}`}
                         >
                             {activeStep?.desc}
                         </p>
                     </div>
                 </div>
                 <div
+                    onMouseEnter={() => setAutoPlay(false)}
+                    onMouseLeave={() => setAutoPlay(true)}
                     className={`w-full lg:w-[408px] h-[300px] lg:h-[458px] bg-cover bg-center transition-all duration-700 ${activeStep?.border}`}
                     style={{ backgroundImage: `url(/image/${activeStep?.img})` }}
                 />
