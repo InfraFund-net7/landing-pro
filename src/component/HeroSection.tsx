@@ -29,13 +29,13 @@ export default function HeroSection() {
     const [currentStep, setCurrentStep] = useState(1);
     const [autoPlay, setAutoPlay] = useState(true);
     const containerRef = useRef<HTMLDivElement | null>(null);
-    const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
+    const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
     const [indicator, setIndicator] = useState({ left: 0, width: 0 });
     const [fade, setFade] = useState(true);
 
     // Auto change step every 10s
     useEffect(() => {
-        if (!autoPlay) return; // pause autoplay on hover
+        if (!autoPlay) return;
 
         const interval = setInterval(() => {
             setFade(false);
@@ -107,7 +107,9 @@ export default function HeroSection() {
                             {steps.map((step, idx) => (
                                 <button
                                     key={step.id}
-                                    ref={(el) => (buttonRefs.current[idx] = el)}
+                                    ref={(el) => {
+                                        buttonRefs.current[idx] = el;
+                                    }}
                                     onClick={() => {
                                         setFade(false);
                                         setTimeout(() => {
@@ -123,6 +125,8 @@ export default function HeroSection() {
                                 </button>
                             ))}
                         </div>
+
+                        {/* INDICATOR BAR */}
                         <div className="relative h-2 bg-gray-800 rounded-full overflow-hidden">
                             <div
                                 className="absolute top-0 h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full"
@@ -133,6 +137,8 @@ export default function HeroSection() {
                                 }}
                             />
                         </div>
+
+                        {/* DESCRIPTION */}
                         <p
                             className={`mt-5 text-gray-200 text-sm sm:text-base md:text-xl leading-relaxed transition-opacity duration-500 
                                 ${fade ? "opacity-100" : "opacity-0"}`}
@@ -141,6 +147,8 @@ export default function HeroSection() {
                         </p>
                     </div>
                 </div>
+
+                {/* IMAGE SECTION */}
                 <div
                     onMouseEnter={() => setAutoPlay(false)}
                     onMouseLeave={() => setAutoPlay(true)}
