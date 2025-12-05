@@ -1,5 +1,5 @@
 'use client';
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useLayoutEffect, useState, useCallback } from 'react';
 import { partners } from '@/data/partners';
 import Image from 'next/image';
 import gsap from 'gsap';
@@ -14,12 +14,15 @@ export default function PartnersSection() {
 
   const calculateSetWidth = useCallback(() => {
     if (!firstSetRef.current) return 0;
-    const rect = firstSetRef.current.getBoundingClientRect();
-    return rect.width;
+    return firstSetRef.current.getBoundingClientRect().width;
   }, []);
 
-  useEffect(() => {
-    if (!sliderRef.current) return;
+  const handleImageLoad = () => {
+    setImagesLoadedCount((prev) => prev + 1);
+  };
+
+  useLayoutEffect(() => {
+    if (imagesLoadedCount < totalImages || !sliderRef.current) return;
 
     let tween: gsap.core.Tween | null = null;
 
@@ -39,10 +42,7 @@ export default function PartnersSection() {
       });
     };
 
-    if (imagesLoadedCount >= totalImages && sliderRef.current) {
-      const id = setTimeout(initAnimation, 10);
-      return () => clearTimeout(id);
-    }
+    initAnimation();
 
     const handleMouseEnter = () => tween?.pause();
     const handleMouseLeave = () => tween?.resume();
@@ -68,11 +68,7 @@ export default function PartnersSection() {
       resizeObserver.disconnect();
       if (tween) tween.kill();
     };
-  }, [imagesLoadedCount, totalImages, calculateSetWidth]);
-
-  const handleImageLoad = () => {
-    setImagesLoadedCount((prev) => prev + 1);
-  };
+  }, [imagesLoadedCount, calculateSetWidth, totalImages]);
 
   return (
     <section className="w-full bg-[#00000066] py-8 px-2 sm:px-4 overflow-hidden">
@@ -117,7 +113,7 @@ export default function PartnersSection() {
                   width={100}
                   height={32}
                   className="h-6 sm:h-8 md:h-10 w-auto object-contain"
-                  loading="lazy"
+                  loading="eager"
                   onLoad={handleImageLoad}
                   unoptimized
                 />
