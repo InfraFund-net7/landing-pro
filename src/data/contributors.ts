@@ -1,7 +1,6 @@
 import ImanAlibeigi from '@/../public/image/contributors/Iman-Alibeigi.png';
 import SvenMeyer from '@/../public/image/contributors/Sven-Meyer.png';
 import AkbarJavadi from '@/../public/image/contributors/Akbar-Javadi.png';
-import HomayounHeidarzadeh from '@/../public/image/contributors/Homayoun-Heidarzadeh.png';
 import JedDahlke from '@/../public/image/contributors/Jed-Dahlke.png';
 import YifengTian from '@/../public/image/contributors/Yifeng-Tian.png';
 import NataliaIsmagilova from '@/../public/image/contributors/Natalia-Ismagilova.png';
@@ -37,14 +36,6 @@ export const contributors = [
     role: 'Director - Digital Twin & NetZero Adviser',
     description:
       'A Professor of Engineering with deep expertise in Digital Twins and NetZero projects.',
-  },
-  {
-    img: HomayounHeidarzadeh,
-    name: 'Homayoun Heidarzadeh',
-    linkedin: 'https://www.linkedin.com/in/homayounh',
-    role: 'Technical Lead',
-    description:
-      'A Blockchain Engineer and full-stack developer with over 15 years of experience delivering scalable software solutions.',
   },
   {
     img: JedDahlke,
@@ -95,6 +86,14 @@ export const contributors = [
       'Head of Startup Services at the Austrian Federal Economic Chamber, providing guidance on global startup growth.',
   },
   {
+    img: NicholasPearson,
+    name: 'Nicholas Pearson',
+    linkedin: 'https://uk.linkedin.com/in/nicholaspearson',
+    role: 'Technology Transfer Officer',
+    description:
+      'Technology Transfer Officer at the University of Exeter, advising on commercializing our research and technology.',
+  },
+  {
     img: PooriaGhadir,
     name: 'Dr. Pooria Ghadir',
     linkedin: 'https://uk.linkedin.com/in/pooria-ghadir-phd',
@@ -109,14 +108,6 @@ export const contributors = [
     role: 'Product Designer',
     description:
       'Responsible for shaping the user experience and visual interface of the InfraFund platform.',
-  },
-  {
-    img: NicholasPearson,
-    name: 'Nicholas Pearson',
-    linkedin: 'https://uk.linkedin.com/in/nicholaspearson',
-    role: 'Technology Transfer Officer',
-    description:
-      'Technology Transfer Officer at the University of Exeter, advising on commercializing our research and technology.',
   },
   {
     img: SajadSalehi,

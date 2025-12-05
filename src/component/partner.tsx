@@ -32,7 +32,7 @@ export default function PartnersSection() {
 
       tween = gsap.to(sliderRef.current, {
         x: `-${setWidth}px`,
-        duration: 35,
+        duration: 60,
         ease: 'linear',
         repeat: -1,
         paused: false,
