@@ -33,7 +33,6 @@ export default function HeroSection() {
     const [indicator, setIndicator] = useState({ left: 0, width: 0 });
     const [fade, setFade] = useState(true);
 
-    // Auto change step every 10s
     useEffect(() => {
         if (!autoPlay) return;
 
@@ -83,7 +82,7 @@ export default function HeroSection() {
     const activeStep = steps.find((s) => s.id === currentStep);
 
     return (
-        <div className="w-full min-h-[220px] flex flex-col justify-center items-center px-4 sm:px-[90px] py-10">
+        <div className="w-full min-h-[220px] flex flex-col justify-center items-center px- mb-5 sm:px-[90px] py-10">
             <div className="flex flex-col justify-center items-center gap-2 mb-10 text-center">
                 <h2 className="text-xl sm:text-2xl md:text-[42px] text-white font-bold tracking-tight">
                     Powered by Radical Transparency
@@ -96,8 +95,6 @@ export default function HeroSection() {
             <div className="w-full flex flex-col lg:flex-row justify-between items-center gap-10">
                 <div className="w-full lg:w-[767px]">
                     <div className="w-full max-w-4xl mx-auto px-2 sm:px-4">
-
-                        {/* STEPS HEADER */}
                         <div
                             className="flex justify-between items-end mb-5 gap-1"
                             ref={containerRef}

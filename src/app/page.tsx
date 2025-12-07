@@ -18,8 +18,8 @@ export default function Home() {
     <>
       <section className="fade-in"><OperatingSystem /></section>
       <section className="fade-in"><ChooseInfraFund /></section>
-      <section className="fade-in"><HeroSection /></section>
       <section className="fade-in"><InvestmentPlatform /></section>
+      <section className="fade-in"><HeroSection /></section>
       <section className="fade-in"><FundingSection /></section>
       <section className="fade-in"><TrustedSection /></section>
 

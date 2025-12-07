@@ -104,7 +104,11 @@ const ContributorCard = ({ item, linkedin }: { item: Contributor; linkedin: stri
       <div className="group relative w-full flex flex-col items-center gap-3">
         <div
           className="relative w-full aspect-square max-w-[190px] mx-auto rounded-[30px] overflow-hidden cursor-pointer sm:cursor-default"
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+            if (isMobile) setIsModalOpen(true)
+          }}
+
         >
           <Image
             src={item.img || "/placeholder.svg"}
@@ -119,7 +123,7 @@ const ContributorCard = ({ item, linkedin }: { item: Contributor; linkedin: stri
     w-[85%] px-3 py-2
     rounded-2xl 
     bg-white/10 backdrop-blur-xl
-    text-[11px] text-white text-center
+    text-[10px] text-white text-center
     opacity-0 translate-y-3 scale-[0.95]
     transition-all duration-500 ease-[cubic-bezier(.16,1,.3,1)]
     group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-100
