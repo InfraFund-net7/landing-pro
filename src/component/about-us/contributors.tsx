@@ -104,7 +104,11 @@ const ContributorCard = ({ item, linkedin }: { item: Contributor; linkedin: stri
       <div className="group relative w-full flex flex-col items-center gap-3">
         <div
           className="relative w-full aspect-square max-w-[190px] mx-auto rounded-[30px] overflow-hidden cursor-pointer sm:cursor-default"
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+            if (isMobile) setIsModalOpen(true)
+          }}
+
         >
           <Image
             src={item.img || "/placeholder.svg"}
@@ -114,17 +118,21 @@ const ContributorCard = ({ item, linkedin }: { item: Contributor; linkedin: stri
             alt={item.name}
           />
           <div
-            className="hidden sm:block absolute bottom-0 left-0 right-0 rounded-b-[30px] p-2 bg-[#191C2980] backdrop-blur-md text-[10px] w-full text-white text-center 
-      opacity-0 scale-y-0 origin-bottom transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:scale-y-100"
-            style={{
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
-              color: "#ffffff",
-              WebkitTextFillColor: "#ffffff",
-            }}
+            className="
+    hidden sm:flex absolute bottom-3 left-1/2 -translate-x-1/2 
+    w-[85%] px-3 py-2
+    rounded-2xl 
+    bg-white/10 backdrop-blur-xl
+    text-[10px] text-white text-center
+    opacity-0 translate-y-3 scale-[0.95]
+    transition-all duration-500 ease-[cubic-bezier(.16,1,.3,1)]
+    group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-100
+    shadow-[0_8px_30px_rgba(0,0,0,0.2)]
+  "
           >
             {item.description}
           </div>
+
         </div>
 
         <div className="text-center w-full min-h-[60px] flex flex-col justify-start">
