@@ -11,7 +11,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
       - name: Build Docker image
-        run: docker build --no-cache -f ./deployment/Dockerfile -t infra-landing:dev .
+        run: |
+                  docker build \
+                    -f ./deployment/Dockerfile \
+                    --build-arg NEXT_PUBLIC_API_BASE_URL=${{ secrets.DEV_API_BASE_URL }} \
+                    -t infra-landing:dev .
 
   deploy:
     name: Deploy to Development Server
@@ -19,6 +23,13 @@ jobs:
     needs: build
     steps:
       - name: Deploy with Docker Compose
-        run: docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }} up -d landing --force-recreate
-      - name: Check status
-        run: docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }} ps
+        run: docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }} up -d landing --pull always
+      - name: Wait for container readiness
+        run: |
+          echo "Waiting for container to be ready..."
+          sleep 5
+          docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }} ps
+
+      - name: Verify deployment
+        run: |
+          docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }} logs --tail=20 landing
