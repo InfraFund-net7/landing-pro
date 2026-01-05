@@ -1,0 +1,36 @@
+name: Deploy to Production Environment
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build docker image
+    runs-on: prod-runner
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Build Docker image
+        run: |
+                  docker build \
+                    -f ./deployment/Dockerfile \
+                    --build-arg NEXT_PUBLIC_API_BASE_URL=${{ secrets.PROD_API_BASE_URL }} \
+                    --build-arg NEXT_PUBLIC_DASHBOARD_URL=${{ secrets.DASHBOARD_URL }} \
+                    -t infra-landing:prod .
+
+  deploy:
+    name: Deploy to Production Server
+    runs-on: prod-runner
+    needs: build
+    steps:
+      - name: Deploy with Docker Compose
+        run: docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_PRODUCTION }} up -d landing --force-recreate
+      - name: Wait for container readiness
+        run: |
+          echo "Waiting for container to be ready..."
+          sleep 5
+          docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_PRODUCTION }} ps
+
+      - name: Verify deployment
+        run: |
+          docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_PRODUCTION }} logs --tail=20 landing

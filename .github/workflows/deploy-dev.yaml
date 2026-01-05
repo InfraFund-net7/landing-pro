@@ -15,6 +15,7 @@ jobs:
                   docker build \
                     -f ./deployment/Dockerfile \
                     --build-arg NEXT_PUBLIC_API_BASE_URL=${{ secrets.DEV_API_BASE_URL }} \
+                    --build-arg NEXT_PUBLIC_DASHBOARD_URL=${{ secrets.DEV_DASHBOARD_URL }} \
                     -t infra-landing:dev .
 
   deploy:
