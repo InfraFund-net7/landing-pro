@@ -1,14 +1,14 @@
 'use client';
-import { X, Menu } from 'lucide-react';
-import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
 import InfraFund from '@/../public/svg/infrafund.svg';
+import gsap from 'gsap';
+import { Menu, X } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import gsap from 'gsap';
-import { CustomButton } from './ui/custom-button';
-import Waitlistmodal from './waitlistmodal';
+import { useEffect, useRef, useState } from 'react';
 import SurveyOnlyForm from './SurveyOnlyForm';
+import { CustomButton } from './ui/custom-button';
+import WaitlistModal from './waitlistmodal';
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -16,7 +16,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [createaccount, setCreateAccount] = useState(false);
+  const [createAccount, setCreateAccount] = useState(false);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
@@ -61,16 +61,16 @@ export default function Header() {
     }
   }, [isMenuOpen, mounted]);
 
-  useEffect(() => {
-    if (createaccount) {
-      const originalOverflow = window.getComputedStyle(document.body).overflow;
-      document.body.style.overflow = 'hidden';
+  // useEffect(() => {
+  //   if (createAccount) {
+  //     const originalOverflow = window.getComputedStyle(document.body).overflow;
+  //     document.body.style.overflow = 'hidden';
 
-      return () => {
-        document.body.style.overflow = originalOverflow;
-      };
-    }
-  }, [createaccount]);
+  //     return () => {
+  //       document.body.style.overflow = originalOverflow;
+  //     };
+  //   }
+  // }, [createAccount]);
 
   const Navigation = [
     { name: 'Projects', route: '/project' },
@@ -95,7 +95,8 @@ export default function Header() {
               onClick={() => setIsModalOpen(true)}
               className="text-[#24FF8E] underline ml-1 cursor-pointer"
             >
-              Waitlist{''} {''}{''}!
+              Waitlist{''} {''}
+              {''}!
             </button>
             <button
               onClick={() => setShowBanner(false)}
@@ -199,13 +200,20 @@ export default function Header() {
           </button>
           <button
             onClick={() => setCreateAccount(true)}
-            className="w-full h-10 bg-[#24FF8E] text-black rounded-md font-medium">
+            className="w-full h-10 bg-[#24FF8E] text-black rounded-md font-medium"
+          >
             Create Account
           </button>
         </div>
       </div>
-      <SurveyOnlyForm isModalOpen={createaccount} setIsModalOpen={setCreateAccount} />
-      <Waitlistmodal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+      <SurveyOnlyForm
+        isModalOpen={createAccount}
+        setIsModalOpen={setCreateAccount}
+      />
+      <WaitlistModal
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+      />
     </>
   );
 }

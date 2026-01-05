@@ -1,6 +1,7 @@
 'use client';
-import { type ReactNode /*, useEffect, useRef, useState*/ } from 'react';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { type ReactNode /*, useEffect, useRef, useState*/ } from 'react';
 import Header from './header';
 import Hero from './hero';
 import PartnersSection from './partner';
@@ -64,7 +65,15 @@ export default function HeaderHeroWrapper({
 
   return (
     <>
-      <div className="relative w-full h-[1024px] sm:h-[900px] md:h-[1024px] overflow-hidden bg-[url('/image/hero-home.png')] bg-no-repeat bg-cover">
+      <div className="relative w-full h-[1024px] sm:h-[900px] md:h-[1024px] overflow-hidden">
+        <Image
+          src="/image/hero-home.png"
+          alt="Hero background"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
         <div className="relative z-10 flex flex-col w-full h-full">
           <div className="relative z-50">
             <Header />

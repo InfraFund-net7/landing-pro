@@ -1,6 +1,7 @@
+import Footer from '@/component/footer';
+import { Providers } from '@/providers/Providers';
 import type { Metadata } from 'next';
 import './globals.css';
-import Footer from '@/component/footer';
 import PathnameWrapper from './PathnameWrapper';
 
 export const metadata: Metadata = {
@@ -14,8 +15,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <PathnameWrapper>{children}</PathnameWrapper>
-        <Footer />
+        <Providers>
+          <PathnameWrapper>{children}</PathnameWrapper>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, { useRef } from 'react';
 import { CustomButton } from './ui/custom-button';
 import ContactUsModal from './contactus/contactus';
@@ -8,7 +8,10 @@ interface ContactUsPageProps {
   setIsOpen: (isOpen: boolean) => void;
 }
 
-export default function ContactUsPage({ isopen, setIsOpen }: ContactUsPageProps) {
+export default function ContactUsPage({
+  isopen,
+  setIsOpen,
+}: ContactUsPageProps) {
   const buttonRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -24,7 +27,8 @@ export default function ContactUsPage({ isopen, setIsOpen }: ContactUsPageProps)
           Let&apos;s Build the Green Future Together
         </h2>
         <p className="text-lg sm:text-2xl text-gray-300 text-center max-w-3xl z-10">
-          Whether you&apos;re an investor ready to make an impact or a builder with a vision, we&apos;re here to help.
+          Whether you&apos;re an investor ready to make an impact or a builder
+          with a vision, we&apos;re here to help.
         </p>
         <div ref={buttonRef} className="z-10">
           <CustomButton

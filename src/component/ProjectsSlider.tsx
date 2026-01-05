@@ -17,7 +17,7 @@ export default function ProjectsSlider({
   projects,
   cardsPerSlide = 3,
   cardWidth = 320,
-  onSelectProject
+  onSelectProject,
 }: ProjectsSliderProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [slidesPerView, setSlidesPerView] = useState(cardsPerSlide);
@@ -72,7 +72,7 @@ export default function ProjectsSlider({
                 <div
                   key={project.id}
                   style={{ width: `${cardWidth}px` }}
-                  onClick={() => onSelectProject?.(project)} 
+                  onClick={() => onSelectProject?.(project)}
                 >
                   <ProjectCard project={project} />
                 </div>
@@ -92,10 +92,11 @@ export default function ProjectsSlider({
           <div
             key={i}
             onClick={() => setCurrentSlide(i)}
-            className={`h-3 rounded-full cursor-pointer transition-all duration-300 ${i === currentSlide
+            className={`h-3 rounded-full cursor-pointer transition-all duration-300 ${
+              i === currentSlide
                 ? 'w-[52px] bg-[#24FF8E]'
                 : 'w-3 bg-gray-500 hover:bg-gray-300'
-              }`}
+            }`}
           />
         ))}
       </div>

@@ -41,54 +41,59 @@ export default function InvestmentPlatform() {
     }
   }, [selectedProject]);
 
-  const modal = selectedProject && createPortal(
-    <div
-      className="fixed inset-0 z-[9999] w-screen h-dvh bg-black"
-      onClick={() => setSelectedProject(null)}
-    >
+  const modal =
+    selectedProject &&
+    createPortal(
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-80"
-        style={{ backgroundImage: `url(${selectedProject.image.src})` }}
-      />
-      <div
-        className="relative z-10 w-full h-full text-white px-6 md:px-16 lg:px-28 py-20 flex flex-col gap-10 md:gap-16"
-        onClick={(e) => e.stopPropagation()}
+        className="fixed inset-0 z-[9999] w-screen h-dvh bg-black"
+        onClick={() => setSelectedProject(null)}
       >
-        <div className="flex items-center gap-3 w-full mt-[20%] md:mt-[7%]">
-          <ChevronLeft
-            onClick={() => setSelectedProject(null)}
-            size={40}
-            className="cursor-pointer text-white hover:text-[#24FF8E]"
-          />
-          <h1 className="text-2xl md:text-[42px] font-bold text-left">
-            {selectedProject.title}
-          </h1>
-        </div>
-
         <div
-          className="bg-black/60 rounded-[30px] md:rounded-[50px] p-6 md:p-12 max-w-[650px] w-full"
-          style={{ backdropFilter: 'blur(12px)' }}
+          className="absolute inset-0 bg-cover bg-center opacity-80"
+          style={{ backgroundImage: `url(${selectedProject.image.src})` }}
+        />
+        <div
+          className="relative z-10 w-full h-full text-white px-6 md:px-16 lg:px-28 py-20 flex flex-col gap-10 md:gap-16"
+          onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 mb-6">
-            {tabs.map((tab) => (
-              <span
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`text-sm md:text-base cursor-pointer ${activeTab === tab ? 'font-bold text-[#24FF8E]' : 'hover:text-[#24FF8E]'
-                  }`}
-              >
-                {tab}
-              </span>
-            ))}
+          <div className="flex items-center gap-3 w-full mt-[20%] md:mt-[7%]">
+            <ChevronLeft
+              onClick={() => setSelectedProject(null)}
+              size={40}
+              className="cursor-pointer text-white hover:text-[#24FF8E]"
+            />
+            <h1 className="text-2xl md:text-[42px] font-bold text-left">
+              {selectedProject.title}
+            </h1>
           </div>
-          <p className="text-sm md:text-lg text-left leading-relaxed">
-            {tabContent[activeTab]}
-          </p>
+
+          <div
+            className="bg-black/60 rounded-[30px] md:rounded-[50px] p-6 md:p-12 max-w-[650px] w-full"
+            style={{ backdropFilter: 'blur(12px)' }}
+          >
+            <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 mb-6">
+              {tabs.map((tab) => (
+                <span
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`text-sm md:text-base cursor-pointer ${
+                    activeTab === tab
+                      ? 'font-bold text-[#24FF8E]'
+                      : 'hover:text-[#24FF8E]'
+                  }`}
+                >
+                  {tab}
+                </span>
+              ))}
+            </div>
+            <p className="text-sm md:text-lg text-left leading-relaxed">
+              {tabContent[activeTab]}
+            </p>
+          </div>
         </div>
-      </div>
-    </div>,
-    document.body
-  );
+      </div>,
+      document.body
+    );
 
   return (
     <>
@@ -106,7 +111,10 @@ export default function InvestmentPlatform() {
               onSelectProject={setSelectedProject}
             />
           </div>
-          <Link href="/project" className="bg-transparent border cursor-pointer border-gray-600 hover:border-gray-400 text-white px-8 py-3 rounded-lg mt-10">
+          <Link
+            href="/project"
+            className="bg-transparent border cursor-pointer border-gray-600 hover:border-gray-400 text-white px-8 py-3 rounded-lg mt-10"
+          >
             Explore All Projects
           </Link>
         </div>

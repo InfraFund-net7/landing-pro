@@ -9,10 +9,7 @@ export default function Faq() {
         FAQs
       </h2>
       <div className="w-full">
-        <FaqList
-          faqs={combinedFaqs}
-          allowMultiple={true}
-        />
+        <FaqList faqs={combinedFaqs} allowMultiple={true} />
       </div>
     </div>
   );

@@ -1,10 +1,10 @@
 'use client';
-import { ReactNode, useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
 import Header from '@/component/header';
 import Hero from '@/component/hero';
 import PartnersSection from '@/component/partner';
 import { useFadeInScroll } from '@/hooks/useFadeInScroll';
+import { usePathname } from 'next/navigation';
+import { ReactNode, useState } from 'react';
 
 export default function HeaderHeroWrapper({
   children,
@@ -14,22 +14,22 @@ export default function HeaderHeroWrapper({
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // useEffect(() => {
+  //   setMounted(true);
+  // }, []);
 
   useFadeInScroll();
 
-  useEffect(() => {
-    if (mounted) {
-      console.log(
-        '%c[GSAP] Wrapper Mounted, activating FadeIn',
-        'color: violet'
-      );
-    }
-  }, [mounted]);
+  // useEffect(() => {
+  //   if (mounted) {
+  //     console.log(
+  //       '%c[GSAP] Wrapper Mounted, activating FadeIn',
+  //       'color: violet'
+  //     );
+  //   }
+  // }, [mounted]);
 
-  if (!mounted) return null;
+  // if (!mounted) return null;
 
   if (pathname !== '/') {
     return (
@@ -42,14 +42,12 @@ export default function HeaderHeroWrapper({
 
   return (
     <>
-      <div
-        className="relative w-full h-screen sm:h-[90vh] md:h-screen overflow-hidden"
-      >
+      <div className="relative w-full h-screen sm:h-[90vh] md:h-screen overflow-hidden">
         <div
           className="absolute inset-0 bg-[url('/image/hero-second.jpg')] bg-no-repeat bg-cover"
           style={{
             backgroundPosition: 'center 60%',
-            opacity: 0.6, 
+            opacity: 0.6,
           }}
         />
         <div className="relative z-10 flex flex-col w-full h-full">
