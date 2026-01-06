@@ -25,7 +25,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
+  adduser --system --uid 1001 nextjs
 
 # Copy from builder with ownership
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
