@@ -7,6 +7,7 @@ import greentik from "@/../public/svg/green-tik.svg"
 import { FormInput } from './ui/form-input';
 import { CustomButton } from './ui/custom-button';
 import apiService from '@/services/apiService';
+import { withCaptcha } from '@/lib/apiCaptcha';
 
 interface WaitlistmodalProps {
     isModalOpen: boolean;
@@ -29,7 +30,11 @@ export default function Waitlistmodal({ isModalOpen, setIsModalOpen }: Waitlistm
         setMessage("");
 
         try {
-            const data = await apiService.post<{ success: boolean; message?: string }>("/waitlist", { email: email.trim().toLowerCase() });
+            const data = await apiService.post<{ success: boolean; message?: string }>(
+                "/waitlist",
+                { email: email.trim().toLowerCase() },
+                await withCaptcha("waitlist")
+            );
             setStatus("success");
             setMessage(data.message || "Thank you! You're on the list.");
             setEmail("");

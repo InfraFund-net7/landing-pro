@@ -4,7 +4,6 @@ import ProjectCard from './ui/ProjectCard';
 import { ChevronLeft } from 'lucide-react';
 import { Project } from '@/types/types';
 import { projects } from '@/constants/projectData';
-import { CustomButton } from './ui/custom-button';
 
 export default function ProjectPage() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);

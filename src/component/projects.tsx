@@ -1,7 +1,5 @@
 'use client';
 import ProjectsSlider from './ProjectsSlider';
-import Image from 'next/image';
-import projectbg from '@/../public/svg/project-bg.svg';
 import { projects } from '@/constants/projectData';
 import { Project } from '@/types/types';
 import { ChevronLeft } from 'lucide-react';

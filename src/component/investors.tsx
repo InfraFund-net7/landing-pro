@@ -6,7 +6,6 @@ import stars from '@/../public/image/stars.png';
 import { infradiffrence, invest, Investfaqs } from '@/constants/investorData';
 import { CustomButton } from './ui/custom-button';
 import FaqList from './ui/FaqList';
-import ContactUs from './contactus/contactus';
 import SurveyOnlyForm from './SurveyOnlyForm';
 
 export default function Investors() {

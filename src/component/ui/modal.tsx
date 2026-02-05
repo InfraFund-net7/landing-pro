@@ -23,7 +23,6 @@ export function Modal({
   children,
   ModalTitle,
   width = "90vw",
-  height = "auto",
   className = "",
   showCloseButton = true,
   closeOnBackdropClick = true,
