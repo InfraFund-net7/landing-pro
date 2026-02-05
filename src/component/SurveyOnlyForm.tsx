@@ -13,6 +13,12 @@ import { CustomButton } from "./ui/custom-button";
 import { Check } from "lucide-react";
 import { FormInput } from "./ui/form-input";
 import { individualStep5Schema, orgStep5Schema } from "@/schema/survey.schema";
+import apiService from "@/services/apiService";
+import { useFetchLocations } from "@/hooks/useFetchLocations";
+import { useLocationStore } from "@/stores/locationStore";
+import { withCaptcha } from "@/lib/apiCaptcha";
+import { Dropdown } from "./ui/dropdown";
+import { getRecaptchaToken } from "@/utils/recaptcha";
 
 type SurveyData = {
     role: string;
@@ -67,7 +73,7 @@ export default function SurveyOnlyForm({
         active: null,
     });
     const [step4Form, setStep4Form] = useState({
-        country: "",
+        countryId: null as number | null,
         email: "",
         firstName: "",
         lastName: "",
@@ -90,10 +96,11 @@ export default function SurveyOnlyForm({
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [submitting, setSubmitting] = useState(false);
-    const [submitSuccess, setSubmitSuccess] = useState(false);
+    const [, setSubmitSuccess] = useState(false);
     const [selectedItem, setSelectedItem] = useState<string | null>(null);
     const surveyDataRef = useRef<SurveyData | null>(null);
-
+    const countries = useLocationStore((state) => state.countries);
+    useFetchLocations();
     const formatPhoneNumber = (value: string): string => {
         let cleaned = value.replace(/[^+\d]/g, "");
         if (!cleaned.startsWith("+44")) {
@@ -125,10 +132,52 @@ export default function SurveyOnlyForm({
         return formatted;
     };
 
-    const handleStep4Change = (key: keyof typeof step4Form, value: string) => {
-        setStep4Form((prev) => ({ ...prev, [key]: value }));
-    };
+    const getNonResidentEndpoint = () => {
+        if (userType === "individual") {
+            return "/non-resident/individual";
+        }
 
+        return "/non-resident/company";
+    };
+    const submitStep4 = async () => {
+        const endpoint = getNonResidentEndpoint();
+        const payload: any = {
+            country_id: step4Form.countryId,
+            email: step4Form.email.trim().toLowerCase(),
+            first_name: step4Form.firstName?.trim(),
+            last_name: step4Form.lastName?.trim(),
+        };
+
+        try {
+            setSubmitting(true);
+            const captchaToken = await getRecaptchaToken('non_resident');
+
+            const data = await apiService.post<{ success: boolean; message?: string }>(
+                endpoint,
+                payload,
+                { "X-Captcha-Token": captchaToken }
+            );
+
+            if (data.success) {
+                setStep4Form({
+                    countryId: null,
+                    email: "",
+                    firstName: "",
+                    lastName: "",
+                    contactFullName: "",
+                    companyName: "",
+                });
+                setIsModalOpen(false);
+            } else {
+                alert(data.message || "Something went wrong");
+            }
+        } catch (err) {
+            console.error("submitStep4 error:", err);
+            alert("Request failed");
+        } finally {
+            setSubmitting(false);
+        }
+    };
     useEffect(() => {
         if (isModalOpen && initialRole && currentStep === 1) {
             setSelectedAction(initialRole);
@@ -221,6 +270,14 @@ export default function SurveyOnlyForm({
 
     const handleTypeSelect = (type: "individual" | "organization") => {
         setUserType(type);
+        setStep4Form({
+            countryId: null,
+            email: "",
+            firstName: "",
+            lastName: "",
+            contactFullName: "",
+            companyName: "",
+        });
     };
 
     const handleIndividualConfirm = (key: keyof typeof confirmations, checked: boolean) => {
@@ -665,17 +722,18 @@ export default function SurveyOnlyForm({
             ? {
                 firstName: step4Form.firstName,
                 lastName: step4Form.lastName,
-                country: step4Form.country,
                 email: step4Form.email,
             }
             : {
-                contactFullName: step4Form.contactFullName || "",
-                companyName: step4Form.companyName || "",
-                country: step4Form.country,
+                contactFullName: step4Form.contactFullName,
+                companyName: step4Form.companyName,
                 email: step4Form.email,
             };
 
-        const isFormValid = Object.values(step4Fields).every((val) => val.trim() !== "");
+        const isFormValid =
+            Object.values(step4Fields).every(
+                (val) => typeof val === "string" && val.trim() !== ""
+            ) && step4Form.countryId !== null;
         const disclaimerText = isIndividual
             ? "Unfortunately, at this point in time, we cannot accept investments from people who are not UK residents or don't have a valid UK national insurance number."
             : "Unfortunately, at this point in time, we cannot accept investments from organizations who are not in the UK.";
@@ -729,12 +787,23 @@ export default function SurveyOnlyForm({
                             />
                         </>
                     )}
-                    <FormInput
-                        label="Country"
-                        placeholder="Country"
-                        value={step4Form.country}
-                        onChange={(e) => handleStep4Change("country", e.target.value)}
+                    <Dropdown
+                        label="Select your country"
+                        options={countries.map((c) => ({
+                            key: c.ID.toString(),
+                            label: c.Name,
+                            value: c.ID.toString(),
+                        }))}
+                        value={step4Form.countryId?.toString() ?? ""}
+                        onChange={(value) =>
+                            setStep4Form((prev) => ({
+                                ...prev,
+                                countryId: Number(value),
+                            }))
+                        }
+                        placeholder="Choose a country"
                     />
+
                     <FormInput
                         label={isIndividual ? "Email" : "Work Email"}
                         placeholder={isIndividual ? "Email" : "Work Email"}
@@ -745,18 +814,14 @@ export default function SurveyOnlyForm({
                 </div>
                 <div className="w-full h-fit flex justify-center items-center">
                     <button
-                        className={`w-full max-w-[237px] py-2.5 sm:py-3 rounded-md transition-colors ${isFormValid
+                        className={`w-full max-w-[237px] py-2.5 sm:py-3 rounded-md transition-colors ${isFormValid && !submitting
                             ? "bg-primary text-black cursor-pointer"
                             : "bg-gray-300 text-black cursor-not-allowed"
                             }`}
-                        disabled={!isFormValid}
-                        onClick={() => {
-                            console.log("Step 4 Form Data:", { userType, ...step4Form });
-                            alert("Thank you! We’ll notify you when available in your region.");
-                            setIsModalOpen(false);
-                        }}
+                        disabled={!isFormValid || submitting}
+                        onClick={submitStep4}
                     >
-                        Submit
+                        {submitting ? "Submitting..." : "Submit"}
                     </button>
                 </div>
             </div>

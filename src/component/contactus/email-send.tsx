@@ -5,6 +5,7 @@ import { FormInput } from '../ui/form-input';
 import Link from 'next/link';
 import apiService from '@/services/apiService';
 import { CustomButton } from '../ui/custom-button';
+import { getRecaptchaToken } from '@/utils/recaptcha';
 
 interface EmailSendProps {
     onBack?: () => void;
@@ -16,6 +17,7 @@ export default function EmailSend({ onBack }: EmailSendProps) {
         lastName: '',
         email: '',
         message: '',
+        subject: '',
     });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [messageText, setMessageText] = useState<string>('');
@@ -28,7 +30,7 @@ export default function EmailSend({ onBack }: EmailSendProps) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const { firstName, lastName, email, message } = formData;
+        const { firstName, lastName, email, message, subject } = formData;
         if (!firstName.trim() || !lastName.trim() || !email.trim() || !message.trim()) {
             setStatus('error');
             setMessageText('All fields are required.');
@@ -49,13 +51,23 @@ export default function EmailSend({ onBack }: EmailSendProps) {
                 last_name: lastName.trim(),
                 email: email.trim().toLowerCase(),
                 message: message.trim(),
+                subject: subject.trim() || 'Contact Form Submission',
             };
 
-            const data = await apiService.post<{ success: boolean; message?: string }>('/contact', payload);
+            const recaptchaToken = await getRecaptchaToken();
+
+            const data = await apiService.post(
+                '/contact',
+                payload,
+                {
+                    'X-Captcha-Token': recaptchaToken,
+                }
+            );
+
 
             setStatus('success');
-            setMessageText(data.message || 'Your message has been sent successfully!');
-            setFormData({ firstName: '', lastName: '', email: '', message: '' });
+            setMessageText('Your message has been sent successfully!');
+            setFormData({ firstName: '', lastName: '', email: '', message: '', subject: '' });
 
         } catch (error: unknown) {
             setStatus('error');
@@ -89,6 +101,7 @@ export default function EmailSend({ onBack }: EmailSendProps) {
         { title: "First Name", isTextarea: false, name: "firstName", type: "text" },
         { title: "Last Name", isTextarea: false, name: "lastName", type: "text" },
         { title: "Email", isTextarea: false, name: "email", type: "email" },
+        { title: "Subject", isTextarea: false, name: "subject", type: "text" },
         { title: "Message", isTextarea: true, name: "message" },
     ];
 

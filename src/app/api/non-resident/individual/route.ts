@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
     const payload = await request.json();
     const headers = request.headers;
 
-    return await axios.post(getServerUrl("contact-forms"), payload, {
+    return await axios.post(getServerUrl("non-resident-waitlist/individual"), payload, {
         headers: {
             Authorization: headers.get("Authorization") ?? "",
             "X-Captcha-Token": headers.get("X-Captcha-Token") ?? "",
