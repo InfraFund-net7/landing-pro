@@ -42,6 +42,13 @@ export interface SurveyOnlyFormProps {
     initialRole?: string;
 }
 
+type Step4Payload = {
+    country_id: number | null;
+    email: string;
+    first_name?: string;
+    last_name?: string;
+};
+
 export default function SurveyOnlyForm({
     onSuccess,
     onError,
@@ -141,7 +148,7 @@ export default function SurveyOnlyForm({
     };
     const submitStep4 = async () => {
         const endpoint = getNonResidentEndpoint();
-        const payload: any = {
+        const payload: Step4Payload  = {
             country_id: step4Form.countryId,
             email: step4Form.email.trim().toLowerCase(),
             first_name: step4Form.firstName?.trim(),
