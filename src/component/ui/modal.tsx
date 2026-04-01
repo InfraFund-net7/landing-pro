@@ -1,20 +1,20 @@
-"use client"
+'use client';
 
-import { X } from "lucide-react"
-import type React from "react"
-import { useEffect, useRef } from "react"
-import gsap from "gsap"
+import { X } from 'lucide-react';
+import type React from 'react';
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
 
 interface ModalProps {
-  isOpen: boolean
-  onClose: () => void
-  children: React.ReactNode
-  width?: string
-  height?: string
-  ModalTitle?: string
-  className?: string
-  showCloseButton?: boolean
-  closeOnBackdropClick?: boolean
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+  width?: string;
+  height?: string;
+  ModalTitle?: string;
+  className?: string;
+  showCloseButton?: boolean;
+  closeOnBackdropClick?: boolean;
 }
 
 export function Modal({
@@ -22,55 +22,55 @@ export function Modal({
   onClose,
   children,
   ModalTitle,
-  width = "90vw",
-  className = "",
+  width = '90vw',
+  className = '',
   showCloseButton = true,
   closeOnBackdropClick = true,
 }: ModalProps) {
-  const overlayRef = useRef<HTMLDivElement>(null)
-  const modalRef = useRef<HTMLDivElement>(null)
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const overlay = overlayRef.current
-    const modal = modalRef.current
+    const overlay = overlayRef.current;
+    const modal = modalRef.current;
 
     if (isOpen) {
-      gsap.set(overlay, { opacity: 0, display: "flex" })
-      gsap.set(modal, { opacity: 0, y: 30, scale: 0.95 })
-      gsap.to(overlay, { opacity: 1, duration: 0.3, ease: "power2.out" })
+      gsap.set(overlay, { opacity: 0, display: 'flex' });
+      gsap.set(modal, { opacity: 0, y: 30, scale: 0.95 });
+      gsap.to(overlay, { opacity: 1, duration: 0.3, ease: 'power2.out' });
       gsap.to(modal, {
         opacity: 1,
         y: 0,
         scale: 1,
         duration: 0.4,
-        ease: "power3.out",
+        ease: 'power3.out',
         delay: 0.1,
-      })
+      });
     } else {
       gsap.to(modal, {
         opacity: 0,
         y: 20,
         scale: 0.95,
         duration: 0.3,
-        ease: "power2.in",
-      })
+        ease: 'power2.in',
+      });
       gsap.to(overlay, {
         opacity: 0,
         duration: 0.3,
-        ease: "power2.in",
+        ease: 'power2.in',
         delay: 0.1,
         onComplete: () => {
-          gsap.set(overlay, { display: "none" })
+          gsap.set(overlay, { display: 'none' });
         },
-      })
+      });
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (closeOnBackdropClick && e.target === e.currentTarget) {
-      onClose()
+      onClose();
     }
-  }
+  };
 
   return (
     <div
@@ -84,14 +84,18 @@ export function Modal({
         ref={modalRef}
         style={{
           width,
-          maxWidth: "512px",
-          height: "auto",
+          maxWidth: '512px',
+          height: 'auto',
         }}
         className={`relative p-3 sm:p-4 md:p-5 flex flex-col justify-between text-center items-start rounded-[20px] shadow-lg bg-[#343C5266] backdrop-blur-xl border border-card-bg-border ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-full flex justify-between items-center mb-2 sm:mb-3">
-          {ModalTitle && <h2 className="text-xl sm:text-2xl font-bold text-white">{ModalTitle}</h2>}
+          {ModalTitle && (
+            <h2 className="text-xl sm:text-2xl font-bold text-white">
+              {ModalTitle}
+            </h2>
+          )}
           {showCloseButton && (
             <button
               onClick={onClose}
@@ -105,5 +109,5 @@ export function Modal({
         <>{children}</>
       </div>
     </div>
-  )
+  );
 }

@@ -95,7 +95,8 @@ export default function Header() {
               onClick={() => setIsModalOpen(true)}
               className="text-[#24FF8E] underline ml-1 cursor-pointer"
             >
-              Waitlist{''} {''}{''}!
+              Waitlist{''} {''}
+              {''}!
             </button>
             <button
               onClick={() => setShowBanner(false)}
@@ -199,13 +200,20 @@ export default function Header() {
           </button>
           <button
             onClick={() => setCreateAccount(true)}
-            className="w-full h-10 bg-[#24FF8E] text-black rounded-md font-medium">
+            className="w-full h-10 bg-[#24FF8E] text-black rounded-md font-medium"
+          >
             Create Account
           </button>
         </div>
       </div>
-      <SurveyOnlyForm isModalOpen={createaccount} setIsModalOpen={setCreateAccount} />
-      <Waitlistmodal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+      <SurveyOnlyForm
+        isModalOpen={createaccount}
+        setIsModalOpen={setCreateAccount}
+      />
+      <Waitlistmodal
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+      />
     </>
   );
 }

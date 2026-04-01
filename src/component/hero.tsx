@@ -16,7 +16,8 @@ export default function Hero() {
 
       <div className="absolute bottom-6 sm:bottom-10 w-full flex flex-col justify-center items-end px-4 sm:px-6 md:px-[90px]">
         <div className="w-full max-w-[590px]  flex flex-col gap-6 sm:gap-7 ">
-          <h2 className="text-white text-sm sm:text-[15px] md:text-[17px]"
+          <h2
+            className="text-white text-sm sm:text-[15px] md:text-[17px]"
             style={{ hyphens: 'auto', textAlign: 'justify' }}
           >
             We are the operating system for tokenizing real-world green{' '}

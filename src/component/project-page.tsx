@@ -43,7 +43,6 @@ offshore wind farms in Europe...`,
     }, 300);
   };
 
-
   return (
     <div className="w-full min-h-screen text-white ">
       {selectedProject ? (
@@ -79,10 +78,11 @@ offshore wind farms in Europe...`,
                   <span
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`text-sm md:text-base cursor-pointer transition-all ${activeTab === tab
-                      ? 'font-bold text-[#24FF8E]'
-                      : 'font-normal hover:text-[#24FF8E]'
-                      }`}
+                    className={`text-sm md:text-base cursor-pointer transition-all ${
+                      activeTab === tab
+                        ? 'font-bold text-[#24FF8E]'
+                        : 'font-normal hover:text-[#24FF8E]'
+                    }`}
                   >
                     {tab}
                   </span>
@@ -124,8 +124,9 @@ offshore wind farms in Europe...`,
             {showLoadMore && (
               <button
                 onClick={handleLoadMoreClick}
-                className={`bg-transparent cursor-pointer border border-gray-600 hover:border-gray-400 text-white px-8 py-3 rounded-lg mt-10 transition-opacity duration-300 ${hideAnimation ? 'opacity-0' : 'opacity-100'
-                  }`}
+                className={`bg-transparent cursor-pointer border border-gray-600 hover:border-gray-400 text-white px-8 py-3 rounded-lg mt-10 transition-opacity duration-300 ${
+                  hideAnimation ? 'opacity-0' : 'opacity-100'
+                }`}
               >
                 Load More Projects
               </button>

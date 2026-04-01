@@ -1,3 +1,6 @@
 export function getAccessToken(): string | null {
-    return localStorage.getItem("access_token") ?? null
+  const access_token =
+    localStorage.getItem('access_token') ?? localStorage.getItem('accessToken');
+  console.log(`Access token from accessToken() ${access_token}`);
+  return access_token ?? null;
 }
