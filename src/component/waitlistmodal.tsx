@@ -39,7 +39,7 @@ export default function Waitlistmodal({
         success: boolean;
         message?: string;
       }>(
-        '/waitlist',
+        '/waitlists',
         { email: email.trim().toLowerCase() },
         await withCaptcha('waitlist')
       );
