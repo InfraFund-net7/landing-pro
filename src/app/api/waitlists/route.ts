@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   }
-  /**  */
+  /** A */
 
   const url_server = getServerUrl(`waitlists`);
   console.log(`Captcha Token: ${captcha_token}`);
