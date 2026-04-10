@@ -19,6 +19,7 @@ import { useLocationStore } from '@/stores/locationStore';
 import { withCaptcha } from '@/lib/apiCaptcha';
 import { Dropdown } from './ui/dropdown';
 import { getRecaptchaToken } from '@/utils/recaptcha';
+import { getDashLoginUrl } from '@/utils/dash-login-url';
 
 type SurveyData = {
   role: string;
@@ -47,6 +48,7 @@ type Step4Payload = {
   email: string;
   first_name?: string;
   last_name?: string;
+  company_name?: string;
 };
 
 export default function SurveyOnlyForm({
@@ -110,6 +112,7 @@ export default function SurveyOnlyForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [, setSubmitSuccess] = useState(false);
+  const [step4Success, setStep4Success] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const surveyDataRef = useRef<SurveyData | null>(null);
   const countries = useLocationStore((state) => state.countries);
@@ -154,35 +157,46 @@ export default function SurveyOnlyForm({
   };
   const submitStep4 = async () => {
     const endpoint = getNonResidentEndpoint();
-    const payload: Step4Payload = {
-      country_id: step4Form.countryId,
-      email: step4Form.email.trim().toLowerCase(),
-      first_name: step4Form.firstName?.trim(),
-      last_name: step4Form.lastName?.trim(),
-    };
+    const fullName = step4Form.contactFullName?.trim() ?? '';
+    const spaceIndex = fullName.indexOf(' ');
+    const derivedFirstName =
+      spaceIndex !== -1 ? fullName.slice(0, spaceIndex) : fullName;
+    const derivedLastName =
+      spaceIndex !== -1 ? fullName.slice(spaceIndex + 1) : '';
+
+    const payload: Step4Payload =
+      userType === 'organization'
+        ? {
+            country_id: step4Form.countryId,
+            email: step4Form.email.trim().toLowerCase(),
+            first_name: derivedFirstName,
+            last_name: derivedLastName,
+            company_name: step4Form.companyName?.trim(),
+          }
+        : {
+            country_id: step4Form.countryId,
+            email: step4Form.email.trim().toLowerCase(),
+            first_name: step4Form.firstName?.trim(),
+            last_name: step4Form.lastName?.trim(),
+          };
 
     try {
       setSubmitting(true);
       const captchaToken = await getRecaptchaToken('non_resident');
 
-      const data = await apiService.post<{
-        success: boolean;
-        message?: string;
-      }>(endpoint, payload, { 'X-Captcha-Token': captchaToken });
+      await apiService.post(endpoint, payload, {
+        'X-Captcha-Token': captchaToken,
+      });
 
-      if (data.success) {
-        setStep4Form({
-          countryId: null,
-          email: '',
-          firstName: '',
-          lastName: '',
-          contactFullName: '',
-          companyName: '',
-        });
-        setIsModalOpen(false);
-      } else {
-        alert(data.message || 'Something went wrong');
-      }
+      setStep4Form({
+        countryId: null,
+        email: '',
+        firstName: '',
+        lastName: '',
+        contactFullName: '',
+        companyName: '',
+      });
+      setStep4Success(true);
     } catch (err) {
       console.error('submitStep4 error:', err);
       alert('Request failed');
@@ -241,6 +255,7 @@ export default function SurveyOnlyForm({
       setErrors({});
       setSubmitting(false);
       setSubmitSuccess(false);
+      setStep4Success(false);
       surveyDataRef.current = null;
     }
   }, [isModalOpen]);
@@ -507,14 +522,22 @@ export default function SurveyOnlyForm({
         minutes = 15
       ) => {
         const encoded = encodeURIComponent(JSON.stringify(value));
-        document.cookie = `${name}=${encoded}; Path=/; Domain=.infrafund.test; Max-Age=${minutes * 60}; SameSite=Lax`;
+        const domainAttr = process.env.NEXT_PUBLIC_SURVEY_COOKIE_DOMAIN
+          ? `; Domain=${process.env.NEXT_PUBLIC_SURVEY_COOKIE_DOMAIN}`
+          : '';
+        const secureAttr =
+          typeof window !== 'undefined' &&
+          window.location.protocol === 'https:'
+            ? '; Secure'
+            : '';
+        document.cookie = `${name}=${encoded}; Path=/${domainAttr}; Max-Age=${minutes * 60}; SameSite=Lax${secureAttr}`;
       };
 
       setDomainCookie('survey_data', payload, 15);
       setSubmitSuccess(true);
       onSuccess?.(data);
       setTimeout(() => {
-        window.location.href = 'http://dash.infrafund.test:3001/login';
+        window.location.href = getDashLoginUrl();
       }, 800);
     } catch (err: unknown) {
       console.error('Client-side error:', err);
@@ -863,6 +886,30 @@ export default function SurveyOnlyForm({
       setStep4Form((prev) => ({ ...prev, [key]: value }));
     };
 
+    if (step4Success) {
+      return (
+        <div className="flex flex-col gap-6 sm:gap-8 justify-center items-center text-center px-2 sm:px-6 py-4 max-w-lg mx-auto">
+          <span className="text-xl sm:text-2xl text-white font-semibold">
+            Thank you
+          </span>
+          <p className="text-white text-sm sm:text-base leading-relaxed">
+            Thank you for your interest, you have been successfully added to
+            our waitlist.
+          </p>
+          <button
+            type="button"
+            className="w-full max-w-[237px] py-2.5 sm:py-3 rounded-md bg-primary text-black hover:bg-green-500 transition-colors cursor-pointer"
+            onClick={() => {
+              setStep4Success(false);
+              setIsModalOpen(false);
+            }}
+          >
+            Close
+          </button>
+        </div>
+      );
+    }
+
     return (
       <div className="flex flex-col gap-6 sm:gap-12 justify-center items-start">
         <span className="text-xl sm:text-2xl text-white font-semibold block">
@@ -1154,6 +1201,12 @@ export default function SurveyOnlyForm({
     <Modal
       isOpen={isModalOpen}
       onClose={() => {
+        if (step4Success) {
+          setStep4Success(false);
+          setIsModalOpen(false);
+
+          return;
+        }
         if (currentStep === 4) {
           setCurrentStep(3);
         } else {
