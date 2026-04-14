@@ -501,6 +501,8 @@ export default function SurveyOnlyForm({
     surveyDataRef.current = data;
     setSubmitting(true);
     try {
+      const captchaToken = await getRecaptchaToken('signup');
+
       const payload = {
         role: data.role || '',
         type: data.type,
@@ -514,6 +516,7 @@ export default function SurveyOnlyForm({
         company_name:
           data.type === 'organization' ? data.company_name || '' : '',
         country: 'uk',
+        captcha_token: captchaToken,
       };
 
       const setDomainCookie = (

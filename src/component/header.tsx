@@ -9,7 +9,7 @@ import gsap from 'gsap';
 import { CustomButton } from './ui/custom-button';
 import Waitlistmodal from './waitlistmodal';
 import SurveyOnlyForm from './SurveyOnlyForm';
-import { getDashLoginUrl } from '@/utils/dash-login-url';
+import ParticleLoginButton from './ParticleLoginButton';
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -131,15 +131,7 @@ export default function Header() {
           </div>
 
           <div className="hidden lg:flex justify-center items-center gap-6 h-12">
-            <button
-              type="button"
-              className="w-[110px] h-full cursor-pointer bg-white flex justify-center items-center text-black rounded-lg border-2 border-gray-400 font-bold"
-              onClick={() => {
-                window.location.href = getDashLoginUrl();
-              }}
-            >
-              Login
-            </button>
+            <ParticleLoginButton className="w-[110px] h-full cursor-pointer bg-white flex justify-center items-center text-black rounded-lg border-2 border-gray-400 font-bold" />
             <CustomButton
               variant="filled"
               onClick={() => setCreateAccount(true)}
@@ -202,16 +194,10 @@ export default function Header() {
         </nav>
 
         <div className="mt-auto flex flex-col gap-3 pt-10">
-          <button
-            type="button"
+          <ParticleLoginButton
             className="w-full h-10 bg-white text-black rounded-md font-medium"
-            onClick={() => {
-              setIsMenuOpen(false);
-              window.location.href = getDashLoginUrl();
-            }}
-          >
-            Login
-          </button>
+            onClose={() => setIsMenuOpen(false)}
+          />
           <button
             onClick={() => setCreateAccount(true)}
             className="w-full h-10 bg-[#24FF8E] text-black rounded-md font-medium"

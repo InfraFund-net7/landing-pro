@@ -1,0 +1,41 @@
+'use client';
+
+import { useCallback, useEffect } from 'react';
+import { useAccount, useModal } from '@particle-network/connectkit';
+import { getDashLoginUrl } from '@/utils/dash-login-url';
+
+interface ParticleLoginButtonProps {
+  className?: string;
+  children?: React.ReactNode;
+  onClose?: () => void;
+}
+
+export default function ParticleLoginButton({
+  className,
+  children = 'Login',
+  onClose,
+}: ParticleLoginButtonProps) {
+  const { setOpen } = useModal();
+  const account = useAccount();
+
+  // Once connected via Particle, redirect to the dashboard
+  useEffect(() => {
+    if (
+      account.status === 'connected' &&
+      account.connector.walletConnectorType === 'particleAuth'
+    ) {
+      window.location.href = getDashLoginUrl();
+    }
+  }, [account]);
+
+  const handleClick = useCallback(() => {
+    onClose?.();
+    setOpen(true);
+  }, [setOpen, onClose]);
+
+  return (
+    <button type="button" className={className} onClick={handleClick}>
+      {children}
+    </button>
+  );
+}

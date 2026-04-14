@@ -6,6 +6,7 @@ import Link from 'next/link';
 import apiService from '@/services/apiService';
 import { CustomButton } from '../ui/custom-button';
 import { getRecaptchaToken } from '@/utils/recaptcha';
+import { ApiError } from '@/utils/interceptors.utils';
 
 interface EmailSendProps {
   onBack?: () => void;
@@ -63,7 +64,7 @@ export default function EmailSend({ onBack }: EmailSendProps) {
         subject: subject.trim() || 'Contact Form Submission',
       };
 
-      const recaptchaToken = await getRecaptchaToken();
+      const recaptchaToken = await getRecaptchaToken('contact');
 
       const data = await apiService.post('/contact', payload, {
         'X-Captcha-Token': recaptchaToken,
@@ -80,29 +81,13 @@ export default function EmailSend({ onBack }: EmailSendProps) {
       });
     } catch (error: unknown) {
       setStatus('error');
-      let msg = 'Failed to send message. Please try again.';
-      if (
-        typeof error === 'object' &&
-        error !== null &&
-        'response' in error &&
-        typeof (error as Record<string, unknown>).response === 'object'
-      ) {
-        const err = error as {
-          response?: { data?: { message?: string; detail?: string } };
-          message?: string;
-        };
-
-        msg =
-          err.response?.data?.message ||
-          err.response?.data?.detail ||
-          err.message ||
-          msg;
-      } else if (error instanceof Error) {
-        msg = error.message;
-      }
-
+      const msg =
+        error instanceof ApiError
+          ? error.detail
+          : error instanceof Error
+            ? error.message
+            : 'Failed to send message. Please try again.';
       setMessageText(msg);
-      console.error('[Contact Form Error]', error);
     }
   };
 

@@ -8,6 +8,7 @@ import { FormInput } from './ui/form-input';
 import { CustomButton } from './ui/custom-button';
 import apiService from '@/services/apiService';
 import { withCaptcha } from '@/lib/apiCaptcha';
+import { ApiError } from '@/utils/interceptors.utils';
 
 interface WaitlistmodalProps {
   isModalOpen: boolean;
@@ -47,30 +48,20 @@ export default function Waitlistmodal({
       setMessage(data.message || "Thank you! You're on the list.");
       setEmail('');
     } catch (error: unknown) {
-      setStatus('error');
-      let msg = 'Failed to send message. Please try again.';
-      if (
-        typeof error === 'object' &&
-        error !== null &&
-        'response' in error &&
-        typeof (error as Record<string, unknown>).response === 'object'
-      ) {
-        const err = error as {
-          response?: { data?: { message?: string; detail?: string } };
-          message?: string;
-        };
-
-        msg =
-          err.response?.data?.message ||
-          err.response?.data?.detail ||
-          err.message ||
-          msg;
-      } else if (error instanceof Error) {
-        msg = error.message;
+      if (error instanceof ApiError && error.status === 409) {
+        setStatus('success');
+        setMessage('This email is already on our waitlist.');
+        return;
       }
 
+      setStatus('error');
+      const msg =
+        error instanceof ApiError
+          ? error.detail
+          : error instanceof Error
+            ? error.message
+            : 'Failed to join the waitlist. Please try again.';
       setMessage(msg);
-      console.error('[Waitlist Modal Error]', error);
     }
   };
 
