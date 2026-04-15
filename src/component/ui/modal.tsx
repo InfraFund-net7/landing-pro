@@ -85,9 +85,8 @@ export function Modal({
         style={{
           width,
           maxWidth: '512px',
-          height: 'auto',
         }}
-        className={`relative p-3 sm:p-4 md:p-5 flex flex-col justify-between text-center items-start rounded-[20px] shadow-lg bg-[#343C5266] backdrop-blur-xl border border-card-bg-border ${className}`}
+        className={`relative p-3 sm:p-4 md:p-5 flex flex-col text-center items-start rounded-[20px] shadow-lg bg-[#343C5266] backdrop-blur-xl border border-card-bg-border max-h-[90vh] overflow-y-auto ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-full flex justify-between items-center mb-2 sm:mb-3">

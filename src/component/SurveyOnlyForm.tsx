@@ -1010,8 +1010,8 @@ export default function SurveyOnlyForm({
   const renderStep5 = () => {
     const isValid = isStep5Valid();
     return (
-      <div className="w-full text-left flex flex-col h-full">
-        <div className="flex-1 overflow-y-auto">
+      <div className="w-full text-left flex flex-col gap-4 sm:gap-6">
+        <div>
           <span className="text-xl sm:text-2xl text-white font-semibold mb-4 sm:mb-6 block">
             Great! Let&apos;s get started.
           </span>
@@ -1116,11 +1116,12 @@ export default function SurveyOnlyForm({
     );
   };
 
+
   const renderStep6 = () => {
     const canSubmit =
       accountForm.email.trim() !== '' && accountForm.termsAgreed && !submitting;
     return (
-      <div className="w-full text-left h-full flex flex-col justify-between py-1 sm:py-1.5">
+      <div className="w-full text-left flex flex-col gap-4 sm:gap-6">
         <div>
           <span className="text-xl sm:text-2xl text-white font-semibold mb-4 sm:mb-6 block">
             Let&apos;s create your account!
@@ -1219,7 +1220,7 @@ export default function SurveyOnlyForm({
       showCloseButton={true}
       closeOnBackdropClick={false}
     >
-      <div className="w-full min-h-[480px] sm:h-[650px] flex flex-col justify-between items-center px-2 sm:px-0">
+      <div className="w-full flex flex-col items-center gap-4 sm:gap-6 px-2 sm:px-0">
         {currentStep !== 4 && (
           <Image
             priority
