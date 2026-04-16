@@ -13,9 +13,9 @@ export const isParticleConfigured = Boolean(projectId && clientKey && appId);
 
 const config = isParticleConfigured
   ? createConfig({
-      projectId,
-      clientKey,
-      appId,
+      projectId: projectId as string,
+      clientKey: clientKey as string,
+      appId: appId as string,
       appearance: {
         mode: 'auto',
         connectorsOrder: ['social', 'email'],

@@ -196,16 +196,12 @@ export default function Header() {
         </nav>
 
         <div className="mt-auto flex flex-col gap-3 pt-10">
-          <button
-            type="button"
+          <ParticleLoginButton
             className="w-full h-10 bg-white text-black rounded-md font-medium"
-            onClick={() => {
-              setIsMenuOpen(false);
-              window.location.href = getDashLoginUrl();
-            }}
+            onClose={() => setIsMenuOpen(false)}
           >
             Login
-          </button>
+          </ParticleLoginButton>
           <button
             onClick={() => setCreateAccount(true)}
             className="w-full h-10 bg-[#24FF8E] text-black rounded-md font-medium"
