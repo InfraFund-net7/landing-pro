@@ -115,20 +115,12 @@ export default function SurveyOnlyForm({
   const [, setSubmitSuccess] = useState(false);
   const [step4Success, setStep4Success] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [openParticleLogin, setOpenParticleLogin] = useState<
+    (() => void) | null
+  >(null);
   const surveyDataRef = useRef<SurveyData | null>(null);
   const countries = useLocationStore((state) => state.countries);
-  const { setOpen } = useModal();
-  const account = useAccount();
   useFetchLocations();
-
-  useEffect(() => {
-    if (
-      account.status === 'connected' &&
-      account.connector.walletConnectorType === 'particleAuth'
-    ) {
-      window.location.href = getDashLoginUrl();
-    }
-  }, [account]);
   const formatPhoneNumber = (value: string): string => {
     let cleaned = value.replace(/[^+\d]/g, '');
     if (!cleaned.startsWith('+44')) {
@@ -551,8 +543,8 @@ export default function SurveyOnlyForm({
       setDomainCookie('survey_data', payload, 15);
       setSubmitSuccess(true);
       onSuccess?.(data);
-      if (isParticleConfigured) {
-        setOpen(true);
+      if (isParticleConfigured && openParticleLogin) {
+        openParticleLogin();
       } else {
         window.location.href = getDashLoginUrl();
       }
@@ -1234,6 +1226,9 @@ export default function SurveyOnlyForm({
       closeOnBackdropClick={false}
     >
       <div className="w-full flex flex-col items-center gap-4 sm:gap-6 px-2 sm:px-0">
+        {isParticleConfigured && (
+          <SurveyParticleAuthBridge onOpenReady={setOpenParticleLogin} />
+        )}
         {currentStep !== 4 && (
           <Image
             priority
@@ -1253,4 +1248,28 @@ export default function SurveyOnlyForm({
       </div>
     </Modal>
   );
+}
+
+function SurveyParticleAuthBridge({
+  onOpenReady,
+}: {
+  onOpenReady: (open: () => void) => void;
+}) {
+  const { setOpen } = useModal();
+  const account = useAccount();
+
+  useEffect(() => {
+    onOpenReady(() => setOpen(true));
+  }, [onOpenReady, setOpen]);
+
+  useEffect(() => {
+    if (
+      account.status === 'connected' &&
+      account.connector.walletConnectorType === 'particleAuth'
+    ) {
+      window.location.href = getDashLoginUrl();
+    }
+  }, [account]);
+
+  return null;
 }
