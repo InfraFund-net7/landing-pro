@@ -15,7 +15,11 @@ jobs:
           docker build \
             -f ./deployment/Dockerfile \
             --build-arg NEXT_PUBLIC_API_BASE_URL=${{ secrets.PROD_API_BASE_URL }} \
-            --build-arg NEXT_PUBLIC_DASHBOARD_URL=${{ secrets.DASHBOARD_URL }} \
+            --build-arg NEXT_PUBLIC_DASH_LOGIN_URL=${{ secrets.DASHBOARD_URL }} \
+            --build-arg NEXT_PUBLIC_RECAPTCHA_SITE_KEY=${{ secrets.GOOGLE_RECAPTCHA_SITE_KEY }} \
+            --build-arg NEXT_PUBLIC_PROJECT_ID=${{ secrets.PROD_PARTICLE_PROJECT_ID }} \
+            --build-arg NEXT_PUBLIC_CLIENT_KEY=${{ secrets.PROD_PARTICLE_CLIENT_KEY }} \
+            --build-arg NEXT_PUBLIC_APP_ID=${{ secrets.PROD_PARTICLE_APP_ID }} \
             -t infra-landing:prod .
 
   deploy:

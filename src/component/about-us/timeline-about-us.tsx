@@ -7,6 +7,7 @@ import { useEffect, useState, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+// Timeline component for the about us page
 if (
   typeof window !== 'undefined' &&
   gsap &&
@@ -14,7 +15,6 @@ if (
 ) {
   gsap.registerPlugin(ScrollTrigger);
 }
-
 export default function Timeline() {
   const [nodeStates, setNodeStates] = useState<number[]>(() => {
     const arr = new Array(timelineData.length).fill(0);
