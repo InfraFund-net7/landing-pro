@@ -16,8 +16,15 @@ export default function ParticleLoginButton({
   children = 'Login',
   onClose,
 }: ParticleLoginButtonProps) {
+  useEffect(() => {
+    console.info(
+      `[ParticleLoginButton] mode=${isParticleConfigured ? 'particle-modal' : 'fallback-redirect'}`
+    );
+  }, []);
+
   const handleFallbackClick = useCallback(() => {
     onClose?.();
+    console.info('[ParticleLoginButton] click -> fallback redirect');
     window.location.href = getDashLoginUrl();
   }, [onClose]);
 
@@ -30,11 +37,9 @@ export default function ParticleLoginButton({
   }
 
   return (
-    <ParticleLoginButtonWithModal
-      className={className}
-      onClose={onClose}
-      children={children}
-    />
+    <ParticleLoginButtonWithModal className={className} onClose={onClose}>
+      {children}
+    </ParticleLoginButtonWithModal>
   );
 }
 
@@ -58,6 +63,7 @@ function ParticleLoginButtonWithModal({
 
   const handleClick = useCallback(() => {
     onClose?.();
+    console.info('[ParticleLoginButton] click -> open particle modal');
     setOpen(true);
   }, [setOpen, onClose]);
 

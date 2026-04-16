@@ -194,7 +194,11 @@ export default function SurveyOnlyForm({
 
     try {
       setSubmitting(true);
-      await apiService.post(endpoint, payload, await withCaptcha('non_resident'));
+      await apiService.post(
+        endpoint,
+        payload,
+        await withCaptcha('non_resident')
+      );
 
       setStep4Form({
         countryId: null,
@@ -538,8 +542,7 @@ export default function SurveyOnlyForm({
           ? `; Domain=${process.env.NEXT_PUBLIC_SURVEY_COOKIE_DOMAIN}`
           : '';
         const secureAttr =
-          typeof window !== 'undefined' &&
-          window.location.protocol === 'https:'
+          typeof window !== 'undefined' && window.location.protocol === 'https:'
             ? '; Secure'
             : '';
         document.cookie = `${name}=${encoded}; Path=/${domainAttr}; Max-Age=${minutes * 60}; SameSite=Lax${secureAttr}`;
@@ -907,8 +910,8 @@ export default function SurveyOnlyForm({
             Thank you
           </span>
           <p className="text-white text-sm sm:text-base leading-relaxed">
-            Thank you for your interest, you have been successfully added to
-            our waitlist.
+            Thank you for your interest, you have been successfully added to our
+            waitlist.
           </p>
           <button
             type="button"
@@ -1126,7 +1129,6 @@ export default function SurveyOnlyForm({
       </div>
     );
   };
-
 
   const renderStep6 = () => {
     const canSubmit =

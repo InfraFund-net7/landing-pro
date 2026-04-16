@@ -164,7 +164,8 @@
     "infafund",
     "grecaptcha",
     "Javad",
-    "Rajabzadeh"
+    "Rajabzadeh",
+    "connectkit"
   ],
   "ignorePaths": [
     "node_modules",

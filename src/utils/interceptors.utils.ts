@@ -36,7 +36,9 @@ export const setupInterceptors = (axiosInstance: AxiosInstance): void => {
         const detail = data?.detail || data?.message || 'API Error';
         return Promise.reject(new ApiError(status, detail));
       } else if (error.request) {
-        return Promise.reject(new ApiError(0, 'Network error, please try again later'));
+        return Promise.reject(
+          new ApiError(0, 'Network error, please try again later')
+        );
       } else {
         return Promise.reject(new ApiError(0, error.message));
       }
