@@ -1259,7 +1259,7 @@ function SurveyParticleAuthBridge({
   const account = useAccount();
 
   useEffect(() => {
-    onOpenReady(() => setOpen(true));
+    onOpenReady(() => () => setOpen(true));
   }, [onOpenReady, setOpen]);
 
   useEffect(() => {
