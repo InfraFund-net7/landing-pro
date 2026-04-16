@@ -3,6 +3,7 @@
 import { useCallback, useEffect } from 'react';
 import { useAccount, useModal } from '@particle-network/connectkit';
 import { getDashLoginUrl } from '@/utils/dash-login-url';
+import { isParticleConfigured } from '@/lib/particle-config';
 
 interface ParticleLoginButtonProps {
   className?: string;
@@ -13,6 +14,33 @@ interface ParticleLoginButtonProps {
 export default function ParticleLoginButton({
   className,
   children = 'Login',
+  onClose,
+}: ParticleLoginButtonProps) {
+  const handleFallbackClick = useCallback(() => {
+    onClose?.();
+    window.location.href = getDashLoginUrl();
+  }, [onClose]);
+
+  if (!isParticleConfigured) {
+    return (
+      <button type="button" className={className} onClick={handleFallbackClick}>
+        {children}
+      </button>
+    );
+  }
+
+  return (
+    <ParticleLoginButtonWithModal
+      className={className}
+      onClose={onClose}
+      children={children}
+    />
+  );
+}
+
+function ParticleLoginButtonWithModal({
+  className,
+  children,
   onClose,
 }: ParticleLoginButtonProps) {
   const { setOpen } = useModal();

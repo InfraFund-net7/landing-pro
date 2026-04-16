@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Footer from '@/component/footer';
+import { ParticleConnectProvider } from '@/lib/particle-config';
 import PathnameWrapper from './PathnameWrapper';
 import Script from 'next/script';
 export const metadata: Metadata = {
@@ -18,8 +19,10 @@ export default function RootLayout({
           src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
           strategy="afterInteractive"
         />
-        <PathnameWrapper>{children}</PathnameWrapper>
-        <Footer />
+        <ParticleConnectProvider>
+          <PathnameWrapper>{children}</PathnameWrapper>
+          <Footer />
+        </ParticleConnectProvider>
       </body>
     </html>
   );

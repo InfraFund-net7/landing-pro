@@ -9,7 +9,7 @@ import gsap from 'gsap';
 import { CustomButton } from './ui/custom-button';
 import Waitlistmodal from './waitlistmodal';
 import SurveyOnlyForm from './SurveyOnlyForm';
-import { getDashLoginUrl } from '@/utils/dash-login-url';
+import ParticleLoginButton from './ParticleLoginButton';
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -131,13 +131,9 @@ export default function Header() {
           </div>
 
           <div className="hidden lg:flex justify-center items-center gap-6 h-12">
-            <button
-              type="button"
-              className="w-[110px] h-full cursor-pointer bg-white flex justify-center items-center text-black rounded-lg border-2 border-gray-400 font-bold"
-              onClick={() => { window.location.href = getDashLoginUrl(); }}
-            >
+            <ParticleLoginButton className="w-[110px] h-full cursor-pointer bg-white flex justify-center items-center text-black rounded-lg border-2 border-gray-400 font-bold">
               Login
-            </button>
+            </ParticleLoginButton>
             <CustomButton
               variant="filled"
               onClick={() => setCreateAccount(true)}

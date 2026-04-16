@@ -5,7 +5,7 @@ import { FormInput } from '../ui/form-input';
 import Link from 'next/link';
 import apiService from '@/services/apiService';
 import { CustomButton } from '../ui/custom-button';
-import { getRecaptchaToken } from '@/utils/recaptcha';
+import { withCaptcha } from '@/lib/apiCaptcha';
 import { ApiError } from '@/utils/interceptors.utils';
 
 interface EmailSendProps {
@@ -64,11 +64,11 @@ export default function EmailSend({ onBack }: EmailSendProps) {
         subject: subject.trim() || 'Contact Form Submission',
       };
 
-      const recaptchaToken = await getRecaptchaToken('contact');
-
-      const data = await apiService.post('/contact', payload, {
-        'X-Captcha-Token': recaptchaToken,
-      });
+      const data = await apiService.post(
+        '/contact',
+        payload,
+        await withCaptcha('contact')
+      );
 
       setStatus('success');
       setMessageText('Your message has been sent successfully!');

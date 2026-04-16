@@ -11,14 +11,15 @@ import organization from '@/../public/svg/organization.svg';
 import { Modal } from './ui/modal';
 import { CustomButton } from './ui/custom-button';
 import { Check } from 'lucide-react';
+import { useAccount, useModal } from '@particle-network/connectkit';
 import { FormInput } from './ui/form-input';
 import { individualStep5Schema, orgStep5Schema } from '@/schema/survey.schema';
 import apiService from '@/services/apiService';
 import { useFetchLocations } from '@/hooks/useFetchLocations';
 import { useLocationStore } from '@/stores/locationStore';
 import { withCaptcha } from '@/lib/apiCaptcha';
+import { isParticleConfigured } from '@/lib/particle-config';
 import { Dropdown } from './ui/dropdown';
-import { getRecaptchaToken } from '@/utils/recaptcha';
 import { getDashLoginUrl } from '@/utils/dash-login-url';
 
 type SurveyData = {
@@ -116,7 +117,18 @@ export default function SurveyOnlyForm({
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const surveyDataRef = useRef<SurveyData | null>(null);
   const countries = useLocationStore((state) => state.countries);
+  const { setOpen } = useModal();
+  const account = useAccount();
   useFetchLocations();
+
+  useEffect(() => {
+    if (
+      account.status === 'connected' &&
+      account.connector.walletConnectorType === 'particleAuth'
+    ) {
+      window.location.href = getDashLoginUrl();
+    }
+  }, [account]);
   const formatPhoneNumber = (value: string): string => {
     let cleaned = value.replace(/[^+\d]/g, '');
     if (!cleaned.startsWith('+44')) {
@@ -182,11 +194,7 @@ export default function SurveyOnlyForm({
 
     try {
       setSubmitting(true);
-      const captchaToken = await getRecaptchaToken('non_resident');
-
-      await apiService.post(endpoint, payload, {
-        'X-Captcha-Token': captchaToken,
-      });
+      await apiService.post(endpoint, payload, await withCaptcha('non_resident'));
 
       setStep4Form({
         countryId: null,
@@ -501,7 +509,8 @@ export default function SurveyOnlyForm({
     surveyDataRef.current = data;
     setSubmitting(true);
     try {
-      const captchaToken = await getRecaptchaToken('signup');
+      const captchaHeaders = await withCaptcha('signup');
+      const captchaToken = captchaHeaders['X-Captcha-Token'];
 
       const payload = {
         role: data.role || '',
@@ -539,9 +548,11 @@ export default function SurveyOnlyForm({
       setDomainCookie('survey_data', payload, 15);
       setSubmitSuccess(true);
       onSuccess?.(data);
-      setTimeout(() => {
+      if (isParticleConfigured) {
+        setOpen(true);
+      } else {
         window.location.href = getDashLoginUrl();
-      }, 800);
+      }
     } catch (err: unknown) {
       console.error('Client-side error:', err);
       const error = new Error('Failed to store the data. Please try again.');
