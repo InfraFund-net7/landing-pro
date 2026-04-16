@@ -21,6 +21,11 @@ import { withCaptcha } from '@/lib/apiCaptcha';
 import { isParticleConfigured } from '@/lib/particle-config';
 import { Dropdown } from './ui/dropdown';
 import { getDashLoginUrl } from '@/utils/dash-login-url';
+import {
+  clearParticleDashRedirectIntent,
+  markParticleDashRedirectIntent,
+  peekParticleDashRedirectIntent,
+} from '@/utils/particle-dash-redirect-intent';
 
 type SurveyData = {
   role: string;
@@ -1255,21 +1260,29 @@ function SurveyParticleAuthBridge({
 }: {
   onOpenReady: (open: () => void) => void;
 }) {
-  const { setOpen } = useModal();
+  const { setOpen, isOpen } = useModal();
   const account = useAccount();
 
   useEffect(() => {
-    onOpenReady(() => () => setOpen(true));
+    onOpenReady(() => () => {
+      markParticleDashRedirectIntent();
+      setOpen(true);
+    });
   }, [onOpenReady, setOpen]);
 
   useEffect(() => {
-    if (
-      account.status === 'connected' &&
-      account.connector.walletConnectorType === 'particleAuth'
-    ) {
-      window.location.href = getDashLoginUrl();
-    }
+    if (account.status !== 'connected') return;
+    if (account.connector.walletConnectorType !== 'particleAuth') return;
+    if (!peekParticleDashRedirectIntent()) return;
+    clearParticleDashRedirectIntent();
+    window.location.href = getDashLoginUrl();
   }, [account]);
+
+  useEffect(() => {
+    if (isOpen) return;
+    if (account.status === 'connected') return;
+    clearParticleDashRedirectIntent();
+  }, [isOpen, account.status]);
 
   return null;
 }

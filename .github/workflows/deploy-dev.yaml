@@ -11,15 +11,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
       - name: Build Docker image
+        env:
+          BUILD_ARG_API: ${{ secrets.DEV_API_BASE_URL }}
+          BUILD_ARG_DASH_LOGIN: ${{ secrets.DEV_DASHBOARD_URL }}
+          BUILD_ARG_RECAPTCHA: ${{ secrets.GOOGLE_RECAPTCHA_SITE_KEY }}
+          BUILD_ARG_PARTICLE_PROJECT: ${{ secrets.DEV_PARTICLE_PROJECT_ID }}
+          BUILD_ARG_PARTICLE_CLIENT: ${{ secrets.DEV_PARTICLE_CLIENT_KEY }}
+          BUILD_ARG_PARTICLE_APP: ${{ secrets.DEV_PARTICLE_APP_ID }}
         run: |
           docker build \
             -f ./deployment/Dockerfile \
-            --build-arg NEXT_PUBLIC_API_BASE_URL=${{ secrets.DEV_API_BASE_URL }} \
-            --build-arg NEXT_PUBLIC_DASH_LOGIN_URL=${{ secrets.DEV_DASHBOARD_URL }} \
-            --build-arg NEXT_PUBLIC_RECAPTCHA_SITE_KEY=${{ secrets.GOOGLE_RECAPTCHA_SITE_KEY }} \
-            --build-arg NEXT_PUBLIC_PROJECT_ID=${{ secrets.DEV_PARTICLE_PROJECT_ID }} \
-            --build-arg NEXT_PUBLIC_CLIENT_KEY=${{ secrets.DEV_PARTICLE_CLIENT_KEY }} \
-            --build-arg NEXT_PUBLIC_APP_ID=${{ secrets.DEV_PARTICLE_APP_ID }} \
+            --build-arg NEXT_PUBLIC_API_BASE_URL="$BUILD_ARG_API" \
+            --build-arg NEXT_PUBLIC_DASH_LOGIN_URL="$BUILD_ARG_DASH_LOGIN" \
+            --build-arg NEXT_PUBLIC_RECAPTCHA_SITE_KEY="$BUILD_ARG_RECAPTCHA" \
+            --build-arg NEXT_PUBLIC_PROJECT_ID="$BUILD_ARG_PARTICLE_PROJECT" \
+            --build-arg NEXT_PUBLIC_CLIENT_KEY="$BUILD_ARG_PARTICLE_CLIENT" \
+            --build-arg NEXT_PUBLIC_APP_ID="$BUILD_ARG_PARTICLE_APP" \
             -t infra-landing:dev .
 
   deploy:
