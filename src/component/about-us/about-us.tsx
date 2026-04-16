@@ -10,10 +10,9 @@ import { CustomButton } from '../ui/custom-button';
 import FadeInStagger from '../animations/FadeInStagger';
 import { useState } from 'react';
 import ContactUs from '../contactus/contactus';
-
+// About us page
 export default function AboutUs() {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-
   const openContactModal = () => setIsContactModalOpen(true);
   const closeContactModal = () => setIsContactModalOpen(false);
   return (
