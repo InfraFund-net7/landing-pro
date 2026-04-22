@@ -9,6 +9,7 @@ import JamesCater from '@/../public/image/contributors/James-Cater.png';
 import KambisKohansal from '@/../public/image/contributors/Kambis-Kohansal.png';
 import PooriaGhadir from '@/../public/image/contributors/Pooria-Ghadir.png';
 import AmirrezaZareian from '@/../public/image/contributors/Amirreza-Zareian.jpg';
+import JavadRajabzadeh from '@/../public/image/contributors/Javad-Rajabzadeh.jpg';
 import NicholasPearson from '@/../public/image/contributors/Nicholas-Pearson.png';
 import SajadSalehi from '@/../public/image/contributors/Sajad-Salehi.png';
 import ShervinMansouri from '@/../public/image/contributors/Shervin-Mansouri.png';
@@ -108,6 +109,14 @@ export const contributors = [
     role: 'Product Designer',
     description:
       'Responsible for shaping the user experience and visual interface of the InfraFund platform.',
+  },
+  {
+    img: JavadRajabzadeh,
+    name: 'Javad Rajabzadeh',
+    linkedin: 'https://www.linkedin.com/in/ja7ad/',
+    role: 'Engineer',
+    description:
+      'Senior Software Engineer with over 10 years of professional expertise in developing scalable Business Software, IoT, Blockchain, and AI solutions.',
   },
   {
     img: SajadSalehi,

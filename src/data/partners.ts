@@ -73,5 +73,4 @@ export const partners = [
     logo: CompaniesHouse,
     alt: 'InfraFund-Companies-House',
   },
-
 ];

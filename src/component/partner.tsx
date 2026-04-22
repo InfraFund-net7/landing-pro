@@ -8,7 +8,8 @@ export default function PartnersSection() {
   const sliderRef = useRef<HTMLDivElement>(null);
   const firstSetRef = useRef<HTMLDivElement>(null);
   const [imagesLoadedCount, setImagesLoadedCount] = useState(0);
-  const totalImages = partners.filter((p) => p.name !== 'CompaniesHouse').length * 2;
+  const totalImages =
+    partners.filter((p) => p.name !== 'CompaniesHouse').length * 2;
 
   const filteredPartners = partners.filter((p) => p.name !== 'CompaniesHouse');
 

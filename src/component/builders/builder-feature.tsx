@@ -15,9 +15,9 @@ export default function BuilderFeature() {
           Your Project, Upgraded with an AI-Driven Digital
         </h3>
         <h4 className="text-xl font-normal text-gray-100 max-md:text-sm">
-          We create a dynamic virtual model of
-          every project, providing live performance data and predictive risk
-          analysis to de-risk your investment.
+          We create a dynamic virtual model of every project, providing live
+          performance data and predictive risk analysis to de-risk your
+          investment.
         </h4>
       </div>
 

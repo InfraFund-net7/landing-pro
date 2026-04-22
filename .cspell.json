@@ -149,8 +149,30 @@
     "utilising",
     "organisations",
     "authorise",
-    "authorise"
+    "authorise",
+    "waitlists",
+    "waitlistdata",
+    "Waitlistmodal",
+    "waitlistmodal",
+    "greentik",
+    "contactus",
+    "contactusactions",
+    "createaccount",
+    "isopen",
+    "ukparleman",
+    "windturbin",
+    "infafund",
+    "grecaptcha",
+    "Javad",
+    "Rajabzadeh",
+    "connectkit"
   ],
-  "ignorePaths": ["node_modules", "build", ".next"],
+  "ignorePaths": [
+    "node_modules",
+    "build",
+    ".next",
+    "src/component/BookingModal.tsx",
+    "src/component/ui/custom-button.tsx"
+  ],
   "files": ["**/*.{js,jsx,ts,tsx,md}"]
 }

@@ -77,13 +77,13 @@ export default function FundingSection() {
                   {item.title}
                 </h3>
               </div>
-              <div className='w-full h-[100px] flex justify-start items-start '>
-
-              <p className="text-white text-sm"
-                style={{ hyphens: 'auto', textAlign: 'justify' }}
-              >
-                {item.description}
-              </p>
+              <div className="w-full h-[100px] flex justify-start items-start ">
+                <p
+                  className="text-white text-sm"
+                  style={{ hyphens: 'auto', textAlign: 'justify' }}
+                >
+                  {item.description}
+                </p>
               </div>
             </div>
           </div>
@@ -122,7 +122,8 @@ export default function FundingSection() {
                   {item.title}
                 </h3>
               </div>
-              <p className="text-white text-sm leading-relaxed"
+              <p
+                className="text-white text-sm leading-relaxed"
                 style={{ hyphens: 'auto', textAlign: 'justify' }}
               >
                 {item.description}

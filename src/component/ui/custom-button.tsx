@@ -22,7 +22,8 @@ export function CustomButton({
   const baseClasses =
     'py-4 rounded-lg font-semibold text-lg transition-all duration-300 ease-in-out outline-none border-2';
 
-  const disabledClasses = 'cursor-not-allowed bg-[#616172] text-[#a3a3a3] border-[#777777] pointer-events-none';
+  const disabledClasses =
+    'cursor-not-allowed bg-[#616172] text-[#a3a3a3] border-[#777777] pointer-events-none';
 
   const variantClasses = {
     filled: disabled

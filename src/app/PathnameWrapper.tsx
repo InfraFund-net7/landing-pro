@@ -42,14 +42,12 @@ export default function HeaderHeroWrapper({
 
   return (
     <>
-      <div
-        className="relative w-full h-screen sm:h-[90vh] md:h-screen overflow-hidden"
-      >
+      <div className="relative w-full h-screen sm:h-[90vh] md:h-screen overflow-hidden">
         <div
           className="absolute inset-0 bg-[url('/image/hero-second.jpg')] bg-no-repeat bg-cover"
           style={{
             backgroundPosition: 'center 60%',
-            opacity: 0.6, 
+            opacity: 0.6,
           }}
         />
         <div className="relative z-10 flex flex-col w-full h-full">

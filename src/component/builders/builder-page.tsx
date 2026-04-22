@@ -1,4 +1,4 @@
-"use client"
+'use client';
 import React, { useState } from 'react';
 import BlockchainDiagram from './blockchain-diagram';
 import BuilderFeature from './builder-feature';
@@ -20,7 +20,8 @@ export default function BuilderPage() {
           <div
             className="absolute inset-0 z-0"
             style={{
-              background: 'linear-gradient(244.83deg, rgba(13, 16, 24, 0) 9.61%, #0D1018 71.18%)',
+              background:
+                'linear-gradient(244.83deg, rgba(13, 16, 24, 0) 9.61%, #0D1018 71.18%)',
             }}
           />
           <div className="space-y-12 absolute z-10 px-[90px] max-md:static max-md:px-6">
@@ -30,11 +31,12 @@ export default function BuilderPage() {
               Start Building Your Future
             </h1>
             <h2 className="text-2xl text-white font-normal max-md:text-base">
-              InfraFund provides the full-stack toolkit to fund your NetZero project,
+              InfraFund provides the full-stack toolkit to fund your NetZero
+              project,
               <br className="max-md:hidden" />
               from tokenisation to global distribution.
             </h2>
-            <div className='w-full h-fit flex justify-center items-center md:justify-start md:items-center'>
+            <div className="w-full h-fit flex justify-center items-center md:justify-start md:items-center">
               <CustomButton
                 variant="filled"
                 onClick={() => setCreateAccount(true)}
@@ -87,7 +89,10 @@ export default function BuilderPage() {
           </div>
         </section>
       </div>
-      <SurveyOnlyForm isModalOpen={createaccount} setIsModalOpen={setCreateAccount} />
+      <SurveyOnlyForm
+        isModalOpen={createaccount}
+        setIsModalOpen={setCreateAccount}
+      />
     </>
   );
 }

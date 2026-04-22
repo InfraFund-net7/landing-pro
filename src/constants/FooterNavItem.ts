@@ -3,6 +3,10 @@ export const navItems = [
     title: 'Company',
     items: [
       { name: 'About Us', link: '/about-us' },
+      {
+        name: 'Gender Equality Plan (GEP)',
+        link: '/GEP',
+      },
       { name: 'Contact', type: 'modal' },
     ],
   },

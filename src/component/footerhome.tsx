@@ -52,17 +52,18 @@ export default function FooterHome() {
             InfraNetZero LTD (trading as InfraFund) is an award winning startup,
             incubated & accelerated in SETsquared Partnership delivered by
             University of Exeter. Please be aware that investing in tokenized
-            renewable energy assets through our platform (www.InfraFund.net) is a
-            high-risk activity where your capital is at risk, and you may lose
+            renewable energy assets through our platform (www.InfraFund.net) is
+            a high-risk activity where your capital is at risk, and you may lose
             your entire investment. These investments are not covered by the
-            Financial Services Compensation Scheme (FSCS). By creating an account,
-            you accept our Terms of Service and Privacy Policy. We do not provide
-            any investment, tax, or legal advice; any investment decisions are
-            solely your responsibility. All personal data is handled in strict
-            compliance with UK GDPR. We strongly advise you to consult with
-            independent professional advisors before making any investment.
+            Financial Services Compensation Scheme (FSCS). By creating an
+            account, you accept our Terms of Service and Privacy Policy. We do
+            not provide any investment, tax, or legal advice; any investment
+            decisions are solely your responsibility. All personal data is
+            handled in strict compliance with UK GDPR. We strongly advise you to
+            consult with independent professional advisors before making any
+            investment.
           </p>
-          <span className='text-gray-400'>📍 London, UK</span>
+          <span className="text-gray-400">📍 London, UK</span>
           <span>
             <Link
               href="/uk-residents"
@@ -70,7 +71,7 @@ export default function FooterHome() {
             >
               UK Residents
             </Link>
-            {" - "}
+            {' - '}
             <Link
               href="/risk-warning"
               className="text-gray-400 hover:text-[#24FF8E] transition-colors"
@@ -93,7 +94,12 @@ export default function FooterHome() {
                 {item.type === 'component' ? (
                   <item.icon size={20} />
                 ) : (
-                  <Image src={item.icon} width={20} height={20} alt={item.name} />
+                  <Image
+                    src={item.icon}
+                    width={20}
+                    height={20}
+                    alt={item.name}
+                  />
                 )}
               </a>
             ))}
@@ -134,16 +140,20 @@ export default function FooterHome() {
                       );
                     }
 
-                    return (
-                      <li key={j}>
-                        <Link
-                          href={item.link || '#'}
-                          className="hover:text-[#24FF8E] transition-colors"
-                        >
-                          {item.name}
-                        </Link>
-                      </li>
-                    );
+                    if ('link' in item && item.link) {
+                      return (
+                        <li key={`${section.title}-${item.name}`}>
+                          <a
+                            href={item.link}
+                            className="relative z-20 inline-block hover:text-[#24FF8E] transition-colors cursor-pointer"
+                          >
+                            {item.name}
+                          </a>
+                        </li>
+                      );
+                    }
+
+                    return null;
                   })}
                 </ul>
               </div>
