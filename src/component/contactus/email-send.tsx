@@ -64,11 +64,7 @@ export default function EmailSend({ onBack }: EmailSendProps) {
         subject: subject.trim() || 'Contact Form Submission',
       };
 
-      const data = await apiService.post(
-        '/contact',
-        payload,
-        await withCaptcha('contact')
-      );
+      await apiService.post('/contact', payload, await withCaptcha('contact'));
 
       setStatus('success');
       setMessageText('Your message has been sent successfully!');

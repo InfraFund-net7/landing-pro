@@ -1,6 +1,5 @@
 'use client';
 import React, { useState } from 'react';
-import { CustomButton } from './ui/custom-button';
 import { Play, X } from 'lucide-react';
 
 export default function Hero() {

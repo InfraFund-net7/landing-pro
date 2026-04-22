@@ -42,7 +42,7 @@ type SurveyData = {
 
 type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
-export interface SurveyOnlyFormProps {
+interface SurveyOnlyFormProps {
   onSuccess?: (data: SurveyData) => void;
   onError?: (error: Error) => void;
   isModalOpen: boolean;
@@ -238,7 +238,7 @@ export default function SurveyOnlyForm({
       setSelectedItem(initialRole);
       setCurrentStep(2);
     }
-  }, [isModalOpen, initialRole]);
+  }, [isModalOpen, initialRole, currentStep]);
 
   useEffect(() => {
     if (!isModalOpen) {
