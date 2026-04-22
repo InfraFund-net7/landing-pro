@@ -1,16 +1,12 @@
 export default function GenderEqualityPlan() {
   return (
-    <div
-      className="flex flex-col justify-center items-start text-white gap-8 py-[175px] px-4 md:px-6 lg:px-12 xl:px-[90px]"
-    >
+    <div className="flex flex-col justify-center items-start text-white gap-8 py-[175px] px-4 md:px-6 lg:px-12 xl:px-[90px]">
       <h1 className="text-5xl font-bold">GENDER EQUALITY PLAN (GEP)</h1>
 
       <article className="text-base font-normal space-y-6 max-w-[1200px]">
         <section className="space-y-5">
           <p>Last updated: 22 April 2026</p>
-          <h2 className="text-2xl font-semibold">
-            Statement of Commitment
-          </h2>
+          <h2 className="text-2xl font-semibold">Statement of Commitment</h2>
           <p>
             At InfraNetZero LTD (operating as InfraFund), we recognize that
             solving the world&apos;s most complex infrastructure and climate
@@ -40,23 +36,16 @@ export default function GenderEqualityPlan() {
           </p>
           <ul className="list-disc pl-6 space-y-1">
             <li>
-              <strong>
-                Flexible Work Architecture:
-              </strong>
-              {' '}
-              Maintaining a remote-first, asynchronous working environment that
-              inherently supports team members with caregiving responsibilities,
-              ensuring that work-life balance is a structural reality, not just
-              a policy.
+              <strong>Flexible Work Architecture:</strong> Maintaining a
+              remote-first, asynchronous working environment that inherently
+              supports team members with caregiving responsibilities, ensuring
+              that work-life balance is a structural reality, not just a policy.
             </li>
             <li>
-              <strong>
-                Psychological Safety:
-              </strong>
-              {' '}
-              Cultivating a culture where all voices, regardless of gender, are
-              actively solicited and equally weighed in technical, strategic, and
-              commercial decision-making.
+              <strong>Psychological Safety:</strong> Cultivating a culture where
+              all voices, regardless of gender, are actively solicited and
+              equally weighed in technical, strategic, and commercial
+              decision-making.
             </li>
           </ul>
         </section>
@@ -71,12 +60,12 @@ export default function GenderEqualityPlan() {
           </p>
           <ul className="list-disc pl-6 space-y-1">
             <li>
-              Actively seek diverse perspectives when forming our Advisory Boards
-              and steering committees.
+              Actively seek diverse perspectives when forming our Advisory
+              Boards and steering committees.
             </li>
             <li>
-              Ensure that leadership opportunities, project management roles, and
-              public-facing representations (such as conference speaking and
+              Ensure that leadership opportunities, project management roles,
+              and public-facing representations (such as conference speaking and
               consortium leadership) are distributed equitably among our team.
             </li>
           </ul>
@@ -102,9 +91,9 @@ export default function GenderEqualityPlan() {
               channels.
             </li>
             <li>
-              Ensuring transparent communication regarding compensation and career
-              advancement frameworks to prevent the gender pay gap from taking
-              root.
+              Ensuring transparent communication regarding compensation and
+              career advancement frameworks to prevent the gender pay gap from
+              taking root.
             </li>
           </ul>
         </section>
@@ -114,9 +103,7 @@ export default function GenderEqualityPlan() {
             4. Integrating the Gender Dimension into R&amp;D &amp; Technology
             Design
           </h2>
-          <p className="italic">
-            This is our most critical commitment.
-          </p>
+          <p className="italic">This is our most critical commitment.</p>
           <p>
             Because our core expertise lies in developing secure smart contract
             architectures and utilizing Edge-AI, we bear a responsibility to
@@ -127,30 +114,21 @@ export default function GenderEqualityPlan() {
           </p>
           <ul className="list-disc pl-6 space-y-1">
             <li>
-              <strong>
-                Design and governance:
-              </strong>
-              {' '}
-              embedding structured review of fairness, accessibility, and edge
-              cases into requirements, architecture choices, and release criteria
-              for high-impact features.
+              <strong>Design and governance:</strong> embedding structured
+              review of fairness, accessibility, and edge cases into
+              requirements, architecture choices, and release criteria for
+              high-impact features.
             </li>
             <li>
-              <strong>
-                Data and models:
-              </strong>
-              {' '}
-              scrutinising labelling, sampling, and outcomes where AI or automation
-              is used, and mitigating skew or blind spots we identify.
+              <strong>Data and models:</strong> scrutinising labelling,
+              sampling, and outcomes where AI or automation is used, and
+              mitigating skew or blind spots we identify.
             </li>
             <li>
-              <strong>
-                Transparency:
-              </strong>
-              {' '}
-              documenting material assumptions, limitations, and known risks where
-              automated tools could materially affect participation, safety, or
-              economic outcomes for users and partners.
+              <strong>Transparency:</strong> documenting material assumptions,
+              limitations, and known risks where automated tools could
+              materially affect participation, safety, or economic outcomes for
+              users and partners.
             </li>
           </ul>
         </section>

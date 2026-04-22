@@ -49,7 +49,7 @@ export default function HeroSection() {
     }, 10000);
 
     return () => clearInterval(interval);
-  }, [autoPlay]);
+  }, [autoPlay, steps.length]);
 
   // Indicator movement
   const updateIndicatorToStep = (stepIndex: number) => {
