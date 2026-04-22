@@ -26,6 +26,7 @@ import {
   markParticleDashRedirectIntent,
   peekParticleDashRedirectIntent,
 } from '@/utils/particle-dash-redirect-intent';
+import { ApiError } from '@/utils/interceptors.utils';
 
 type SurveyData = {
   role: string;
@@ -119,6 +120,10 @@ export default function SurveyOnlyForm({
   const [submitting, setSubmitting] = useState(false);
   const [, setSubmitSuccess] = useState(false);
   const [step4Success, setStep4Success] = useState(false);
+  const [step4Message, setStep4Message] = useState<string | null>(null);
+  const [step4MessageType, setStep4MessageType] = useState<'error' | 'success'>(
+    'error'
+  );
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [openParticleLogin, setOpenParticleLogin] = useState<
     (() => void) | null
@@ -191,6 +196,7 @@ export default function SurveyOnlyForm({
 
     try {
       setSubmitting(true);
+      setStep4Message(null);
       await apiService.post(
         endpoint,
         payload,
@@ -208,7 +214,20 @@ export default function SurveyOnlyForm({
       setStep4Success(true);
     } catch (err) {
       console.error('submitStep4 error:', err);
-      alert('Request failed');
+      if (err instanceof ApiError && err.status === 409) {
+        setStep4MessageType('error');
+        setStep4Message('This email is already on the wishlist.');
+        return;
+      }
+
+      setStep4MessageType('error');
+      setStep4Message(
+        err instanceof ApiError
+          ? err.detail
+          : err instanceof Error
+            ? err.message
+            : 'Request failed. Please try again.'
+      );
     } finally {
       setSubmitting(false);
     }
@@ -265,6 +284,8 @@ export default function SurveyOnlyForm({
       setSubmitting(false);
       setSubmitSuccess(false);
       setStep4Success(false);
+      setStep4Message(null);
+      setStep4MessageType('error');
       surveyDataRef.current = null;
     }
   }, [isModalOpen]);
@@ -898,6 +919,7 @@ export default function SurveyOnlyForm({
 
     const handleStep4Change = (key: string, value: string) => {
       setStep4Form((prev) => ({ ...prev, [key]: value }));
+      if (step4Message) setStep4Message(null);
     };
 
     if (step4Success) {
@@ -1014,6 +1036,15 @@ export default function SurveyOnlyForm({
             {submitting ? 'Submitting...' : 'Submit'}
           </button>
         </div>
+        {step4Message && (
+          <p
+            className={`w-full text-center text-sm ${
+              step4MessageType === 'success' ? 'text-green-400' : 'text-red-400'
+            }`}
+          >
+            {step4Message}
+          </p>
+        )}
       </div>
     );
   };

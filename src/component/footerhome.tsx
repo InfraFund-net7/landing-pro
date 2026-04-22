@@ -140,16 +140,20 @@ export default function FooterHome() {
                       );
                     }
 
-                    return (
-                      <li key={j}>
-                        <Link
-                          href={item.link || '#'}
-                          className="hover:text-[#24FF8E] transition-colors"
-                        >
-                          {item.name}
-                        </Link>
-                      </li>
-                    );
+                    if ('link' in item && item.link) {
+                      return (
+                        <li key={`${section.title}-${item.name}`}>
+                          <a
+                            href={item.link}
+                            className="relative z-20 inline-block hover:text-[#24FF8E] transition-colors cursor-pointer"
+                          >
+                            {item.name}
+                          </a>
+                        </li>
+                      );
+                    }
+
+                    return null;
                   })}
                 </ul>
               </div>

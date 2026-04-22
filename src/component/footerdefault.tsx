@@ -93,13 +93,13 @@ export default function FooterDefault() {
                     }
                     if ('link' in item && item.link) {
                       return (
-                        <li key={j}>
-                          <Link
+                        <li key={`${section.title}-${item.name}`}>
+                          <a
                             href={item.link}
-                            className="hover:text-[#24FF8E] transition-colors"
+                            className="relative z-20 inline-block hover:text-[#24FF8E] transition-colors cursor-pointer"
                           >
                             {item.name}
-                          </Link>
+                          </a>
                         </li>
                       );
                     }
