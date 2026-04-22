@@ -14,3 +14,12 @@ coverage
 build
 .next
 .notes.md
+
+# Local VS Code workspace settings
+*.code-workspace
+
+# Local environment variables (Safety first!)
+.env.local
+# Local settings
+*.code-workspace
+.env.local

@@ -9,6 +9,7 @@ import gsap from 'gsap';
 import { CustomButton } from './ui/custom-button';
 import Waitlistmodal from './waitlistmodal';
 import SurveyOnlyForm from './SurveyOnlyForm';
+import ParticleLoginButton from './ParticleLoginButton';
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -95,7 +96,8 @@ export default function Header() {
               onClick={() => setIsModalOpen(true)}
               className="text-[#24FF8E] underline ml-1 cursor-pointer"
             >
-              Waitlist{''} {''}{''}!
+              Waitlist{''} {''}
+              {''}!
             </button>
             <button
               onClick={() => setShowBanner(false)}
@@ -129,9 +131,9 @@ export default function Header() {
           </div>
 
           <div className="hidden lg:flex justify-center items-center gap-6 h-12">
-            <button className="w-[110px] h-full cursor-pointer bg-white flex justify-center items-center text-black rounded-lg border-2 border-gray-400 font-bold">
+            <ParticleLoginButton className="w-[110px] h-full cursor-pointer bg-white flex justify-center items-center text-black rounded-lg border-2 border-gray-400 font-bold">
               Login
-            </button>
+            </ParticleLoginButton>
             <CustomButton
               variant="filled"
               onClick={() => setCreateAccount(true)}
@@ -194,18 +196,28 @@ export default function Header() {
         </nav>
 
         <div className="mt-auto flex flex-col gap-3 pt-10">
-          <button className="w-full h-10 bg-white text-black rounded-md font-medium">
+          <ParticleLoginButton
+            className="w-full h-10 bg-white text-black rounded-md font-medium"
+            onClose={() => setIsMenuOpen(false)}
+          >
             Login
-          </button>
+          </ParticleLoginButton>
           <button
             onClick={() => setCreateAccount(true)}
-            className="w-full h-10 bg-[#24FF8E] text-black rounded-md font-medium">
+            className="w-full h-10 bg-[#24FF8E] text-black rounded-md font-medium"
+          >
             Create Account
           </button>
         </div>
       </div>
-      <SurveyOnlyForm isModalOpen={createaccount} setIsModalOpen={setCreateAccount} />
-      <Waitlistmodal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+      <SurveyOnlyForm
+        isModalOpen={createaccount}
+        setIsModalOpen={setCreateAccount}
+      />
+      <Waitlistmodal
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+      />
     </>
   );
 }

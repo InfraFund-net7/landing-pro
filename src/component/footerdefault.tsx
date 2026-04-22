@@ -29,7 +29,7 @@ export default function FooterDefault() {
                 alt="InfraFund"
                 className="w-[180px] sm:w-[261px] h-auto"
               />
-              <span className='text-gray-400'>📍 London, UK</span>
+              <span className="text-gray-400">📍 London, UK</span>
               <span>
                 <Link
                   href="/uk-residents"
@@ -37,7 +37,7 @@ export default function FooterDefault() {
                 >
                   UK Residents
                 </Link>
-                {" - "}
+                {' - '}
                 <Link
                   href="/risk-warning"
                   className="text-gray-400 hover:text-[#24FF8E] transition-colors"
@@ -74,7 +74,9 @@ export default function FooterDefault() {
           <div className="w-full sm:w-[511px] flex flex-nowrap justify-between items-start gap-6">
             {navItems.map((section, i) => (
               <div key={i} className="min-w-[120px] text-gray-400">
-                <h3 className="font-bold text-base sm:text-lg">{section.title}</h3>
+                <h3 className="font-bold text-base sm:text-lg">
+                  {section.title}
+                </h3>
                 <ul className="mt-2 space-y-1 text-xs sm:text-base">
                   {section.items.map((item, j) => {
                     if (item.type === 'modal' && item.name === 'Contact') {
@@ -91,13 +93,13 @@ export default function FooterDefault() {
                     }
                     if ('link' in item && item.link) {
                       return (
-                        <li key={j}>
-                          <Link
+                        <li key={`${section.title}-${item.name}`}>
+                          <a
                             href={item.link}
-                            className="hover:text-[#24FF8E] transition-colors"
+                            className="relative z-20 inline-block hover:text-[#24FF8E] transition-colors cursor-pointer"
                           >
                             {item.name}
-                          </Link>
+                          </a>
                         </li>
                       );
                     }
@@ -118,14 +120,14 @@ export default function FooterDefault() {
             incubated & accelerated in SETsquared Partnership delivered by
             University of Exeter. Please be aware that investing in tokenized
             renewable energy assets through our platform (www.InfraFund.net) is
-            a high-risk activity where your capital is at risk, and you may
-            lose your entire investment. These investments are not covered by
-            the Financial Services Compensation Scheme (FSCS). By creating an
+            a high-risk activity where your capital is at risk, and you may lose
+            your entire investment. These investments are not covered by the
+            Financial Services Compensation Scheme (FSCS). By creating an
             account, you accept our Terms of Service and Privacy Policy. We do
             not provide any investment, tax, or legal advice; any investment
             decisions are solely your responsibility. All personal data is
-            handled in strict compliance with UK GDPR. We strongly advise you
-            to consult with independent professional advisors before making any
+            handled in strict compliance with UK GDPR. We strongly advise you to
+            consult with independent professional advisors before making any
             investment.
           </p>
         </div>
