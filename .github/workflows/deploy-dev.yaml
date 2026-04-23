@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Build docker image
-    runs-on: ubuntu-latest
+    runs-on: develop-runner
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -31,7 +31,7 @@ jobs:
 
   deploy:
     name: Deploy to Development Server
-    runs-on: ubuntu-latest
+    runs-on: develop-runner
     needs: build
     steps:
       - name: Deploy with Docker Compose
