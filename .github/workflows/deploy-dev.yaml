@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Build docker image
-    runs-on: [self-hosted, infrafund-develop]
+    runs-on: [develop-runner]
     steps:
       - name: Checkout
         uses: actions/checkout@v6

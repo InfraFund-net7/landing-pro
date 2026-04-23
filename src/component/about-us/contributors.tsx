@@ -3,6 +3,7 @@
 import Image, { type StaticImageData } from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 import { Modal } from '../ui/modal';
+// Contributors section
 
 interface Contributor {
   img: string | StaticImageData;
@@ -11,7 +12,6 @@ interface Contributor {
   description: string;
   linkedin: string;
 }
-
 interface Props {
   contributors: Contributor[];
   linkedin: string;
