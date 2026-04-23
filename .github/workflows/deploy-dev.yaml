@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Build docker image
-    runs-on: develop-runner
+    runs-on: [develop-runner]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -28,10 +28,9 @@ jobs:
             --build-arg NEXT_PUBLIC_CLIENT_KEY="$BUILD_ARG_PARTICLE_CLIENT" \
             --build-arg NEXT_PUBLIC_APP_ID="$BUILD_ARG_PARTICLE_APP" \
             -t infra-landing:dev .
-
   deploy:
     name: Deploy to Development Server
-    runs-on: develop-runner
+    runs-on: [develop-runner]
     needs: build
     steps:
       - name: Deploy with Docker Compose
