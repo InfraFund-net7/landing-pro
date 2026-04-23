@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Build docker image
-    runs-on: infrafund-develop
+    runs-on: self-hosted
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -31,7 +31,7 @@ jobs:
 
   deploy:
     name: Deploy to Development Server
-    runs-on: infrafund-develop
+    runs-on: self-hosted
     needs: build
     steps:
       - name: Deploy with Docker Compose
