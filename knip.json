@@ -1,6 +1,8 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignore": ["src/payload-types.ts", "src/app/(website)/robots.ts"],
   "ignoreDependencies": [
+    "@payloadcms/ui",
     "@ant-design/icons",
     "@typescript-eslint/eslint-plugin",
     "@typescript-eslint/parser",

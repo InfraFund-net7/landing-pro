@@ -1,8 +1,47 @@
+import { withPayload } from '@payloadcms/next/withPayload';
 import type { NextConfig } from 'next';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(__filename);
+
+const dashboardProxyOrigin = (
+  process.env.DASHBOARD_PROXY_ORIGIN ?? process.env.DASHBOARD_DEV_PROXY_ORIGIN
+)?.replace(/\/$/, '');
 
 const nextConfig: NextConfig = {
-  /* config options here */
   output: 'standalone',
+  images: {
+    localPatterns: [
+      { pathname: '/cms/api/media/file/**' },
+      { pathname: '/api/media/file/**' },
+    ],
+  },
+  webpack: (webpackConfig) => {
+    webpackConfig.resolve.extensionAlias = {
+      '.cjs': ['.cts', '.cjs'],
+      '.js': ['.ts', '.tsx', '.js', '.jsx'],
+      '.mjs': ['.mts', '.mjs'],
+    };
+    return webpackConfig;
+  },
+  turbopack: {
+    root: path.resolve(dirname),
+  },
+  async rewrites() {
+    if (!dashboardProxyOrigin) return [];
+    return [
+      {
+        source: '/register',
+        destination: `${dashboardProxyOrigin}/register`,
+      },
+      {
+        source: '/login',
+        destination: `${dashboardProxyOrigin}/login`,
+      },
+    ];
+  },
 };
 
-export default nextConfig;
+export default withPayload(nextConfig, { devBundleServerPackages: false });

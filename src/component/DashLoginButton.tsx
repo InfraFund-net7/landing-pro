@@ -3,18 +3,18 @@
 import { useCallback } from 'react';
 import { getDashLoginUrl } from '@/utils/dash-login-url';
 
-interface ParticleLoginButtonProps {
+interface DashLoginButtonProps {
   className?: string;
   children?: React.ReactNode;
   onClose?: () => void;
 }
 
-/** Sends users to the dashboard login page; the app opens the Particle modal there. */
-export default function ParticleLoginButton({
+/** Opens the dashboard login page (OpenFort auth on the dashboard app). */
+export default function DashLoginButton({
   className,
   children = 'Login',
   onClose,
-}: ParticleLoginButtonProps) {
+}: DashLoginButtonProps) {
   const goToDashboardLogin = useCallback(() => {
     onClose?.();
     window.location.href = getDashLoginUrl();

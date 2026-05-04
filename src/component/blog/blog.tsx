@@ -3,8 +3,17 @@ import React from 'react';
 import BlogCard from './blog-card';
 import { blogcategories, blogs } from '@/data/blog';
 import Image from 'next/image';
+import type { BlogListItem } from '@/lib/cms-posts';
 
-export default function Blog() {
+type BlogProps = {
+  cmsPosts?: BlogListItem[];
+};
+
+export default function Blog({ cmsPosts = [] }: BlogProps) {
+  const mergedBlogs = [
+    ...cmsPosts,
+    ...blogs.filter((b) => !cmsPosts.some((c) => c.slug === b.slug)),
+  ];
   return (
     <div className="w-full min-h-screen flex flex-col gap-16 md:gap-24 justify-center items-center px-4 sm:px-8 md:px-[90px] py-[175px]">
       <div
@@ -71,7 +80,7 @@ export default function Blog() {
   max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-[90px]
   overflow-hidden"
       >
-        {blogs.map((blog, index) => (
+        {mergedBlogs.map((blog, index) => (
           <div key={index} className="w-full max-w-[400px] min-w-0 fade-in">
             <BlogCard
               image={blog.image}
