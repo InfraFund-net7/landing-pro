@@ -19,11 +19,11 @@ jobs:
         run: |
           docker build \
             -f ./deployment/Dockerfile \
+            --secret id=payload_secret,env=BUILD_ARG_PAYLOAD_SECRET \
+            --secret id=database_url,env=BUILD_ARG_PAYLOAD_DATABASE_URL \
             --build-arg NEXT_PUBLIC_API_BASE_URL="$BUILD_ARG_API" \
             --build-arg NEXT_PUBLIC_DASH_LOGIN_URL="$BUILD_ARG_DASH_LOGIN" \
             --build-arg NEXT_PUBLIC_RECAPTCHA_SITE_KEY="$BUILD_ARG_RECAPTCHA" \
-            --build-arg PAYLOAD_SECRET="$BUILD_ARG_PAYLOAD_SECRET" \
-            --build-arg DATABASE_URL="$BUILD_ARG_PAYLOAD_DATABASE_URL" \
             -t infra-landing:prod .
 
   deploy:

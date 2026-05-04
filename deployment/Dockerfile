@@ -1,13 +1,21 @@
+# syntax=docker/dockerfile:1
+
 FROM node:24-alpine AS builder
 WORKDIR /app
 
 # Add libc6-compat for sharp/image optimization
 RUN apk add --no-cache libc6-compat
 
+# Match lockfile resolution when .npmrc is not copied yet (see root .npmrc legacy-peer-deps)
+RUN npm config set legacy-peer-deps true
+
 COPY package*.json package-lock.json* ./
 RUN npm ci --ignore-scripts
 
 COPY . .
+
+# postinstall is skipped by npm ci; apply patches/ before build
+RUN npx patch-package
 
 # Build args for NEXT_PUBLIC_* variables
 ARG NEXT_PUBLIC_API_BASE_URL
@@ -22,12 +30,12 @@ ENV NEXT_PUBLIC_DASH_LOGIN_URL=$NEXT_PUBLIC_DASH_LOGIN_URL
 ARG NEXT_PUBLIC_DASH_REGISTER_URL
 ENV NEXT_PUBLIC_DASH_REGISTER_URL=$NEXT_PUBLIC_DASH_REGISTER_URL
 
-ARG PAYLOAD_SECRET
-ENV PAYLOAD_SECRET=$PAYLOAD_SECRET
-ARG DATABASE_URL
-ENV DATABASE_URL=$DATABASE_URL
-
-RUN npm run build
+# Sensitive values via BuildKit secrets (not ARG/ENV) to avoid baking them into image layers
+RUN --mount=type=secret,id=payload_secret \
+    --mount=type=secret,id=database_url \
+    export PAYLOAD_SECRET="$(cat /run/secrets/payload_secret)" && \
+    export DATABASE_URL="$(cat /run/secrets/database_url)" && \
+    npm run build
 
 
 FROM node:24-alpine AS runner
