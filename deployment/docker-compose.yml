@@ -32,8 +32,6 @@ services:
       - HOSTNAME=0.0.0.0
       - API_URL=${API_URL}
       # Payload + Postgres at runtime (set in .env.production or host env; use host `postgres` on `internal`)
-      - DATABASE_URL=${DATABASE_URL}
-      - PAYLOAD_SECRET=${PAYLOAD_SECRET}
     env_file:
       - .env.production
     healthcheck:
