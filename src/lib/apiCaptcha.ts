@@ -1,7 +1,7 @@
 import { getRecaptchaToken } from '@/utils/recaptcha';
 
 type CaptchaAction = 'waitlist' | 'non_resident' | 'signup' | 'contact';
-
+// Recaptcha token middleware
 export const withCaptcha = async (
   action: CaptchaAction
 ): Promise<{ 'X-Captcha-Token': string }> => {
