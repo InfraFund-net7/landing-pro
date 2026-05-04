@@ -13,14 +13,27 @@ const dirname = path.dirname(filename);
 
 const isProd = process.env.NODE_ENV === 'production';
 
+// Next sets these during `next build` (webpack + static workers). They run with NODE_ENV=production
+// but must not require real secrets in process.env (Docker BuildKit secrets are exported only in
+// the outer shell; some worker paths can still see an empty value).
+const isNextProdBuildContext =
+  process.env.NEXT_PHASE === 'phase-production-build' ||
+  process.env.NEXT_PRIVATE_BUILD_WORKER === '1';
+
+const devSecret = 'local-dev-only-payload-secret-do-not-use-in-production-32';
+const buildEphemeralSecret =
+  'next-build-ephemeral-payload-secret-min-32-chars-not-for-runtime';
+const devDatabaseUrl = 'postgresql://127.0.0.1:5432/postgres';
+
 const secret =
   process.env.PAYLOAD_SECRET?.trim() ||
-  (!isProd ? 'local-dev-only-payload-secret-do-not-use-in-production-32' : '');
+  (!isProd ? devSecret : isNextProdBuildContext ? buildEphemeralSecret : '');
+
 const databaseUrl =
   process.env.DATABASE_URL?.trim() ||
-  (!isProd ? 'postgresql://127.0.0.1:5432/postgres' : '');
+  (!isProd ? devDatabaseUrl : isNextProdBuildContext ? devDatabaseUrl : '');
 
-if (isProd) {
+if (isProd && !isNextProdBuildContext) {
   if (!process.env.PAYLOAD_SECRET?.trim())
     throw new Error('Missing PAYLOAD_SECRET');
   if (!process.env.DATABASE_URL?.trim())

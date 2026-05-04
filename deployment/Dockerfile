@@ -33,8 +33,8 @@ ENV NEXT_PUBLIC_DASH_REGISTER_URL=$NEXT_PUBLIC_DASH_REGISTER_URL
 # Sensitive values via BuildKit secrets (not ARG/ENV) to avoid baking them into image layers
 RUN --mount=type=secret,id=payload_secret \
     --mount=type=secret,id=database_url \
-    export PAYLOAD_SECRET="$(cat /run/secrets/payload_secret)" && \
-    export DATABASE_URL="$(cat /run/secrets/database_url)" && \
+    export PAYLOAD_SECRET="$(tr -d '\r\n' < /run/secrets/payload_secret)" && \
+    export DATABASE_URL="$(tr -d '\r\n' < /run/secrets/database_url)" && \
     npm run build
 
 
