@@ -15,8 +15,8 @@ jobs:
           BUILD_ARG_API: ${{ secrets.DEV_API_BASE_URL }}
           BUILD_ARG_DASH_LOGIN: ${{ secrets.DEV_DASHBOARD_URL }}
           BUILD_ARG_RECAPTCHA: ${{ secrets.GOOGLE_RECAPTCHA_SITE_KEY }}
-          BUILD_ARG_PAYLOAD_SECRET: ${{ secrets.DEV_PAYLOAD_SECRET }}
-          BUILD_ARG_PAYLOAD_DATABASE_URL: ${{ secrets.DEV_PAYLOAD_DATABASE_URL }}
+          BUILD_ARG_PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          BUILD_ARG_PAYLOAD_DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           set -euo pipefail
           SECDIR="/tmp/landing-docker-secrets-$$"
