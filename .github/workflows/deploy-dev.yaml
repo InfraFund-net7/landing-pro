@@ -16,7 +16,6 @@ jobs:
           BUILD_ARG_DASH_LOGIN: ${{ secrets.DEV_DASHBOARD_URL }}
           BUILD_ARG_RECAPTCHA: ${{ secrets.GOOGLE_RECAPTCHA_SITE_KEY }}
           BUILD_ARG_PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
-          BUILD_ARG_PAYLOAD_DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           set -euo pipefail
           SECDIR="/tmp/landing-docker-secrets-$$"
@@ -31,8 +30,8 @@ jobs:
             --build-arg NEXT_PUBLIC_API_BASE_URL="$BUILD_ARG_API" \
             --build-arg NEXT_PUBLIC_DASH_LOGIN_URL="$BUILD_ARG_DASH_LOGIN" \
             --build-arg NEXT_PUBLIC_RECAPTCHA_SITE_KEY="$BUILD_ARG_RECAPTCHA" \
+            
             -t infra-landing:dev .
-
   deploy:
     name: Deploy to Development Server
     runs-on: [develop-runner]
@@ -41,9 +40,8 @@ jobs:
       - name: Deploy with Docker Compose
         env:
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }} up -d nextjs --force-recreate
 
+        run: docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }} up -d landing --force-recreate
       - name: Wait for container readiness
         run: |
           echo "Waiting for container to be ready..."
@@ -52,4 +50,4 @@ jobs:
 
       - name: Verify deployment
         run: |
-          docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }} logs --tail=20 nextjs
+          docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }} logs --tail=20 landing
