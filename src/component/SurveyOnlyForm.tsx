@@ -11,21 +11,14 @@ import organization from '@/../public/svg/organization.svg';
 import { Modal } from './ui/modal';
 import { CustomButton } from './ui/custom-button';
 import { Check } from 'lucide-react';
-import { useAccount, useModal } from '@particle-network/connectkit';
 import { FormInput } from './ui/form-input';
 import { individualStep5Schema, orgStep5Schema } from '@/schema/survey.schema';
 import apiService from '@/services/apiService';
 import { useFetchLocations } from '@/hooks/useFetchLocations';
 import { useLocationStore } from '@/stores/locationStore';
 import { withCaptcha } from '@/lib/apiCaptcha';
-import { isParticleConfigured } from '@/lib/particle-config';
 import { Dropdown } from './ui/dropdown';
-import { getDashLoginUrl } from '@/utils/dash-login-url';
-import {
-  clearParticleDashRedirectIntent,
-  markParticleDashRedirectIntent,
-  peekParticleDashRedirectIntent,
-} from '@/utils/particle-dash-redirect-intent';
+import { getDashRegisterUrl } from '@/utils/dash-login-url';
 import { ApiError } from '@/utils/interceptors.utils';
 
 type SurveyData = {
@@ -125,9 +118,6 @@ export default function SurveyOnlyForm({
     'error'
   );
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
-  const [openParticleLogin, setOpenParticleLogin] = useState<
-    (() => void) | null
-  >(null);
   const surveyDataRef = useRef<SurveyData | null>(null);
   const countries = useLocationStore((state) => state.countries);
   useFetchLocations();
@@ -569,11 +559,7 @@ export default function SurveyOnlyForm({
       setDomainCookie('survey_data', payload, 15);
       setSubmitSuccess(true);
       onSuccess?.(data);
-      if (isParticleConfigured && openParticleLogin) {
-        openParticleLogin();
-      } else {
-        window.location.href = getDashLoginUrl();
-      }
+      window.location.href = getDashRegisterUrl();
     } catch (err: unknown) {
       console.error('Client-side error:', err);
       const error = new Error('Failed to store the data. Please try again.');
@@ -1262,9 +1248,6 @@ export default function SurveyOnlyForm({
       closeOnBackdropClick={false}
     >
       <div className="w-full flex flex-col items-center gap-4 sm:gap-6 px-2 sm:px-0">
-        {isParticleConfigured && (
-          <SurveyParticleAuthBridge onOpenReady={setOpenParticleLogin} />
-        )}
         {currentStep !== 4 && (
           <Image
             priority
@@ -1284,36 +1267,4 @@ export default function SurveyOnlyForm({
       </div>
     </Modal>
   );
-}
-
-function SurveyParticleAuthBridge({
-  onOpenReady,
-}: {
-  onOpenReady: (open: () => void) => void;
-}) {
-  const { setOpen, isOpen } = useModal();
-  const account = useAccount();
-
-  useEffect(() => {
-    onOpenReady(() => () => {
-      markParticleDashRedirectIntent();
-      setOpen(true);
-    });
-  }, [onOpenReady, setOpen]);
-
-  useEffect(() => {
-    if (account.status !== 'connected') return;
-    if (account.connector.walletConnectorType !== 'particleAuth') return;
-    if (!peekParticleDashRedirectIntent()) return;
-    clearParticleDashRedirectIntent();
-    window.location.href = getDashLoginUrl();
-  }, [account]);
-
-  useEffect(() => {
-    if (isOpen) return;
-    if (account.status === 'connected') return;
-    clearParticleDashRedirectIntent();
-  }, [isOpen, account.status]);
-
-  return null;
 }

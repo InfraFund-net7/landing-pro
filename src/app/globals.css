@@ -2,7 +2,8 @@
 
 :root {
   --background: #0c0c0d;
-  --foreground: #0c0c0d;
+  /* Must contrast with --background (was identical; broke any UI inheriting body color, e.g. Payload admin). */
+  --foreground: #ededed;
   --border-gradient: linear-gradient(
     196.23deg,
     rgba(36, 255, 142, 0.02) 0%,
@@ -72,10 +73,18 @@
 
 body {
   font-family: 'Satoshi', sans-serif;
-  background: var(--background);
-  color: var(--foreground);
+  margin: 0;
+  /* Do not paint the marketing dark theme on body — Payload admin lives in the same <body> and needs a neutral canvas. */
+  background: #f4f4f5;
+  color: #111827;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.website-root {
+  min-height: 100dvh;
+  background: var(--background);
+  color: var(--foreground);
 }
 
 @keyframes slide-infinite {

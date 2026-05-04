@@ -167,7 +167,9 @@
     "grecaptcha",
     "Javad",
     "Rajabzadeh",
-    "connectkit"
+    "payloadcms",
+    "turbopack",
+    "backpro"
   ],
   "ignorePaths": [
     "node_modules",

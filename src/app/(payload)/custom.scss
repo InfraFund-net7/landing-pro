@@ -1,0 +1,5 @@
+/* Payload admin — legibility (theme is `admin.theme` in payload.config.js). */
+html {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
