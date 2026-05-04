@@ -16,13 +16,14 @@ jobs:
           BUILD_ARG_DASH_LOGIN: ${{ secrets.DEV_DASHBOARD_URL }}
           BUILD_ARG_RECAPTCHA: ${{ secrets.GOOGLE_RECAPTCHA_SITE_KEY }}
           BUILD_ARG_PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          BUILD_ARG_PAYLOAD_DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           set -euo pipefail
           SECDIR="/tmp/landing-docker-secrets-$$"
           mkdir -p "$SECDIR"
           trap 'rm -rf "$SECDIR"' EXIT
-          printf '%s' "$BUILD_ARG_PAYLOAD_SECRET" > "$SECDIR/payload"
-          printf '%s' "$BUILD_ARG_PAYLOAD_DATABASE_URL" > "$SECDIR/database"
+          printf '%s' "${BUILD_ARG_PAYLOAD_SECRET:-}" > "$SECDIR/payload"
+          printf '%s' "${BUILD_ARG_PAYLOAD_DATABASE_URL:-}" > "$SECDIR/database"
           docker build \
             -f ./deployment/Dockerfile \
             --secret id=payload_secret,src="$SECDIR/payload" \
@@ -30,7 +31,6 @@ jobs:
             --build-arg NEXT_PUBLIC_API_BASE_URL="$BUILD_ARG_API" \
             --build-arg NEXT_PUBLIC_DASH_LOGIN_URL="$BUILD_ARG_DASH_LOGIN" \
             --build-arg NEXT_PUBLIC_RECAPTCHA_SITE_KEY="$BUILD_ARG_RECAPTCHA" \
-            
             -t infra-landing:dev .
   deploy:
     name: Deploy to Development Server
