@@ -4,6 +4,12 @@ import { fetchCmsPostBySlug } from '@/lib/cms-posts';
 import { notFound } from 'next/navigation';
 import BlogPage from '@/component/blog/blog-page';
 
+/**
+ * Post body comes from CMS at request time using runtime `DATABASE_URL`.
+ * Image build skips Payload via `SKIP_PAYLOAD_FETCH_AT_BUILD` only in the Dockerfile.
+ */
+export const dynamic = 'force-dynamic';
+
 export default async function Page({
   params,
 }: {

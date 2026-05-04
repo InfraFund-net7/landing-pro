@@ -17,6 +17,14 @@ function mediaUrl(img: FeaturedImage): string | undefined {
   return undefined;
 }
 
+/**
+ * Set only in `deployment/Dockerfile` for `npm run build` (no DB in the builder).
+ * Do not set in develop/prod runtime — the app should use your real `DATABASE_URL` there.
+ */
+function skipPayloadFetchAtImageBuild(): boolean {
+  return process.env.SKIP_PAYLOAD_FETCH_AT_BUILD === '1';
+}
+
 function formatPostDate(value: null | string | Date | undefined): string {
   if (!value) return '';
   const d = typeof value === 'string' ? new Date(value) : value;
@@ -38,6 +46,7 @@ export type BlogListItem = {
 };
 
 export async function fetchCmsPostsForListing(): Promise<BlogListItem[]> {
+  if (skipPayloadFetchAtImageBuild()) return [];
   try {
     const payload = await getPayload({ config });
     const { docs } = await payload.find({
@@ -62,6 +71,7 @@ export async function fetchCmsPostsForListing(): Promise<BlogListItem[]> {
 }
 
 export async function fetchCmsPostBySlug(slug: string): Promise<Blog | null> {
+  if (skipPayloadFetchAtImageBuild()) return null;
   try {
     const payload = await getPayload({ config });
     const { docs } = await payload.find({
