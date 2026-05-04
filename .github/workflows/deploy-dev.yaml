@@ -40,7 +40,7 @@ jobs:
       - name: Deploy with Docker Compose
         env:
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
-
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }} up -d landing --force-recreate
       - name: Wait for container readiness
         run: |

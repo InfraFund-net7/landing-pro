@@ -38,6 +38,9 @@ jobs:
     needs: build
     steps:
       - name: Deploy with Docker Compose
+        env:
+          PAYLOAD_SECRET: ${{ secrets.PROD_PAYLOAD_SECRET }}
+          DATABASE_URL: ${{ secrets.PROD_PAYLOAD_DATABASE_URL }}
         run: docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_PRODUCTION }} up -d landing --force-recreate
       - name: Wait for container readiness
         run: |

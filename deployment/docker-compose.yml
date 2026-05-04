@@ -27,11 +27,12 @@ services:
       - '3000:3000'
     environment:
       - NODE_ENV=${ENVIRONMENT:-production}
-      
       - PORT=3000
       - HOSTNAME=0.0.0.0
       - API_URL=${API_URL}
-      # Payload + Postgres at runtime (set in .env.production or host env; use host `postgres` on `internal`)
+      # Payload: must reach the container — pass from host/CI (`docker compose` substitutes ${...}).
+      - PAYLOAD_SECRET=${PAYLOAD_SECRET}
+      - DATABASE_URL=${DATABASE_URL}
     env_file:
       - .env.production
     healthcheck:
