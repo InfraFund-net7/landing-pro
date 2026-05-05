@@ -1,5 +1,6 @@
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
+import fs from 'fs';
 import path from 'path';
 import { buildConfig } from 'payload';
 import { fileURLToPath } from 'url';
@@ -25,19 +26,55 @@ const buildEphemeralSecret =
   'next-build-ephemeral-payload-secret-min-32-chars-not-for-runtime';
 const devDatabaseUrl = 'postgresql://127.0.0.1:5432/postgres';
 
+function readSecretFile(pathname) {
+  if (!pathname) return '';
+  try {
+    return fs.readFileSync(pathname, 'utf8').trim();
+  } catch {
+    return '';
+  }
+}
+
+/** Env var, or `*_FILE`, or Docker Compose default secret mount paths. */
+function resolvePayloadSecret() {
+  const fromEnv = process.env.PAYLOAD_SECRET?.trim();
+  if (fromEnv) return fromEnv;
+  return (
+    readSecretFile(process.env.PAYLOAD_SECRET_FILE) ||
+    readSecretFile('/run/secrets/payload_secret')
+  );
+}
+
+function resolveDatabaseUrl() {
+  const fromEnv = process.env.DATABASE_URL?.trim();
+  if (fromEnv) return fromEnv;
+  return (
+    readSecretFile(process.env.DATABASE_URL_FILE) ||
+    readSecretFile('/run/secrets/database_url')
+  );
+}
+
+const payloadSecretResolved = resolvePayloadSecret();
+const databaseUrlResolved = resolveDatabaseUrl();
+
+if (payloadSecretResolved && !process.env.PAYLOAD_SECRET?.trim()) {
+  process.env.PAYLOAD_SECRET = payloadSecretResolved;
+}
+if (databaseUrlResolved && !process.env.DATABASE_URL?.trim()) {
+  process.env.DATABASE_URL = databaseUrlResolved;
+}
+
 const secret =
-  process.env.PAYLOAD_SECRET?.trim() ||
+  payloadSecretResolved ||
   (!isProd ? devSecret : isNextProdBuildContext ? buildEphemeralSecret : '');
 
 const databaseUrl =
-  process.env.DATABASE_URL?.trim() ||
+  databaseUrlResolved ||
   (!isProd ? devDatabaseUrl : isNextProdBuildContext ? devDatabaseUrl : '');
 
 if (isProd && !isNextProdBuildContext) {
-  if (!process.env.PAYLOAD_SECRET?.trim())
-    throw new Error('Missing PAYLOAD_SECRET');
-  if (!process.env.DATABASE_URL?.trim())
-    throw new Error('Missing DATABASE_URL');
+  if (!payloadSecretResolved) throw new Error('Missing PAYLOAD_SECRET');
+  if (!databaseUrlResolved) throw new Error('Missing DATABASE_URL');
 }
 
 const serverURL = process.env.PAYLOAD_PUBLIC_SERVER_URL;
