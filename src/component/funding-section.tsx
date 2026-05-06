@@ -5,46 +5,72 @@ import charity from '@/../public/image/charity.jpg';
 import PreSale from '@/../public/image/pre-sale.jpg';
 import SecurityBase from '@/../public/image/security-base.jpg';
 
-export default function FundingSection() {
-  const fundingitems = [
+type FundingIconKey = 'zap' | 'chart' | 'dollar' | 'heart';
+
+type FundingItem = {
+  background: string;
+  title: string;
+  iconKey?: FundingIconKey;
+  description: string;
+};
+
+type FundingSectionProps = {
+  title?: string;
+  items?: FundingItem[];
+};
+
+const iconMap = {
+  zap: Zap,
+  chart: ChartSpline,
+  dollar: CircleDollarSign,
+  heart: HandHeart,
+};
+
+const fallbackItems: FundingItem[] = [
     {
-      background: PreSale,
+      background: PreSale.src,
       title: 'Pre-Sale of Energy',
-      icon: Zap,
+      iconKey: 'zap',
       description:
         'Our flagship model. Fund the development of new renewable energy projects by pre-purchasing their future energy output at a discounted rate. A direct, impactful way to accelerate the NetZero transition.',
     },
     {
-      background: SecurityBase,
+      background: SecurityBase.src,
       title: 'Equity-Based',
-      icon: ChartSpline,
+      iconKey: 'chart',
       description:
         'For accredited investors. Purchase digital tokens that represent a direct equity or debt stake in a project, offering traditional financial returns.',
     },
     {
-      background: loan,
+      background: loan.src,
       title: 'Loan-Based',
-      icon: CircleDollarSign,
+      iconKey: 'dollar',
       description:
         'Provide debt financing to projects and earn a fixed return as the loan is repaid. A stable, lower-risk option.',
     },
     {
-      background: charity,
+      background: charity.src,
       title: 'Charity-Based',
-      icon: HandHeart,
+      iconKey: 'heart',
       description:
         'Directly support high-impact, non-profit environmental projects where the primary return is a measurable contribution to our planet.',
     },
   ];
 
+export default function FundingSection({
+  title = 'Flexible Funding for a Diverse Market',
+  items = fallbackItems,
+}: FundingSectionProps) {
   return (
     <div className="flex flex-col gap-16 w-full h-fit items-center mb-10">
       <h2 className="text-white font-bold text-4xl md:text-5xl text-center px-4">
-        Flexible Funding for a Diverse Market
+        {title}
       </h2>
 
       <div className="hidden md:flex w-full h-[500px]">
-        {fundingitems.map((item, index) => (
+        {items.map((item, index) => {
+          const Icon = iconMap[item.iconKey ?? 'zap'];
+          return (
           <div
             key={index}
             className="
@@ -56,7 +82,9 @@ export default function FundingSection() {
               group
             "
             style={{
-              backgroundImage: `url(${item.background.src})`,
+              backgroundImage: item.background
+                ? `url(${item.background})`
+                : undefined,
               backgroundSize: 'cover',
               backgroundPosition:
                 item.title === 'Loan-Based' ? 'right' : 'center',
@@ -72,7 +100,7 @@ export default function FundingSection() {
             />
             <div className="relative z-0 flex flex-col justify-between  gap-6 px-6 h-full">
               <div className="flex flex-col gap-2 ">
-                <item.icon className="text-white" size={32} />
+                <Icon className="text-white" size={32} />
                 <h3 className="text-white text-xl font-semibold">
                   {item.title}
                 </h3>
@@ -87,11 +115,14 @@ export default function FundingSection() {
               </div>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="flex md:hidden flex-col gap-6 w-full px-4">
-        {fundingitems.map((item, index) => (
+        {items.map((item, index) => {
+          const Icon = iconMap[item.iconKey ?? 'zap'];
+          return (
           <div
             key={index}
             className="
@@ -102,7 +133,9 @@ export default function FundingSection() {
               group
             "
             style={{
-              backgroundImage: `url(${item.background.src})`,
+              backgroundImage: item.background
+                ? `url(${item.background})`
+                : undefined,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}
@@ -117,7 +150,7 @@ export default function FundingSection() {
             />
             <div className="relative z-10 flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <item.icon className="text-white" size={28} />
+                <Icon className="text-white" size={28} />
                 <h3 className="text-white text-lg font-semibold">
                   {item.title}
                 </h3>
@@ -130,7 +163,8 @@ export default function FundingSection() {
               </p>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

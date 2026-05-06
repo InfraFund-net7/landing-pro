@@ -1,5 +1,6 @@
 import Blog from '@/component/blog/blog';
 import { fetchCmsPostsForListing } from '@/lib/cms-posts';
+import { fetchSitePageBySlug } from '@/lib/cms-site-pages';
 import React from 'react';
 
 /**
@@ -9,6 +10,7 @@ import React from 'react';
 export const dynamic = 'force-dynamic';
 
 export default async function page() {
+  const cmsPage = await fetchSitePageBySlug('blog');
   const cmsPosts = await fetchCmsPostsForListing();
-  return <Blog cmsPosts={cmsPosts} />;
+  return <Blog cmsPosts={cmsPosts} cmsPage={cmsPage} />;
 }

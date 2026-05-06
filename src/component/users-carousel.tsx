@@ -1,7 +1,15 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 
-const testimonials = [
+type Testimonial = {
+  id: number;
+  quote: string;
+  name: string;
+  title: string;
+  image: string;
+};
+
+const fallbackTestimonials: Testimonial[] = [
   {
     id: 1,
     quote:
@@ -28,7 +36,13 @@ const testimonials = [
   },
 ];
 
-export default function UsersCarousel() {
+type UsersCarouselProps = {
+  testimonials?: Testimonial[];
+};
+
+export default function UsersCarousel({
+  testimonials = fallbackTestimonials,
+}: UsersCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerSlide, setItemsPerSlide] = useState(3);
   const startX = useRef(0);

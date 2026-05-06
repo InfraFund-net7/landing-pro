@@ -1,6 +1,11 @@
 import React from 'react';
 import { Metadata } from 'next';
 import GenderEqualityPlan from '@/component/gep/gep';
+import CmsSitePage from '@/component/cms-site-page';
+import {
+  fetchSitePageBySlug,
+  isCmsPageReplacementEnabled,
+} from '@/lib/cms-site-pages';
 
 const canonicalUrl = 'https://www.infrafund.net/GEP';
 
@@ -40,6 +45,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Page() {
+export default async function Page() {
+  const cmsPage = await fetchSitePageBySlug('GEP');
+  if (isCmsPageReplacementEnabled && cmsPage?.replaceExistingPage) {
+    return <CmsSitePage page={cmsPage} />;
+  }
   return <GenderEqualityPlan />;
 }

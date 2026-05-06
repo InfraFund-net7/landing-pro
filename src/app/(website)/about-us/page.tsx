@@ -1,6 +1,11 @@
 import React from 'react';
 import { Metadata } from 'next';
 import AboutUs from '@/component/about-us/about-us';
+import CmsSitePage from '@/component/cms-site-page';
+import {
+  fetchSitePageBySlug,
+  isCmsPageReplacementEnabled,
+} from '@/lib/cms-site-pages';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://infrafund.io';
 
@@ -50,6 +55,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Page() {
+export default async function Page() {
+  const cmsPage = await fetchSitePageBySlug('about-us');
+  if (isCmsPageReplacementEnabled && cmsPage?.replaceExistingPage) {
+    return <CmsSitePage page={cmsPage} />;
+  }
   return <AboutUs />;
 }

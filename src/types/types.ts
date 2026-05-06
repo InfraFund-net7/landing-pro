@@ -7,5 +7,5 @@ export interface Project {
   fundingTarget: string;
   projectedReturn: string;
   fundingStatus: number;
-  image: StaticImageData;
+  image: StaticImageData | string;
 }

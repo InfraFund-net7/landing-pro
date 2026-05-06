@@ -7,7 +7,9 @@ import { fileURLToPath } from 'url';
 import sharp from 'sharp';
 import { Media } from './collections/Media.js';
 import { Posts } from './collections/Posts.js';
+import { SitePages } from './collections/SitePages.js';
 import { Users } from './collections/Users.js';
+import { HomePage } from './globals/HomePage.js';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -94,7 +96,8 @@ export default buildConfig({
     graphQLPlayground: '/cms/graphql-playground',
   },
   ...(serverURL ? { serverURL } : {}),
-  collections: [Users, Media, Posts],
+  collections: [Users, Media, Posts, SitePages],
+  globals: [HomePage],
   editor: lexicalEditor(),
   secret,
   typescript: {

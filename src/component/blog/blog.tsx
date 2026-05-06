@@ -1,19 +1,19 @@
 import { Search } from 'lucide-react';
 import React from 'react';
 import BlogCard from './blog-card';
-import { blogcategories, blogs } from '@/data/blog';
-import Image from 'next/image';
 import type { BlogListItem } from '@/lib/cms-posts';
+import type { CmsSitePage } from '@/lib/cms-site-pages';
 
 type BlogProps = {
   cmsPosts?: BlogListItem[];
+  cmsPage?: CmsSitePage | null;
 };
 
-export default function Blog({ cmsPosts = [] }: BlogProps) {
-  const mergedBlogs = [
-    ...cmsPosts,
-    ...blogs.filter((b) => !cmsPosts.some((c) => c.slug === b.slug)),
-  ];
+export default function Blog({ cmsPosts = [], cmsPage = null }: BlogProps) {
+  const heading = cmsPage?.hero?.heading || cmsPage?.title || 'Insight';
+  const subheading = cmsPage?.hero?.subheading || '';
+  const categoryItems =
+    cmsPage?.blocks.find((block) => block.blockType === 'feature-grid')?.items ?? [];
   return (
     <div className="w-full min-h-screen flex flex-col gap-16 md:gap-24 justify-center items-center px-4 sm:px-8 md:px-[90px] py-[175px]">
       <div
@@ -27,8 +27,11 @@ export default function Blog({ cmsPosts = [] }: BlogProps) {
       <div className="w-full max-w-[832px] flex flex-col justify-center items-center gap-8 text-center">
         <div className="w-full flex flex-col justify-center items-center gap-6">
           <h1 className="text-[48px] sm:text-[72px] md:text-[106px] text-white font-medium">
-            Insight
+            {heading}
           </h1>
+          {subheading ? (
+            <p className="text-white/80 text-base md:text-lg max-w-3xl">{subheading}</p>
+          ) : null}
 
           <div className="w-full p-3 sm:p-4 flex justify-start items-center bg-[#EEF2F0] rounded-2xl text-black gap-2">
             <Search size={20} className="cursor-pointer" />
@@ -38,29 +41,13 @@ export default function Blog({ cmsPosts = [] }: BlogProps) {
             />
           </div>
           <div className="flex flex-wrap justify-center items-center md:justify-center gap-4 w-full ">
-            {blogcategories.map((item, index) => (
+            {categoryItems.map((item, index) => (
               <div
                 key={index}
                 className="flex items-center gap-1 py-2 px-4 rounded-[51px] border w-fit h-fit"
-                style={{ borderColor: item.color }}
+                style={{ borderColor: '#5D5D5D' }}
               >
-                {item.type === 'lucide' ? (
-                  <item.icon size={16} color={item.color} />
-                ) : (
-                  <Image
-                    src={item.icon}
-                    alt={item.title}
-                    width={16}
-                    height={16}
-                    style={{ objectFit: 'contain' }}
-                  />
-                )}
-                <span
-                  className="text-sm font-medium"
-                  style={{ color: item.color }}
-                >
-                  {item.title}
-                </span>
+                <span className="text-sm font-medium text-white">{item.title}</span>
               </div>
             ))}
           </div>
@@ -80,7 +67,7 @@ export default function Blog({ cmsPosts = [] }: BlogProps) {
   max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-[90px]
   overflow-hidden"
       >
-        {mergedBlogs.map((blog, index) => (
+        {cmsPosts.map((blog, index) => (
           <div key={index} className="w-full max-w-[400px] min-w-0 fade-in">
             <BlogCard
               image={blog.image}
@@ -92,6 +79,11 @@ export default function Blog({ cmsPosts = [] }: BlogProps) {
             />
           </div>
         ))}
+        {cmsPosts.length === 0 ? (
+          <div className="text-white/70 text-center col-span-full py-8">
+            No published posts yet. Add posts in Payload admin to populate this page.
+          </div>
+        ) : null}
       </div>
     </div>
   );

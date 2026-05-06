@@ -20,7 +20,10 @@
     "prepare": "husky",
     "generate:importmap": "npm run payload -- generate:importmap && prettier --write \"src/app/(payload)/admin/importMap.js\"",
     "generate:types": "payload generate:types",
-    "payload": "payload --disable-transpile"
+    "payload": "payload --disable-transpile",
+    "seed:home-page": "node --env-file=.env.local src/scripts/seed-home-page.mjs",
+    "seed:site-pages": "node --env-file=.env.local src/scripts/seed-site-pages.mjs",
+    "seed:posts": "node --env-file=.env.local src/scripts/seed-posts.mjs"
   },
   "commitlint": {
     "extends": [
