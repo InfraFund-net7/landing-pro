@@ -181,6 +181,10 @@ export interface Post {
    */
   slug: string;
   description: string;
+  /**
+   * Long-form post content shown on the post detail page.
+   */
+  mainContent?: string | null;
   published?: boolean | null;
   publishedAt?: string | null;
   readTime?: string | null;
@@ -316,6 +320,7 @@ export interface PostsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   description?: T;
+  mainContent?: T;
   published?: T;
   publishedAt?: T;
   readTime?: T;
