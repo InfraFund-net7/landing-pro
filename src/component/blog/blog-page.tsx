@@ -1,14 +1,18 @@
 import Image from 'next/image';
+import BlogComments from './blog-comments';
 import BlogContents from './blog-contents';
+import CmsBlogContent from './cms-blog-content';
 import RelatedBlog from './related-blog';
 import ProjectSection from './project-section';
 import type { Blog } from '@/data/mockBlog';
+import type { BlogComment } from '@/lib/cms-comments';
 
 interface BlogPageProps {
   blog: Blog;
+  comments: BlogComment[];
 }
 
-export default function BlogPage({ blog }: BlogPageProps) {
+export default function BlogPage({ blog, comments }: BlogPageProps) {
   return (
     <div className="w-full min-h-screen flex flex-col gap-16 md:gap-24 justify-center items-center px-4 sm:px-8 md:px-[90px] py-[175px]">
       <div className="w-full flex flex-col gap-8 md:gap-12">
@@ -59,7 +63,15 @@ export default function BlogPage({ blog }: BlogPageProps) {
       </div>
 
       <hr className="w-full h-[1px] bg-[#DCDCE0]" />
-      <BlogContents />
+      {blog.mainContent?.trim() ? (
+        <CmsBlogContent content={blog.mainContent} />
+      ) : (
+        <BlogContents />
+      )}
+      <hr className="w-full h-[1px] bg-[#DCDCE0]" />
+      {blog.id ? (
+        <BlogComments postId={blog.id} initialComments={comments} />
+      ) : null}
       <hr className="w-full h-[1px] bg-[#DCDCE0]" />
       <RelatedBlog />
       <ProjectSection />

@@ -1,31 +1,65 @@
 'use client';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-export default function HeroSection() {
-  const steps = [
-    {
-      id: 1,
-      title: 'AI-Driven Digital Twin',
-      desc: `Our "secret sauce." We create a dynamic virtual model of every project, providing live performance data and predictive risk analysis to de-risk your investment.`,
-      border: 'rounded-tl-[200px] rounded-tr-[20px] rounded-b-[20px]',
-      img: 'ai-digital.jpg',
-    },
-    {
-      id: 2,
-      title: 'RWA Tokenization',
-      desc: 'We use enterprise-grade, compliance-aware token standards to convert illiquid physical assets into liquid, tradable digital securities.',
-      border:
-        'rounded-tr-[20px] rounded-tl-[200px] rounded-br-[200px] rounded-bl-[20px]',
-      img: 'rwa-tokenization.jpg',
-    },
-    {
-      id: 3,
-      title: 'DAO Governance',
-      desc: 'We are building a future where project governance is decentralized. Token holders can vote on key decisions, turning investors into true project advocates.',
-      border: 'rounded-l-[200px] rounded-r-[20px]',
-      img: 'radical-transparency.jpg',
-    },
-  ];
+type TransparencyStep = {
+  id: number;
+  title: string;
+  desc: string;
+  border: string;
+  img: string;
+};
+
+type HeroSectionProps = {
+  heading?: string;
+  subheading?: string;
+  steps?: Array<{ title: string; desc: string; img: string }>;
+};
+
+const fallbackSteps: TransparencyStep[] = [
+  {
+    id: 1,
+    title: 'AI-Driven Digital Twin',
+    desc: `Our "secret sauce." We create a dynamic virtual model of every project, providing live performance data and predictive risk analysis to de-risk your investment.`,
+    border: 'rounded-tl-[200px] rounded-tr-[20px] rounded-b-[20px]',
+    img: 'ai-digital.jpg',
+  },
+  {
+    id: 2,
+    title: 'RWA Tokenization',
+    desc: 'We use enterprise-grade, compliance-aware token standards to convert illiquid physical assets into liquid, tradable digital securities.',
+    border:
+      'rounded-tr-[20px] rounded-tl-[200px] rounded-br-[200px] rounded-bl-[20px]',
+    img: 'rwa-tokenization.jpg',
+  },
+  {
+    id: 3,
+    title: 'DAO Governance',
+    desc: 'We are building a future where project governance is decentralized. Token holders can vote on key decisions, turning investors into true project advocates.',
+    border: 'rounded-l-[200px] rounded-r-[20px]',
+    img: 'radical-transparency.jpg',
+  },
+];
+
+export default function HeroSection({
+  heading = 'Powered by Radical Transparency',
+  subheading = 'Our technology unlocks trust, efficiency, and accessibility for green finance.',
+  steps,
+}: HeroSectionProps) {
+  const resolvedSteps: TransparencyStep[] =
+    steps && steps.length > 0
+      ? steps.map((step, index) => ({
+          id: index + 1,
+          title: step.title,
+          desc: step.desc,
+          img: step.img,
+          border:
+            index % 3 === 0
+              ? 'rounded-tl-[200px] rounded-tr-[20px] rounded-b-[20px]'
+              : index % 3 === 1
+                ? 'rounded-tr-[20px] rounded-tl-[200px] rounded-br-[200px] rounded-bl-[20px]'
+                : 'rounded-l-[200px] rounded-r-[20px]',
+        }))
+      : fallbackSteps;
 
   const [currentStep, setCurrentStep] = useState(1);
   const [autoPlay, setAutoPlay] = useState(true);
@@ -41,7 +75,9 @@ export default function HeroSection() {
       setFade(false);
 
       const t = setTimeout(() => {
-        setCurrentStep((prev) => (prev === steps.length ? 1 : prev + 1));
+        setCurrentStep((prev) =>
+          prev === resolvedSteps.length ? 1 : prev + 1
+        );
         setFade(true);
       }, 300);
 
@@ -49,7 +85,7 @@ export default function HeroSection() {
     }, 10000);
 
     return () => clearInterval(interval);
-  }, [autoPlay, steps.length]);
+  }, [autoPlay, resolvedSteps.length]);
 
   // Indicator movement
   const updateIndicatorToStep = (stepIndex: number) => {
@@ -80,17 +116,16 @@ export default function HeroSection() {
     return () => window.removeEventListener('resize', onResize);
   }, [currentStep]);
 
-  const activeStep = steps.find((s) => s.id === currentStep);
+  const activeStep = resolvedSteps.find((s) => s.id === currentStep);
 
   return (
     <div className="w-full min-h-[220px] flex flex-col justify-center items-center px- mb-5 sm:px-[90px] py-10">
       <div className="flex flex-col justify-center items-center gap-2 mb-10 text-center">
         <h2 className="text-xl sm:text-2xl md:text-[42px] text-white font-bold tracking-tight">
-          Powered by Radical Transparency
+          {heading}
         </h2>
         <h2 className="text-sm sm:text-base md:text-xl text-gray-300 font-normal max-w-2xl">
-          Our technology unlocks trust, efficiency, and accessibility for green
-          finance.
+          {subheading}
         </h2>
       </div>
 
@@ -103,7 +138,7 @@ export default function HeroSection() {
               onMouseEnter={() => setAutoPlay(false)}
               onMouseLeave={() => setAutoPlay(true)}
             >
-              {steps.map((step, idx) => (
+              {resolvedSteps.map((step, idx) => (
                 <button
                   key={step.id}
                   ref={(el) => {
@@ -153,7 +188,11 @@ export default function HeroSection() {
           onMouseEnter={() => setAutoPlay(false)}
           onMouseLeave={() => setAutoPlay(true)}
           className={`w-full lg:w-[408px] h-[300px] lg:h-[458px] bg-cover bg-center transition-all duration-700 ${activeStep?.border}`}
-          style={{ backgroundImage: `url(/image/${activeStep?.img})` }}
+          style={{
+            backgroundImage: activeStep?.img?.startsWith('/')
+              ? `url(${activeStep.img})`
+              : `url(/image/${activeStep?.img})`,
+          }}
         />
       </div>
     </div>

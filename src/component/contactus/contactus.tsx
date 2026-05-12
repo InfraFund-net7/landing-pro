@@ -5,11 +5,17 @@ import Link from 'next/link';
 import { createPortal } from 'react-dom';
 import { contactusactions } from '@/constants/contactus';
 import EmailSend from './email-send';
+import { Headset, Mail } from 'lucide-react';
 
 interface ContactUsModalProps {
   isOpen: boolean;
   onClose: () => void;
   triggerRef?: React.RefObject<HTMLElement | null>;
+  actions?: Array<{
+    title: string;
+    description: string;
+    type: 'booking' | 'email';
+  }>;
 }
 
 const openGoogleCalendarPopup = () => {
@@ -23,8 +29,10 @@ const openGoogleCalendarPopup = () => {
 export default function ContactUsModal({
   isOpen,
   onClose,
+  actions,
 }: ContactUsModalProps) {
   const [mode, setMode] = useState<'menu' | 'email'>('menu');
+  const resolvedActions = actions ?? contactusactions;
 
   if (!isOpen) return null;
 
@@ -68,8 +76,13 @@ export default function ContactUsModal({
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-                {contactusactions.map((item, i) => {
-                  const Icon = item.icon;
+                {resolvedActions.map((item, i) => {
+                  const Icon =
+                    'icon' in item
+                      ? item.icon
+                      : item.type === 'booking'
+                        ? Headset
+                        : Mail;
                   return (
                     <button
                       key={i}

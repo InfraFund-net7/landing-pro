@@ -7,20 +7,54 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 
-export default function InvestmentPlatform() {
+type ModalTab = {
+  name: string;
+  content: string;
+};
+
+type InvestmentPlatformProps = {
+  title?: string;
+  ctaLabel?: string;
+  ctaLink?: string;
+  projectsData?: Project[];
+  modalTabs?: ModalTab[];
+};
+
+const fallbackModalTabs: ModalTab[] = [
+  {
+    name: 'Overview',
+    content:
+      'The North Sea Wind Project by WindNetZero is one of the largest offshore wind farms in Europe...',
+  },
+  {
+    name: 'Financials',
+    content: 'This project has a total investment size of £350M...',
+  },
+  {
+    name: 'Technical',
+    content: 'The project utilizes advanced 14MW offshore wind turbines...',
+  },
+  {
+    name: 'Documents',
+    content: 'You can access all official project documents...',
+  },
+];
+
+export default function InvestmentPlatform({
+  title = 'Invest in the Future, Today',
+  ctaLabel = 'Explore All Projects',
+  ctaLink = '/project',
+  projectsData = projects,
+  modalTabs = fallbackModalTabs,
+}: InvestmentPlatformProps) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  type TabName = 'Overview' | 'Financials' | 'Technical' | 'Documents';
-  const [activeTab, setActiveTab] = useState<TabName>('Overview');
+  const [activeTab, setActiveTab] = useState(modalTabs[0]?.name ?? 'Overview');
 
-  const tabContent: Record<TabName, string> = {
-    Overview: `The North Sea Wind Project by WindNetZero is one of the largest offshore wind farms in Europe...`,
-    Financials: `This project has a total investment size of £350M...`,
-    Technical: `The project utilizes advanced 14MW offshore wind turbines...`,
-    Documents: `You can access all official project documents...`,
-  };
-
-  const tabs: TabName[] = Object.keys(tabContent) as TabName[];
+  const tabContent = modalTabs.reduce<Record<string, string>>((acc, tab) => {
+    acc[tab.name] = tab.content;
+    return acc;
+  }, {});
 
   useEffect(() => {
     if (selectedProject) {
@@ -48,7 +82,13 @@ export default function InvestmentPlatform() {
       >
         <div
           className="absolute inset-0 bg-cover bg-center opacity-80"
-          style={{ backgroundImage: `url(${selectedProject.image.src})` }}
+          style={{
+            backgroundImage: `url(${
+              typeof selectedProject.image === 'string'
+                ? selectedProject.image
+                : selectedProject.image.src
+            })`,
+          }}
         />
         <div
           className="relative z-10 w-full h-full text-white px-6 md:px-16 lg:px-28 py-20 flex flex-col gap-10 md:gap-16"
@@ -70,22 +110,22 @@ export default function InvestmentPlatform() {
             style={{ backdropFilter: 'blur(12px)' }}
           >
             <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 mb-6">
-              {tabs.map((tab) => (
+              {modalTabs.map((tab) => (
                 <span
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
+                  key={tab.name}
+                  onClick={() => setActiveTab(tab.name)}
                   className={`text-sm md:text-base cursor-pointer ${
-                    activeTab === tab
+                    activeTab === tab.name
                       ? 'font-bold text-[#24FF8E]'
                       : 'hover:text-[#24FF8E]'
                   }`}
                 >
-                  {tab}
+                  {tab.name}
                 </span>
               ))}
             </div>
             <p className="text-sm md:text-lg text-left leading-relaxed">
-              {tabContent[activeTab]}
+              {tabContent[activeTab] ?? ''}
             </p>
           </div>
         </div>
@@ -100,20 +140,20 @@ export default function InvestmentPlatform() {
       <div className="min-h-screen overflow-hidden relative mb-15">
         <div className="z-10 flex flex-col items-center justify-center min-h-screen px-4 py-12">
           <div className="text-[42px] lg:text-6xl font-bold text-white text-center mb-16 max-w-4xl">
-            Invest in the Future, Today
+            {title}
           </div>
           <div className="w-full">
             <ProjectsSlider
-              projects={projects}
+              projects={projectsData}
               cardsPerSlide={3}
               onSelectProject={setSelectedProject}
             />
           </div>
           <Link
-            href="/project"
+            href={ctaLink}
             className="bg-transparent border cursor-pointer border-gray-600 hover:border-gray-400 text-white px-8 py-3 rounded-lg mt-10"
           >
-            Explore All Projects
+            {ctaLabel}
           </Link>
         </div>
       </div>

@@ -30,7 +30,9 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
       <Image
         src={project.image}
         alt={project.title}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
+        fill
+        sizes="(max-width: 640px) 75vw, (max-width: 1024px) 350px, 403px"
+        className="absolute inset-0 object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
       />
 
       <div

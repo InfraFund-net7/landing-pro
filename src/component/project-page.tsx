@@ -29,7 +29,11 @@ offshore wind farms in Europe...`,
   useEffect(() => {
     if (selectedProject) {
       setTimeout(() => {
-        setBgImage(selectedProject.image.src);
+        setBgImage(
+          typeof selectedProject.image === 'string'
+            ? selectedProject.image
+            : selectedProject.image.src
+        );
       }, 300);
     } else {
       setBgImage(null);

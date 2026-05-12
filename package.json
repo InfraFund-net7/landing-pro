@@ -16,7 +16,14 @@
     "format:knip": "knip",
     "fix:prettier": "prettier --write .",
     "fix:lint": "eslint --fix .",
-    "prepare": "husky"
+    "postinstall": "patch-package",
+    "prepare": "husky",
+    "generate:importmap": "npm run payload -- generate:importmap && prettier --write \"src/app/(payload)/admin/importMap.js\"",
+    "generate:types": "payload generate:types",
+    "payload": "payload --disable-transpile",
+    "seed:home-page": "node --env-file=.env.local src/scripts/seed-home-page.mjs",
+    "seed:site-pages": "node --env-file=.env.local src/scripts/seed-site-pages.mjs",
+    "seed:posts": "node --env-file=.env.local src/scripts/seed-posts.mjs"
   },
   "commitlint": {
     "extends": [
@@ -25,15 +32,23 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.1",
-    "@particle-network/connectkit": "^2.1.3",
+    "@payloadcms/db-postgres": "^3.84.1",
+    "@payloadcms/next": "^3.84.1",
+    "@payloadcms/richtext-lexical": "^3.84.1",
+    "@payloadcms/ui": "^3.84.1",
     "axios": "^1.13.2",
+    "graphql": "^16.13.2",
     "gsap": "^3.13.0",
     "lucide-react": "^0.542.0",
     "next": "15.5.7",
+    "payload": "^3.84.1",
     "react": "19.1.2",
     "react-dom": "19.1.2",
+    "react-is": "19.1.2",
     "react-responsive": "^10.0.1",
     "recharts": "^3.3.0",
+    "sass": "^1.99.0",
+    "sharp": "^0.34.5",
     "zod": "^4.1.12",
     "zustand": "^5.0.11"
   },
@@ -52,6 +67,7 @@
     "eslint-config-next": "^15.5.7",
     "husky": "^9.1.7",
     "knip": "^5.66.2",
+    "patch-package": "^8.0.1",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "tailwindcss": "^4",

@@ -1,26 +1,48 @@
-version: '3.8'
+# Stack that runs next to an existing Docker `internal` network (Postgres, API, etc.).
+# Standalone: `docker network create internal` once, or remove the `internal` network block
+# and the `networks:` entry under `nextjs` if you do not use a shared DB network.
+#
+# Traefik: add another external network (e.g. traefik_proxy) here and under `nextjs.networks`.
+
+networks:
+  internal:
+    external: true
+    name: internal
 
 services:
   nextjs:
     build:
-      context: .
-      dockerfile: Dockerfile
+      # Repo root — Dockerfile lives under deployment/
+      context: ..
+      dockerfile: deployment/Dockerfile
       args:
         NODE_ENV: production
     image: landing-infrafund:latest
     container_name: nextjs-app
     restart: unless-stopped
+    networks:
+      - default
+      - internal
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
-      - NODE_ENV=${ENVIRONMENT}
+      - NODE_ENV=${ENVIRONMENT:-production}
       - PORT=3000
       - HOSTNAME=0.0.0.0
       - API_URL=${API_URL}
+      # Payload: must reach the container — pass from host/CI (`docker compose` substitutes ${...}).
+      - PAYLOAD_SECRET=${PAYLOAD_SECRET}
+      - DATABASE_URL=${DATABASE_URL}
     env_file:
       - .env.production
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "require('http').get('http://localhost:3000', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -34,7 +56,7 @@ services:
           cpus: '0.5'
           memory: 256M
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: '10m'
+        max-file: '3'

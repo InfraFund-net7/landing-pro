@@ -1,0 +1,16 @@
+diff --git a/node_modules/drizzle-kit/api.js b/node_modules/drizzle-kit/api.js
+index dff423b..fd7cd05 100644
+--- a/node_modules/drizzle-kit/api.js
++++ b/node_modules/drizzle-kit/api.js
+@@ -166293,6 +166293,11 @@ var pushSchema = async (imports, drizzleInstance, schemaFilters, tablesFilter, e
+   );
+   const db2 = {
+     query: async (query, params) => {
++      const pgClient = drizzleInstance.$client;
++      if (pgClient && typeof pgClient.query === "function") {
++        const res = await pgClient.query(query, params ?? []);
++        return res.rows;
++      }
+       const res = await drizzleInstance.execute(sql3.raw(query));
+       return res.rows;
+     }

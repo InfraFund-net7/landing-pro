@@ -15,18 +15,28 @@ jobs:
           BUILD_ARG_API: ${{ secrets.DEV_API_BASE_URL }}
           BUILD_ARG_DASH_LOGIN: ${{ secrets.DEV_DASHBOARD_URL }}
           BUILD_ARG_RECAPTCHA: ${{ secrets.GOOGLE_RECAPTCHA_SITE_KEY }}
-          BUILD_ARG_PARTICLE_PROJECT: ${{ secrets.DEV_PARTICLE_PROJECT_ID }}
-          BUILD_ARG_PARTICLE_CLIENT: ${{ secrets.DEV_PARTICLE_CLIENT_KEY }}
-          BUILD_ARG_PARTICLE_APP: ${{ secrets.DEV_PARTICLE_APP_ID }}
+          BUILD_ARG_PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          BUILD_ARG_PAYLOAD_DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
+          set -euo pipefail
+          case "${BUILD_ARG_PAYLOAD_DATABASE_URL:-}" in
+            *"@127.0.0.1:"*|*"@localhost:"*)
+              echo "ERROR: DATABASE_URL points to localhost. Use a Docker-reachable host/service (e.g. postgres:5432 on internal network)." >&2
+              exit 1
+              ;;
+          esac
+          SECDIR="/tmp/landing-docker-secrets-$$"
+          mkdir -p "$SECDIR"
+          trap 'rm -rf "$SECDIR"' EXIT
+          printf '%s' "${BUILD_ARG_PAYLOAD_SECRET:-}" > "$SECDIR/payload"
+          printf '%s' "${BUILD_ARG_PAYLOAD_DATABASE_URL:-}" > "$SECDIR/database"
           docker build \
             -f ./deployment/Dockerfile \
+            --secret id=payload_secret,src="$SECDIR/payload" \
+            --secret id=database_url,src="$SECDIR/database" \
             --build-arg NEXT_PUBLIC_API_BASE_URL="$BUILD_ARG_API" \
             --build-arg NEXT_PUBLIC_DASH_LOGIN_URL="$BUILD_ARG_DASH_LOGIN" \
             --build-arg NEXT_PUBLIC_RECAPTCHA_SITE_KEY="$BUILD_ARG_RECAPTCHA" \
-            --build-arg NEXT_PUBLIC_PROJECT_ID="$BUILD_ARG_PARTICLE_PROJECT" \
-            --build-arg NEXT_PUBLIC_CLIENT_KEY="$BUILD_ARG_PARTICLE_CLIENT" \
-            --build-arg NEXT_PUBLIC_APP_ID="$BUILD_ARG_PARTICLE_APP" \
             -t infra-landing:dev .
   deploy:
     name: Deploy to Development Server
@@ -34,7 +44,18 @@ jobs:
     needs: build
     steps:
       - name: Deploy with Docker Compose
-        run: docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }} up -d landing --force-recreate
+        env:
+          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          set -euo pipefail
+          case "${DATABASE_URL:-}" in
+            *"@127.0.0.1:"*|*"@localhost:"*)
+              echo "ERROR: DATABASE_URL points to localhost. Set secret DATABASE_URL to an internal host/service reachable from the container." >&2
+              exit 1
+              ;;
+          esac
+          docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }} up -d landing --force-recreate
       - name: Wait for container readiness
         run: |
           echo "Waiting for container to be ready..."
