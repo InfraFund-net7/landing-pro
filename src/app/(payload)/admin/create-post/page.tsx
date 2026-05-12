@@ -26,6 +26,25 @@ function excerptFrom(value: string): string {
   return `${clean.slice(0, 157)}...`;
 }
 
+type PayloadWithPostsCreate = {
+  create: (args: {
+    collection: 'posts';
+    data: {
+      title: string;
+      slug: string;
+      description: string;
+      mainContent: string;
+      published: boolean;
+      publishedAt: string;
+      readTime: string;
+      author: string;
+      category: string;
+      categories: string[];
+      tags: { tag: string }[];
+    };
+  }) => Promise<unknown>;
+};
+
 async function createPostAction(formData: FormData) {
   'use server';
 
@@ -54,9 +73,11 @@ async function createPostAction(formData: FormData) {
     .map((tag) => ({ tag }));
 
   try {
-    const payload = await getPayload({ config });
+    const payload = (await getPayload({
+      config,
+    })) as unknown as PayloadWithPostsCreate;
 
-    await (payload as any).create({
+    await payload.create({
       collection: 'posts',
       data: {
         title,
@@ -130,6 +151,19 @@ export default async function CreatePostPage({ searchParams }: PageProps) {
           <h1 style={{ fontSize: 28, margin: 0, fontWeight: 700 }}>
             Create New Post
           </h1>
+          <Link
+            href="/admin/comment-management"
+            style={{
+              color: '#A7B7D9',
+              textDecoration: 'none',
+              fontSize: 13,
+              border: '1px solid #2A3B61',
+              borderRadius: 8,
+              padding: '8px 10px',
+            }}
+          >
+            Manage Comments
+          </Link>
           <Link
             href="/admin/collections/posts"
             style={{

@@ -3,6 +3,7 @@ import wind from '@/../public/image/solarpanel.jpg';
 import type { StaticImageData } from 'next/image';
 
 export interface Blog {
+  id?: number;
   slug: string;
   title: string;
   description: string;

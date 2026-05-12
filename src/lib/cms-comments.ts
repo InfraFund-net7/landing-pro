@@ -1,0 +1,252 @@
+import config from '@payload-config';
+import { getPayload } from 'payload';
+
+export type CommentStatus = 'approved' | 'pending' | 'spam' | 'unapproved';
+
+export type BlogComment = {
+  id: number;
+  authorName: string;
+  content: string;
+  createdAt: string;
+  isEditorialReply: boolean;
+  replies: BlogComment[];
+};
+
+type CommentRecord = {
+  id: number;
+  authorName: string;
+  content: string;
+  createdAt: string;
+  isEditorialReply?: boolean | null;
+  parent?: null | number | { id: number };
+};
+
+type PayloadWithComments = {
+  find: (args: {
+    collection: 'comments';
+    where?: unknown;
+    sort?: string;
+    limit?: number;
+    depth?: number;
+  }) => Promise<{ docs: CommentRecord[] }>;
+  create: (args: {
+    collection: 'comments';
+    data: {
+      post: number;
+      authorName: string;
+      authorEmail?: string;
+      content: string;
+      status?: CommentStatus;
+      parent?: number;
+      isEditorialReply?: boolean;
+    };
+  }) => Promise<unknown>;
+  update: (args: {
+    collection: 'comments';
+    id: number;
+    data: {
+      status?: CommentStatus;
+    };
+  }) => Promise<unknown>;
+  delete: (args: { collection: 'comments'; id: number }) => Promise<unknown>;
+};
+
+function skipPayloadFetchAtImageBuild(): boolean {
+  return process.env.SKIP_PAYLOAD_FETCH_AT_BUILD === '1';
+}
+
+function parentId(parent: CommentRecord['parent']): number | null {
+  if (typeof parent === 'number') return parent;
+  if (parent && typeof parent === 'object' && 'id' in parent) return parent.id;
+  return null;
+}
+
+function formatCommentDate(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toISOString().slice(0, 10);
+}
+
+function toBlogComment(doc: CommentRecord): BlogComment {
+  return {
+    id: doc.id,
+    authorName: doc.authorName,
+    content: doc.content,
+    createdAt: formatCommentDate(doc.createdAt),
+    isEditorialReply: Boolean(doc.isEditorialReply),
+    replies: [],
+  };
+}
+
+function buildCommentTree(docs: CommentRecord[]): BlogComment[] {
+  const byId = new Map<number, BlogComment>();
+  const roots: BlogComment[] = [];
+
+  for (const doc of docs) {
+    byId.set(doc.id, toBlogComment(doc));
+  }
+
+  for (const doc of docs) {
+    const comment = byId.get(doc.id);
+    if (!comment) continue;
+
+    const parent = parentId(doc.parent);
+    if (parent && byId.has(parent)) {
+      byId.get(parent)?.replies.push(comment);
+      continue;
+    }
+
+    roots.push(comment);
+  }
+
+  return roots;
+}
+
+async function getPayloadWithComments(): Promise<PayloadWithComments> {
+  return (await getPayload({ config })) as unknown as PayloadWithComments;
+}
+
+export async function fetchApprovedCommentsForPost(
+  postId: number
+): Promise<BlogComment[]> {
+  if (skipPayloadFetchAtImageBuild()) return [];
+
+  try {
+    const payload = await getPayloadWithComments();
+    const { docs } = await payload.find({
+      collection: 'comments',
+      where: {
+        and: [{ post: { equals: postId } }, { status: { equals: 'approved' } }],
+      },
+      sort: 'createdAt',
+      limit: 200,
+      depth: 0,
+    });
+
+    return buildCommentTree(docs);
+  } catch {
+    return [];
+  }
+}
+
+export type AdminComment = {
+  id: number;
+  authorName: string;
+  content: string;
+  status: CommentStatus;
+  createdAt: string;
+  postId: number;
+  postTitle: string;
+  postSlug: string;
+  parentId: number | null;
+  isEditorialReply: boolean;
+};
+
+type AdminCommentRecord = CommentRecord & {
+  status: CommentStatus;
+  post: number | { id: number; title?: string; slug?: string };
+};
+
+export async function fetchCommentsForAdmin(
+  status?: CommentStatus | 'all'
+): Promise<AdminComment[]> {
+  if (skipPayloadFetchAtImageBuild()) return [];
+
+  try {
+    const payload = await getPayloadWithComments();
+    const where =
+      status && status !== 'all' ? { status: { equals: status } } : undefined;
+
+    const { docs } = await payload.find({
+      collection: 'comments',
+      where,
+      sort: '-createdAt',
+      limit: 200,
+      depth: 1,
+    });
+
+    return (docs as AdminCommentRecord[]).map((doc) => {
+      const post =
+        typeof doc.post === 'object' && doc.post
+          ? doc.post
+          : { id: Number(doc.post), title: 'Post', slug: '' };
+
+      return {
+        id: doc.id,
+        authorName: doc.authorName,
+        content: doc.content,
+        status: doc.status,
+        createdAt: formatCommentDate(doc.createdAt),
+        postId: post.id,
+        postTitle: String(post.title ?? 'Post'),
+        postSlug: String(post.slug ?? ''),
+        parentId: parentId(doc.parent),
+        isEditorialReply: Boolean(doc.isEditorialReply),
+      };
+    });
+  } catch {
+    return [];
+  }
+}
+
+export async function createBlogComment(input: {
+  postId: number;
+  authorName: string;
+  authorEmail?: string;
+  content: string;
+}): Promise<void> {
+  const payload = await getPayloadWithComments();
+
+  await payload.create({
+    collection: 'comments',
+    data: {
+      post: input.postId,
+      authorName: input.authorName,
+      authorEmail: input.authorEmail,
+      content: input.content,
+      status: 'pending',
+    },
+  });
+}
+
+export async function createEditorialReply(input: {
+  postId: number;
+  parentId: number;
+  content: string;
+}): Promise<void> {
+  const payload = await getPayloadWithComments();
+
+  await payload.create({
+    collection: 'comments',
+    data: {
+      post: input.postId,
+      authorName: 'Editorial',
+      content: input.content,
+      status: 'approved',
+      parent: input.parentId,
+      isEditorialReply: true,
+    },
+  });
+}
+
+export async function updateCommentStatus(
+  commentId: number,
+  status: CommentStatus
+): Promise<void> {
+  const payload = await getPayloadWithComments();
+
+  await payload.update({
+    collection: 'comments',
+    id: commentId,
+    data: { status },
+  });
+}
+
+export async function deleteComment(commentId: number): Promise<void> {
+  const payload = await getPayloadWithComments();
+
+  await payload.delete({
+    collection: 'comments',
+    id: commentId,
+  });
+}

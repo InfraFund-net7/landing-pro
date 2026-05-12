@@ -5,6 +5,7 @@ import path from 'path';
 import { buildConfig } from 'payload';
 import { fileURLToPath } from 'url';
 import sharp from 'sharp';
+import { Comments } from './collections/Comments.js';
 import { Media } from './collections/Media.js';
 import { Posts } from './collections/Posts.js';
 import { SitePages } from './collections/SitePages.js';
@@ -96,7 +97,7 @@ export default buildConfig({
     graphQLPlayground: '/cms/graphql-playground',
   },
   ...(serverURL ? { serverURL } : {}),
-  collections: [Users, Media, Posts, SitePages],
+  collections: [Users, Media, Posts, Comments, SitePages],
   globals: [HomePage],
   editor: lexicalEditor(),
   secret,

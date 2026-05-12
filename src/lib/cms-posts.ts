@@ -86,6 +86,7 @@ export async function fetchCmsPostBySlug(slug: string): Promise<Blog | null> {
     if (!doc) return null;
 
     return {
+      id: Number(doc.id),
       slug: String(doc.slug),
       title: String(doc.title),
       description: String(doc.description),

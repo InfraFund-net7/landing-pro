@@ -1,5 +1,6 @@
 import type { JSX } from 'react';
 import { mockBlogs, type Blog } from '@/data/mockBlog';
+import { fetchApprovedCommentsForPost } from '@/lib/cms-comments';
 import { fetchCmsPostBySlug } from '@/lib/cms-posts';
 import { notFound } from 'next/navigation';
 import BlogPage from '@/component/blog/blog-page';
@@ -23,5 +24,8 @@ export default async function Page({
 
   if (!blog) return notFound();
 
-  return <BlogPage blog={blog} />;
+  const comments =
+    blog.id != null ? await fetchApprovedCommentsForPost(blog.id) : [];
+
+  return <BlogPage blog={blog} comments={comments} />;
 }
