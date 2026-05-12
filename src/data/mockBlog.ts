@@ -7,6 +7,7 @@ export interface Blog {
   slug: string;
   title: string;
   description: string;
+  mainContent?: string;
   image?: string | StaticImageData;
   date: string;
   readTime: string;

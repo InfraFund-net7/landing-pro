@@ -90,6 +90,7 @@ export async function fetchCmsPostBySlug(slug: string): Promise<Blog | null> {
       slug: String(doc.slug),
       title: String(doc.title),
       description: String(doc.description),
+      mainContent: String(doc.mainContent ?? ''),
       date: formatPostDate(doc.publishedAt as Date | string | undefined) || '—',
       readTime: String(doc.readTime ?? ''),
       author: String(doc.author ?? ''),

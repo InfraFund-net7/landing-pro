@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import BlogComments from './blog-comments';
 import BlogContents from './blog-contents';
+import CmsBlogContent from './cms-blog-content';
 import RelatedBlog from './related-blog';
 import ProjectSection from './project-section';
 import type { Blog } from '@/data/mockBlog';
@@ -62,7 +63,11 @@ export default function BlogPage({ blog, comments }: BlogPageProps) {
       </div>
 
       <hr className="w-full h-[1px] bg-[#DCDCE0]" />
-      <BlogContents />
+      {blog.mainContent?.trim() ? (
+        <CmsBlogContent content={blog.mainContent} />
+      ) : (
+        <BlogContents />
+      )}
       <hr className="w-full h-[1px] bg-[#DCDCE0]" />
       {blog.id ? (
         <BlogComments postId={blog.id} initialComments={comments} />

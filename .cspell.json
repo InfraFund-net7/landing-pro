@@ -169,7 +169,9 @@
     "Rajabzadeh",
     "payloadcms",
     "turbopack",
-    "backpro"
+    "backpro",
+    "unapprove",
+    "unapproved"
   ],
   "ignorePaths": [
     "node_modules",
