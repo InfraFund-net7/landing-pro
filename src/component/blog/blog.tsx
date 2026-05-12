@@ -13,7 +13,8 @@ export default function Blog({ cmsPosts = [], cmsPage = null }: BlogProps) {
   const heading = cmsPage?.hero?.heading || cmsPage?.title || 'Insight';
   const subheading = cmsPage?.hero?.subheading || '';
   const categoryItems =
-    cmsPage?.blocks.find((block) => block.blockType === 'feature-grid')?.items ?? [];
+    cmsPage?.blocks.find((block) => block.blockType === 'feature-grid')
+      ?.items ?? [];
   return (
     <div className="w-full min-h-screen flex flex-col gap-16 md:gap-24 justify-center items-center px-4 sm:px-8 md:px-[90px] py-[175px]">
       <div
@@ -30,7 +31,9 @@ export default function Blog({ cmsPosts = [], cmsPage = null }: BlogProps) {
             {heading}
           </h1>
           {subheading ? (
-            <p className="text-white/80 text-base md:text-lg max-w-3xl">{subheading}</p>
+            <p className="text-white/80 text-base md:text-lg max-w-3xl">
+              {subheading}
+            </p>
           ) : null}
 
           <div className="w-full p-3 sm:p-4 flex justify-start items-center bg-[#EEF2F0] rounded-2xl text-black gap-2">
@@ -47,7 +50,9 @@ export default function Blog({ cmsPosts = [], cmsPage = null }: BlogProps) {
                 className="flex items-center gap-1 py-2 px-4 rounded-[51px] border w-fit h-fit"
                 style={{ borderColor: '#5D5D5D' }}
               >
-                <span className="text-sm font-medium text-white">{item.title}</span>
+                <span className="text-sm font-medium text-white">
+                  {item.title}
+                </span>
               </div>
             ))}
           </div>
@@ -81,7 +86,8 @@ export default function Blog({ cmsPosts = [], cmsPage = null }: BlogProps) {
         ))}
         {cmsPosts.length === 0 ? (
           <div className="text-white/70 text-center col-span-full py-8">
-            No published posts yet. Add posts in Payload admin to populate this page.
+            No published posts yet. Add posts in Payload admin to populate this
+            page.
           </div>
         ) : null}
       </div>

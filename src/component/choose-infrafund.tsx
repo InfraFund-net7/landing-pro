@@ -31,7 +31,9 @@ export default function ChooseInfraFund({
 }: ChooseInfraFundProps) {
   const isMobile = useMediaQuery({ query: '(max-width: 640px)' });
   const sortedCards = [...cards].sort(
-    (a, b) => (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER)
+    (a, b) =>
+      (a.order ?? Number.MAX_SAFE_INTEGER) -
+      (b.order ?? Number.MAX_SAFE_INTEGER)
   );
 
   return (

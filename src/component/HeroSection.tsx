@@ -16,29 +16,29 @@ type HeroSectionProps = {
 };
 
 const fallbackSteps: TransparencyStep[] = [
-    {
-      id: 1,
-      title: 'AI-Driven Digital Twin',
-      desc: `Our "secret sauce." We create a dynamic virtual model of every project, providing live performance data and predictive risk analysis to de-risk your investment.`,
-      border: 'rounded-tl-[200px] rounded-tr-[20px] rounded-b-[20px]',
-      img: 'ai-digital.jpg',
-    },
-    {
-      id: 2,
-      title: 'RWA Tokenization',
-      desc: 'We use enterprise-grade, compliance-aware token standards to convert illiquid physical assets into liquid, tradable digital securities.',
-      border:
-        'rounded-tr-[20px] rounded-tl-[200px] rounded-br-[200px] rounded-bl-[20px]',
-      img: 'rwa-tokenization.jpg',
-    },
-    {
-      id: 3,
-      title: 'DAO Governance',
-      desc: 'We are building a future where project governance is decentralized. Token holders can vote on key decisions, turning investors into true project advocates.',
-      border: 'rounded-l-[200px] rounded-r-[20px]',
-      img: 'radical-transparency.jpg',
-    },
-  ];
+  {
+    id: 1,
+    title: 'AI-Driven Digital Twin',
+    desc: `Our "secret sauce." We create a dynamic virtual model of every project, providing live performance data and predictive risk analysis to de-risk your investment.`,
+    border: 'rounded-tl-[200px] rounded-tr-[20px] rounded-b-[20px]',
+    img: 'ai-digital.jpg',
+  },
+  {
+    id: 2,
+    title: 'RWA Tokenization',
+    desc: 'We use enterprise-grade, compliance-aware token standards to convert illiquid physical assets into liquid, tradable digital securities.',
+    border:
+      'rounded-tr-[20px] rounded-tl-[200px] rounded-br-[200px] rounded-bl-[20px]',
+    img: 'rwa-tokenization.jpg',
+  },
+  {
+    id: 3,
+    title: 'DAO Governance',
+    desc: 'We are building a future where project governance is decentralized. Token holders can vote on key decisions, turning investors into true project advocates.',
+    border: 'rounded-l-[200px] rounded-r-[20px]',
+    img: 'radical-transparency.jpg',
+  },
+];
 
 export default function HeroSection({
   heading = 'Powered by Radical Transparency',

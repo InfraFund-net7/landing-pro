@@ -8,7 +8,9 @@ type CmsSitePageProps = {
 };
 
 export default function CmsSitePage({ page }: CmsSitePageProps) {
-  const faqItemsFor = (items: NonNullable<CmsSitePage['blocks'][number]['items']>) =>
+  const faqItemsFor = (
+    items: NonNullable<CmsSitePage['blocks'][number]['items']>
+  ) =>
     items
       .filter((item) => item.id && item.question && item.answer)
       .map((item) => ({
@@ -32,7 +34,9 @@ export default function CmsSitePage({ page }: CmsSitePageProps) {
           )}
           <div className="relative z-10 max-w-4xl mx-auto">
             {page.hero?.eyebrow && (
-              <p className="text-[#24FF8E] font-semibold mb-4">{page.hero.eyebrow}</p>
+              <p className="text-[#24FF8E] font-semibold mb-4">
+                {page.hero.eyebrow}
+              </p>
             )}
             <h1 className="text-3xl md:text-5xl font-bold">
               {page.hero?.heading || page.title}
@@ -54,33 +58,39 @@ export default function CmsSitePage({ page }: CmsSitePageProps) {
                 key={`${block.blockType}-${index}`}
                 className="rounded-2xl border border-white/10 bg-white/5 p-6 md:p-8"
               >
-                <h2 className="text-2xl md:text-3xl font-semibold mb-6">{block.title}</h2>
+                <h2 className="text-2xl md:text-3xl font-semibold mb-6">
+                  {block.title}
+                </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {(block.items ?? []).map((item, itemIndex) => (
+                  {(block.items ?? []).map((item, itemIndex) =>
                     (() => {
                       const iconSrc = item.icon || item.iconPath;
                       return (
-                    <div
-                      key={`${item.title}-${itemIndex}`}
-                      className="rounded-xl border border-white/10 p-4 flex gap-4 items-start"
-                    >
-                      {iconSrc ? (
-                        <Image
-                          src={iconSrc}
-                          alt={item.title || 'icon'}
-                          width={56}
-                          height={56}
-                          unoptimized={iconSrc.endsWith('.svg')}
-                        />
-                      ) : null}
-                      <div>
-                        <h3 className="text-xl font-semibold">{item.title}</h3>
-                        <p className="text-gray-300 mt-2">{item.description}</p>
-                      </div>
-                    </div>
+                        <div
+                          key={`${item.title}-${itemIndex}`}
+                          className="rounded-xl border border-white/10 p-4 flex gap-4 items-start"
+                        >
+                          {iconSrc ? (
+                            <Image
+                              src={iconSrc}
+                              alt={item.title || 'icon'}
+                              width={56}
+                              height={56}
+                              unoptimized={iconSrc.endsWith('.svg')}
+                            />
+                          ) : null}
+                          <div>
+                            <h3 className="text-xl font-semibold">
+                              {item.title}
+                            </h3>
+                            <p className="text-gray-300 mt-2">
+                              {item.description}
+                            </p>
+                          </div>
+                        </div>
                       );
                     })()
-                  ))}
+                  )}
                 </div>
               </article>
             );
@@ -93,7 +103,9 @@ export default function CmsSitePage({ page }: CmsSitePageProps) {
                 key={`${block.blockType}-${index}`}
                 className="rounded-2xl border border-white/10 bg-white/5 p-6 md:p-8"
               >
-                <h2 className="text-2xl md:text-3xl font-semibold mb-6">{block.title}</h2>
+                <h2 className="text-2xl md:text-3xl font-semibold mb-6">
+                  {block.title}
+                </h2>
                 <FaqList faqs={items} allowMultiple />
               </article>
             );
@@ -106,15 +118,22 @@ export default function CmsSitePage({ page }: CmsSitePageProps) {
                 className="rounded-2xl border border-white/10 bg-white/5 p-6 md:p-8"
               >
                 {block.title && (
-                  <h2 className="text-2xl md:text-3xl font-semibold mb-6">{block.title}</h2>
+                  <h2 className="text-2xl md:text-3xl font-semibold mb-6">
+                    {block.title}
+                  </h2>
                 )}
                 <div className="space-y-6">
                   {(block.items ?? []).map((item, itemIndex) => (
-                    <div key={`${item.period}-${itemIndex}`} className="border-l-2 border-[#24FF8E] pl-4">
+                    <div
+                      key={`${item.period}-${itemIndex}`}
+                      className="border-l-2 border-[#24FF8E] pl-4"
+                    >
                       <h3 className="text-xl font-semibold">{item.period}</h3>
                       <p
                         className="text-gray-300 mt-2 whitespace-pre-line"
-                        dangerouslySetInnerHTML={{ __html: item.description || '' }}
+                        dangerouslySetInnerHTML={{
+                          __html: item.description || '',
+                        }}
                       />
                     </div>
                   ))}
@@ -130,43 +149,54 @@ export default function CmsSitePage({ page }: CmsSitePageProps) {
                 className="rounded-2xl border border-white/10 bg-white/5 p-6 md:p-8"
               >
                 {block.title && (
-                  <h2 className="text-2xl md:text-3xl font-semibold mb-3">{block.title}</h2>
+                  <h2 className="text-2xl md:text-3xl font-semibold mb-3">
+                    {block.title}
+                  </h2>
                 )}
-                {block.subtitle && <p className="text-gray-300 mb-6">{block.subtitle}</p>}
+                {block.subtitle && (
+                  <p className="text-gray-300 mb-6">{block.subtitle}</p>
+                )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {(block.items ?? []).map((item, itemIndex) => (
+                  {(block.items ?? []).map((item, itemIndex) =>
                     (() => {
                       const imageSrc = item.image || item.imagePath;
                       return (
-                    <div
-                      key={`${item.name}-${itemIndex}`}
-                      className="rounded-xl border border-white/10 p-4 bg-black/20"
-                    >
-                      <div className="flex gap-3 items-center">
-                        {imageSrc ? (
-                          <Image
-                            src={imageSrc}
-                            alt={item.name || 'contributor'}
-                            width={52}
-                            height={52}
-                            className="rounded-full object-cover"
-                          />
-                        ) : null}
-                        <div>
-                          <h3 className="font-semibold">{item.name}</h3>
-                          <p className="text-sm text-gray-400">{item.role}</p>
+                        <div
+                          key={`${item.name}-${itemIndex}`}
+                          className="rounded-xl border border-white/10 p-4 bg-black/20"
+                        >
+                          <div className="flex gap-3 items-center">
+                            {imageSrc ? (
+                              <Image
+                                src={imageSrc}
+                                alt={item.name || 'contributor'}
+                                width={52}
+                                height={52}
+                                className="rounded-full object-cover"
+                              />
+                            ) : null}
+                            <div>
+                              <h3 className="font-semibold">{item.name}</h3>
+                              <p className="text-sm text-gray-400">
+                                {item.role}
+                              </p>
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-300 mt-3">
+                            {item.description}
+                          </p>
+                          {item.linkedin ? (
+                            <Link
+                              href={item.linkedin}
+                              className="text-[#24FF8E] text-sm mt-3 inline-block"
+                            >
+                              LinkedIn
+                            </Link>
+                          ) : null}
                         </div>
-                      </div>
-                      <p className="text-sm text-gray-300 mt-3">{item.description}</p>
-                      {item.linkedin ? (
-                        <Link href={item.linkedin} className="text-[#24FF8E] text-sm mt-3 inline-block">
-                          LinkedIn
-                        </Link>
-                      ) : null}
-                    </div>
                       );
                     })()
-                  ))}
+                  )}
                 </div>
               </article>
             );
@@ -178,9 +208,13 @@ export default function CmsSitePage({ page }: CmsSitePageProps) {
                 key={`${block.blockType}-${index}`}
                 className="rounded-2xl border border-white/10 bg-white/5 p-6 md:p-8 text-center"
               >
-                <h2 className="text-2xl md:text-3xl font-semibold mb-3">{block.title}</h2>
+                <h2 className="text-2xl md:text-3xl font-semibold mb-3">
+                  {block.title}
+                </h2>
                 {block.description && (
-                  <p className="text-gray-300 mb-5 max-w-3xl mx-auto">{block.description}</p>
+                  <p className="text-gray-300 mb-5 max-w-3xl mx-auto">
+                    {block.description}
+                  </p>
                 )}
                 {block.buttonLabel && block.buttonLink ? (
                   <Link
@@ -202,8 +236,12 @@ export default function CmsSitePage({ page }: CmsSitePageProps) {
             key={`${section.heading}-${index}`}
             className="rounded-2xl border border-white/10 bg-white/5 p-6 md:p-8"
           >
-            <h2 className="text-2xl md:text-3xl font-semibold mb-4">{section.heading}</h2>
-            <p className="text-gray-200 whitespace-pre-line leading-8">{section.body}</p>
+            <h2 className="text-2xl md:text-3xl font-semibold mb-4">
+              {section.heading}
+            </h2>
+            <p className="text-gray-200 whitespace-pre-line leading-8">
+              {section.body}
+            </p>
             {section.image && (
               <div className="relative w-full h-[280px] md:h-[380px] mt-6 rounded-xl overflow-hidden">
                 <Image

@@ -20,7 +20,12 @@ export const HomePage = {
           minRows: 4,
           maxRows: 4,
           fields: [
-            { name: 'image', type: 'upload', relationTo: 'media', required: true },
+            {
+              name: 'image',
+              type: 'upload',
+              relationTo: 'media',
+              required: true,
+            },
             { name: 'alt', type: 'text', required: true },
           ],
         },
@@ -37,7 +42,12 @@ export const HomePage = {
           fields: [
             { name: 'title', type: 'text', required: true },
             { name: 'description', type: 'textarea', required: true },
-            { name: 'icon', type: 'upload', relationTo: 'media', required: false },
+            {
+              name: 'icon',
+              type: 'upload',
+              relationTo: 'media',
+              required: false,
+            },
             {
               name: 'bottomSpacing',
               type: 'text',
@@ -67,7 +77,12 @@ export const HomePage = {
           fields: [
             { name: 'title', type: 'text', required: true },
             { name: 'description', type: 'textarea', required: true },
-            { name: 'image', type: 'upload', relationTo: 'media', required: true },
+            {
+              name: 'image',
+              type: 'upload',
+              relationTo: 'media',
+              required: true,
+            },
           ],
         },
       ],
@@ -94,7 +109,12 @@ export const HomePage = {
               ],
               required: false,
             },
-            { name: 'backgroundImage', type: 'upload', relationTo: 'media', required: true },
+            {
+              name: 'backgroundImage',
+              type: 'upload',
+              relationTo: 'media',
+              required: true,
+            },
           ],
         },
       ],
@@ -115,7 +135,12 @@ export const HomePage = {
             { name: 'fundingTarget', type: 'text', required: true },
             { name: 'projectedReturn', type: 'text', required: true },
             { name: 'fundingStatus', type: 'number', required: true },
-            { name: 'image', type: 'upload', relationTo: 'media', required: true },
+            {
+              name: 'image',
+              type: 'upload',
+              relationTo: 'media',
+              required: true,
+            },
           ],
         },
         {
@@ -140,7 +165,12 @@ export const HomePage = {
           type: 'array',
           fields: [
             { name: 'name', type: 'text', required: true },
-            { name: 'logo', type: 'upload', relationTo: 'media', required: true },
+            {
+              name: 'logo',
+              type: 'upload',
+              relationTo: 'media',
+              required: true,
+            },
             { name: 'alt', type: 'text', required: true },
           ],
         },
@@ -151,7 +181,12 @@ export const HomePage = {
             { name: 'quote', type: 'textarea', required: true },
             { name: 'name', type: 'text', required: true },
             { name: 'title', type: 'text', required: true },
-            { name: 'avatar', type: 'upload', relationTo: 'media', required: false },
+            {
+              name: 'avatar',
+              type: 'upload',
+              relationTo: 'media',
+              required: false,
+            },
           ],
         },
       ],

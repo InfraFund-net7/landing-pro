@@ -24,7 +24,7 @@ const fallbackModalTabs: ModalTab[] = [
   {
     name: 'Overview',
     content:
-      "The North Sea Wind Project by WindNetZero is one of the largest offshore wind farms in Europe...",
+      'The North Sea Wind Project by WindNetZero is one of the largest offshore wind farms in Europe...',
   },
   {
     name: 'Financials',

@@ -19,6 +19,12 @@ jobs:
           BUILD_ARG_PAYLOAD_DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           set -euo pipefail
+          case "${BUILD_ARG_PAYLOAD_DATABASE_URL:-}" in
+            *"@127.0.0.1:"*|*"@localhost:"*)
+              echo "ERROR: DATABASE_URL points to localhost. Use a Docker-reachable host/service (e.g. postgres:5432 on internal network)." >&2
+              exit 1
+              ;;
+          esac
           SECDIR="/tmp/landing-docker-secrets-$$"
           mkdir -p "$SECDIR"
           trap 'rm -rf "$SECDIR"' EXIT
@@ -41,7 +47,15 @@ jobs:
         env:
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }} up -d landing --force-recreate
+        run: |
+          set -euo pipefail
+          case "${DATABASE_URL:-}" in
+            *"@127.0.0.1:"*|*"@localhost:"*)
+              echo "ERROR: DATABASE_URL points to localhost. Set secret DATABASE_URL to an internal host/service reachable from the container." >&2
+              exit 1
+              ;;
+          esac
+          docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }} up -d landing --force-recreate
       - name: Wait for container readiness
         run: |
           echo "Waiting for container to be ready..."

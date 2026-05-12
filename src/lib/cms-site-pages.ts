@@ -4,8 +4,12 @@ import { getPayload } from 'payload';
 type MediaRelation = null | number | { url?: string };
 const cmsReplacementFlag = process.env.CMS_REPLACE_EXISTING_PAGES;
 
+function skipPayloadFetchAtImageBuild(): boolean {
+  return process.env.SKIP_PAYLOAD_FETCH_AT_BUILD === '1';
+}
+
 export const isCmsPageReplacementEnabled =
-  cmsReplacementFlag !== '0' && cmsReplacementFlag !== 'false';
+  cmsReplacementFlag === '1' || cmsReplacementFlag === 'true';
 
 function mediaUrl(media: MediaRelation): string | undefined {
   if (media && typeof media === 'object' && 'url' in media) return media.url;
@@ -35,12 +39,7 @@ type SitePageRaw = {
     ctaLink?: string;
   }>;
   blocks?: Array<{
-    blockType?:
-      | 'feature-grid'
-      | 'faq'
-      | 'timeline'
-      | 'contributors'
-      | 'cta';
+    blockType?: 'feature-grid' | 'faq' | 'timeline' | 'contributors' | 'cta';
     title?: string;
     subtitle?: string;
     description?: string;
@@ -123,8 +122,11 @@ type PayloadWithSitePages = {
 export async function fetchSitePageBySlug(
   slug: string
 ): Promise<CmsSitePage | null> {
+  if (skipPayloadFetchAtImageBuild()) return null;
   try {
-    const payload = (await getPayload({ config })) as unknown as PayloadWithSitePages;
+    const payload = (await getPayload({
+      config,
+    })) as unknown as PayloadWithSitePages;
     const { docs } = await payload.find({
       collection: 'site-pages',
       where: {
@@ -164,14 +166,17 @@ export async function fetchSitePageBySlug(
         ctaLink: section.ctaLink ?? '',
       })),
       blocks: (doc.blocks ?? [])
-        .filter(
-          (block): block is NonNullable<typeof block> =>
-            Boolean(
-              block?.blockType &&
-                ['feature-grid', 'faq', 'timeline', 'contributors', 'cta'].includes(
-                  block.blockType
-                )
-            )
+        .filter((block): block is NonNullable<typeof block> =>
+          Boolean(
+            block?.blockType &&
+              [
+                'feature-grid',
+                'faq',
+                'timeline',
+                'contributors',
+                'cta',
+              ].includes(block.blockType)
+          )
         )
         .map((block) => ({
           blockType: block.blockType as

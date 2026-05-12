@@ -88,14 +88,12 @@ export default function HomePageClient({ content }: HomePageClientProps) {
         <OperatingSystem
           title={content?.operatingSystem?.title}
           subtitle={content?.operatingSystem?.subtitle}
-          images={
-            content?.operatingSystem?.images
-              ?.filter((item) => item.image)
-              .map((item) => ({
-                image: item.image ?? '',
-                alt: item.alt ?? '',
-              }))
-          }
+          images={content?.operatingSystem?.images
+            ?.filter((item) => item.image)
+            .map((item) => ({
+              image: item.image ?? '',
+              alt: item.alt ?? '',
+            }))}
         />
       </section>
       <section className="fade-in">
@@ -129,7 +127,9 @@ export default function HomePageClient({ content }: HomePageClientProps) {
       <section className="fade-in">
         <TrustedSection
           title={content?.trusted?.title}
-          partnersList={trustedPartners.length > 0 ? trustedPartners : undefined}
+          partnersList={
+            trustedPartners.length > 0 ? trustedPartners : undefined
+          }
           testimonials={
             trustedTestimonials.length > 0 ? trustedTestimonials : undefined
           }

@@ -65,40 +65,36 @@ export default function TrustedSection({
 
       <div className="w-full flex flex-col items-center px-4 sm:px-6 md:px-[90px] relative z-10">
         <div className="grid grid-cols-2  sm:grid-cols-3 lg:grid-cols-6 gap-6 sm:gap-8 justify-center items-center w-full max-w-7xl">
-          {visiblePartners
-            .slice(0, -2)
-            .map((partner, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-center bg-transparent w-[100px] sm:w-[120px] lg:w-[140px] h-[100px] sm:h-[120px] lg:h-[140px]"
-              >
-                <Image
-                  src={partner.logo}
-                  alt={partner.alt}
-                  width={140}
-                  height={140}
-                />
-              </div>
-            ))}
+          {visiblePartners.slice(0, -2).map((partner, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-center bg-transparent w-[100px] sm:w-[120px] lg:w-[140px] h-[100px] sm:h-[120px] lg:h-[140px]"
+            >
+              <Image
+                src={partner.logo}
+                alt={partner.alt}
+                width={140}
+                height={140}
+              />
+            </div>
+          ))}
         </div>
 
         <div className="mt-8 w-full grid grid-cols-2 sm:mt-12 sm:flex sm:flex-wrap sm:justify-center sm:items-center gap-6 sm:gap-10 md:gap-12">
-          {visiblePartners
-            .slice(-2)
-            .map((partner, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-center bg-transparent w-[100px] sm:w-[120px] lg:w-[140px] h-[100px] sm:h-[120px] lg:h-[140px]"
-              >
-                <Image
-                  src={partner.logo}
-                  alt={partner.alt}
-                  width={140}
-                  height={140}
-                  className="object-contain w-full h-full"
-                />
-              </div>
-            ))}
+          {visiblePartners.slice(-2).map((partner, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-center bg-transparent w-[100px] sm:w-[120px] lg:w-[140px] h-[100px] sm:h-[120px] lg:h-[140px]"
+            >
+              <Image
+                src={partner.logo}
+                alt={partner.alt}
+                width={140}
+                height={140}
+                className="object-contain w-full h-full"
+              />
+            </div>
+          ))}
         </div>
       </div>
       <UsersCarousel testimonials={testimonials} />

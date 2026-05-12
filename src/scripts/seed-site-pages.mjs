@@ -41,7 +41,8 @@ const pages = [
       {
         blockType: 'cta',
         title: 'Browse Projects',
-        description: 'Open and review active projects from the dashboard cards.',
+        description:
+          'Open and review active projects from the dashboard cards.',
         buttonLabel: 'Load More Projects',
         buttonLink: '/project',
       },
@@ -144,13 +145,15 @@ const pages = [
           },
           {
             id: 'project-vetting',
-            question: 'How does InfraFund protect my investment and manage risk?',
+            question:
+              'How does InfraFund protect my investment and manage risk?',
             answer:
               'Our platform centers on the AI-Driven Digital Twin, giving a live view of project KPIs and predictive risk analysis.',
           },
           {
             id: 'payouts',
-            question: 'How do I get a financial return, and how are payments handled?',
+            question:
+              'How do I get a financial return, and how are payments handled?',
             answer:
               'Returns are distributed through smart contracts from real-world project revenue, sent directly to investor wallets.',
           },
@@ -183,7 +186,8 @@ const pages = [
     title: 'For Builders',
     slug: 'builders',
     seo: {
-      metaTitle: 'Builders | InfraFund - Fund Your NetZero Project with Tokenisation',
+      metaTitle:
+        'Builders | InfraFund - Fund Your NetZero Project with Tokenisation',
       metaDescription:
         'InfraFund provides the full-stack toolkit to fund your NetZero project, from tokenisation to global distribution.',
       canonicalPath: '/builders',
@@ -284,12 +288,30 @@ const pages = [
         blockType: 'feature-grid',
         title: 'Categories',
         items: [
-          { title: 'Tokenization', description: 'Tokenization insights and explainers.' },
-          { title: 'InfraFund', description: 'Company and product updates from InfraFund.' },
-          { title: 'Industry', description: 'Energy and infrastructure market trends.' },
-          { title: 'Impact', description: 'Climate and sustainability impact stories.' },
-          { title: 'Research', description: 'Research notes and analysis content.' },
-          { title: 'Case Study', description: 'Real project and financing case studies.' },
+          {
+            title: 'Tokenization',
+            description: 'Tokenization insights and explainers.',
+          },
+          {
+            title: 'InfraFund',
+            description: 'Company and product updates from InfraFund.',
+          },
+          {
+            title: 'Industry',
+            description: 'Energy and infrastructure market trends.',
+          },
+          {
+            title: 'Impact',
+            description: 'Climate and sustainability impact stories.',
+          },
+          {
+            title: 'Research',
+            description: 'Research notes and analysis content.',
+          },
+          {
+            title: 'Case Study',
+            description: 'Real project and financing case studies.',
+          },
         ],
       },
       {
@@ -307,7 +329,8 @@ const pages = [
     title: 'About Us',
     slug: 'about-us',
     seo: {
-      metaTitle: 'About Us | InfraFund - Building the Future of Sustainable Finance',
+      metaTitle:
+        'About Us | InfraFund - Building the Future of Sustainable Finance',
       metaDescription:
         "Learn about InfraFund's mission to revolutionize green finance through blockchain technology. Meet our team, explore our story, and see how we’re making sustainable investment accessible worldwide.",
       canonicalPath: '/about-us',
@@ -325,7 +348,7 @@ const pages = [
       },
       {
         heading: 'Our Story',
-        body: "Our story begins not with a company, but with a conviction: the mission to reach Net Zero is being stalled by a broken financial system. InfraFund was forged to bridge that gap.",
+        body: 'Our story begins not with a company, but with a conviction: the mission to reach Net Zero is being stalled by a broken financial system. InfraFund was forged to bridge that gap.',
       },
       {
         heading: "Let's Build the Green Future Together",
@@ -386,7 +409,8 @@ const pages = [
             role: 'Digital Twin & NetZero Adviser',
             description:
               'Professor of Engineering with deep expertise in Digital Twins and NetZero projects.',
-            linkedin: 'https://www.linkedin.com/in/akbar-javadi-fice-ceng-12164616',
+            linkedin:
+              'https://www.linkedin.com/in/akbar-javadi-fice-ceng-12164616',
             imagePath: '/image/contributors/Akbar-Javadi.png',
           },
           {
@@ -410,14 +434,15 @@ const pages = [
             role: 'Web3 Legal & Regulatory Adviser',
             description:
               'Head of Innovation at World Talent, guiding global compliance strategy.',
-            linkedin: 'https://www.linkedin.com/in/natalia-ismagilova-587045185',
+            linkedin:
+              'https://www.linkedin.com/in/natalia-ismagilova-587045185',
             imagePath: '/image/contributors/Natalia-Ismagilova.png',
           },
           {
             name: 'Luke Lang',
             role: 'Business Adviser at SETsquared (EIR)',
             description:
-              "Co-founder of Crowdcube, advising on business and growth strategy.",
+              'Co-founder of Crowdcube, advising on business and growth strategy.',
             linkedin: 'https://www.linkedin.com/in/lukelang',
             imagePath: '/image/contributors/Luke-Lang.png',
           },
@@ -541,7 +566,8 @@ const pages = [
     hero: {
       eyebrow: 'Support',
       heading: 'Frequently Asked Questions',
-      subheading: 'Everything you need to know before investing or building with InfraFund.',
+      subheading:
+        'Everything you need to know before investing or building with InfraFund.',
       backgroundImagePath: '/image/solar.jpg',
     },
     sections: [
@@ -592,7 +618,8 @@ const pages = [
     hero: {
       eyebrow: 'Legal',
       heading: 'Terms of Use',
-      subheading: 'Please review the terms that govern the use of InfraFund services.',
+      subheading:
+        'Please review the terms that govern the use of InfraFund services.',
       backgroundImagePath: '/image/project-hero.png',
     },
     sections: [
@@ -654,7 +681,8 @@ const pages = [
     hero: {
       eyebrow: 'Disclosure',
       heading: 'Risk Warning',
-      subheading: 'Please read this notice carefully before making investment decisions.',
+      subheading:
+        'Please read this notice carefully before making investment decisions.',
       backgroundImagePath: '/image/wind-turbin.jpg',
     },
     sections: [
@@ -685,7 +713,8 @@ const pages = [
     hero: {
       eyebrow: 'Regulatory Information',
       heading: 'UK Residents',
-      subheading: 'Jurisdiction-specific details for users based in the United Kingdom.',
+      subheading:
+        'Jurisdiction-specific details for users based in the United Kingdom.',
       backgroundImagePath: '/image/geo-thermal.jpg',
     },
     sections: [

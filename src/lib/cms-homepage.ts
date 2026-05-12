@@ -3,6 +3,10 @@ import { getPayload } from 'payload';
 
 type MediaRelation = null | number | { url?: string };
 
+function skipPayloadFetchAtImageBuild(): boolean {
+  return process.env.SKIP_PAYLOAD_FETCH_AT_BUILD === '1';
+}
+
 function mediaUrl(media: MediaRelation): string | undefined {
   if (media && typeof media === 'object' && 'url' in media) return media.url;
   return undefined;
@@ -95,7 +99,11 @@ type HomePageGlobalRaw = {
   transparency?: {
     heading?: string;
     subheading?: string;
-    steps?: Array<{ title?: string; description?: string; image?: MediaRelation }>;
+    steps?: Array<{
+      title?: string;
+      description?: string;
+      image?: MediaRelation;
+    }>;
   };
   funding?: {
     title?: string;
@@ -143,8 +151,11 @@ type PayloadWithHomeGlobal = {
 };
 
 export async function fetchHomePageContent(): Promise<HomePageContent | null> {
+  if (skipPayloadFetchAtImageBuild()) return null;
   try {
-    const payload = (await getPayload({ config })) as unknown as PayloadWithHomeGlobal;
+    const payload = (await getPayload({
+      config,
+    })) as unknown as PayloadWithHomeGlobal;
     const global = (await payload.findGlobal({
       slug: 'home-page',
       depth: 1,
@@ -213,13 +224,15 @@ export async function fetchHomePageContent(): Promise<HomePageContent | null> {
           logo: mediaUrl(item.logo ?? null),
           alt: item.alt ?? '',
         })),
-        testimonials: toArray(global.trusted?.testimonials).map((item, index) => ({
-          id: index + 1,
-          quote: item.quote ?? '',
-          name: item.name ?? '',
-          title: item.title ?? '',
-          image: mediaUrl(item.avatar ?? null),
-        })),
+        testimonials: toArray(global.trusted?.testimonials).map(
+          (item, index) => ({
+            id: index + 1,
+            quote: item.quote ?? '',
+            name: item.name ?? '',
+            title: item.title ?? '',
+            image: mediaUrl(item.avatar ?? null),
+          })
+        ),
       },
       contact: {
         heading: global.contact?.heading ?? '',

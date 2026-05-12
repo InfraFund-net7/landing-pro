@@ -38,9 +38,7 @@ export default function OperatingSystem({
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-relaxed">
             {title}
           </h1>
-          <p className="text-lg md:text-xl text-gray-300">
-            {subtitle}
-          </p>
+          <p className="text-lg md:text-xl text-gray-300">{subtitle}</p>
         </div>
 
         <div className="hidden md:block relative w-full h-[450px] ">
