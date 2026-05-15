@@ -17,6 +17,29 @@ const nextConfig: NextConfig = {
       { pathname: '/cms/api/media/file/**' },
       { pathname: '/api/media/file/**' },
     ],
+    // Payload (and CMS content) may use absolute URLs; `next/image` then requires remotePatterns.
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        pathname: '/cms/api/media/file/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+        pathname: '/cms/api/media/file/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'infrafund.net',
+        pathname: '/cms/api/media/file/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.infrafund.net',
+        pathname: '/cms/api/media/file/**',
+      },
+    ],
   },
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {

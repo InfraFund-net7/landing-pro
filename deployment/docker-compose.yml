@@ -33,6 +33,8 @@ services:
       # Payload: must reach the container — pass from host/CI (`docker compose` substitutes ${...}).
       - PAYLOAD_SECRET=${PAYLOAD_SECRET}
       - DATABASE_URL=${DATABASE_URL}
+      # Optional: same SMTP as backpro — add to .env.production or expand here for forgot-password mail.
+      # INFRA_CONTACT_FORM_SMTP_HOST / PORT / SENDER / USERNAME / PASSWORD / REQUIRE_TLS / FROM_NAME
     env_file:
       - .env.production
     healthcheck:

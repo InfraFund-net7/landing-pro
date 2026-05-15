@@ -11,6 +11,7 @@ import { Posts } from './collections/Posts.js';
 import { SitePages } from './collections/SitePages.js';
 import { Users } from './collections/Users.js';
 import { HomePage } from './globals/HomePage.js';
+import { platformSmtpEmailAdapter } from './lib/payload-platform-smtp-email.js';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -80,7 +81,22 @@ if (isProd && !isNextProdBuildContext) {
   if (!databaseUrlResolved) throw new Error('Missing DATABASE_URL');
 }
 
-const serverURL = process.env.PAYLOAD_PUBLIC_SERVER_URL;
+/** Public origin for Payload (reset links, admin). Drops invalid values like `http://` with no host. */
+function resolveServerURL() {
+  const raw = process.env.PAYLOAD_PUBLIC_SERVER_URL?.trim();
+  if (!raw) return undefined;
+  try {
+    const u = new URL(raw);
+    if (!u.hostname) return undefined;
+    return u.origin;
+  } catch {
+    return undefined;
+  }
+}
+
+const serverURL = resolveServerURL();
+
+const email = platformSmtpEmailAdapter();
 
 export default buildConfig({
   admin: {
@@ -97,6 +113,7 @@ export default buildConfig({
     graphQLPlayground: '/cms/graphql-playground',
   },
   ...(serverURL ? { serverURL } : {}),
+  ...(email ? { email } : {}),
   collections: [Users, Media, Posts, Comments, SitePages],
   globals: [HomePage],
   editor: lexicalEditor(),
