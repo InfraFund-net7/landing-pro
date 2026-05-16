@@ -14,7 +14,7 @@ export function getDashLoginUrl(): string {
   }
   return (
     process.env.NEXT_PUBLIC_DASH_LOGIN_URL ??
-    'http://dash.infrafund.test:3001/login'
+    'https://dashboard.infrafund.net/login'
   );
 }
 
@@ -44,5 +44,5 @@ export function getDashRegisterUrl(): string {
     }
   }
 
-  return 'http://dash.infrafund.test:3001/register';
+  return 'https://dashboard.infrafund.net/register';
 }
