@@ -1,0 +1,6 @@
+# Merged after the server stack compose (DOCKER_COMPOSE_PATH_*).
+# Forces the `landing` service to run the CI-built image instead of rebuilding on the runner.
+services:
+  landing:
+    image: ${LANDING_IMAGE:-infra-landing:dev}
+    pull_policy: never

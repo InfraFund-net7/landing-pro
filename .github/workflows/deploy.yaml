@@ -5,7 +5,7 @@ on:
 jobs:
   build:
     name: Build docker image
-    runs-on: develop-runner
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -31,23 +31,43 @@ jobs:
             --build-arg NEXT_PUBLIC_DASH_LOGIN_URL="$BUILD_ARG_DASH_LOGIN" \
             --build-arg NEXT_PUBLIC_RECAPTCHA_SITE_KEY="$BUILD_ARG_RECAPTCHA" \
             -t infra-landing:prod .
+      - name: Export image for deploy runner
+        run: docker save infra-landing:prod | gzip > infra-landing-prod.tar.gz
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: infra-landing-prod
+          path: infra-landing-prod.tar.gz
+          retention-days: 1
 
   deploy:
     name: Deploy to Production Server
     runs-on: prod-runner
     needs: build
     steps:
-      - name: Deploy with Docker Compose
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Download image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: infra-landing-prod
+      - name: Load image on deploy runner
+        run: |
+          set -euo pipefail
+          gunzip -c infra-landing-prod.tar.gz | docker load
+          docker image inspect infra-landing:prod
+      - name: Deploy landing
         env:
+          COMPOSE_PATH: ${{ vars.DOCKER_COMPOSE_PATH_PRODUCTION }}
+          OVERRIDE_PATH: ${{ github.workspace }}/deployment/compose.landing-deploy.override.yml
+          LANDING_IMAGE: infra-landing:prod
+          SERVICE_NAME: landing
           PAYLOAD_SECRET: ${{ secrets.PROD_PAYLOAD_SECRET }}
           DATABASE_URL: ${{ secrets.PROD_PAYLOAD_DATABASE_URL }}
-        run: docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_PRODUCTION }} up -d landing --force-recreate
-      - name: Wait for container readiness
+        run: bash .github/scripts/deploy-landing.sh
+      - name: Verify deployment logs
+        env:
+          COMPOSE_PATH: ${{ vars.DOCKER_COMPOSE_PATH_PRODUCTION }}
+          OVERRIDE_PATH: ${{ github.workspace }}/deployment/compose.landing-deploy.override.yml
         run: |
-          echo "Waiting for container to be ready..."
-          sleep 5
-          docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_PRODUCTION }} ps
-
-      - name: Verify deployment
-        run: |
-          docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_PRODUCTION }} logs --tail=20 landing
+          docker compose -f "$COMPOSE_PATH" -f "$OVERRIDE_PATH" logs --tail=30 landing
