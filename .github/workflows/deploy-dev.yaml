@@ -47,84 +47,11 @@ jobs:
           path: infra-landing-dev.tar.gz
           retention-days: 1
 
-  # Default: deploy over SSH from GitHub-hosted runners (no develop-runner required).
-  # Set repository variable LANDING_DEV_DEPLOY_MODE=runner to use self-hosted develop-runner instead.
-  deploy-ssh:
+  deploy:
     name: Deploy to Development Server
-    if: ${{ vars.LANDING_DEV_DEPLOY_MODE != 'runner' }}
-    runs-on: ubuntu-latest
+    runs-on: develop-runner
     needs: build
     timeout-minutes: 30
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      - name: Download image artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: infra-landing-dev
-      - name: Prepare deploy bundle
-        run: |
-          set -euo pipefail
-          mkdir -p deploy-bundle/deployment
-          mv infra-landing-dev.tar.gz deploy-bundle/
-          cp deployment/compose.landing-deploy.override.yml deploy-bundle/deployment/
-          cp .github/scripts/deploy-landing.sh deploy-bundle/
-      - name: Upload bundle to server
-        uses: appleboy/scp-action@v1.0.0
-        with:
-          host: ${{ secrets.DEV_DEPLOY_SSH_HOST }}
-          username: ${{ secrets.DEV_DEPLOY_SSH_USER }}
-          key: ${{ secrets.DEV_DEPLOY_SSH_KEY }}
-          port: 22
-          source: 'deploy-bundle/infra-landing-dev.tar.gz,deploy-bundle/deployment/compose.landing-deploy.override.yml,deploy-bundle/deploy-landing.sh'
-          target: /tmp/landing-deploy
-          overwrite: true
-      - name: Deploy on server via SSH
-        uses: appleboy/ssh-action@v1.2.0
-        env:
-          COMPOSE_PATH: ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }}
-          OVERRIDE_PATH: /tmp/landing-deploy/deployment/compose.landing-deploy.override.yml
-          LANDING_IMAGE: infra-landing:dev
-          SERVICE_NAME: landing
-          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        with:
-          host: ${{ secrets.DEV_DEPLOY_SSH_HOST }}
-          username: ${{ secrets.DEV_DEPLOY_SSH_USER }}
-          key: ${{ secrets.DEV_DEPLOY_SSH_KEY }}
-          port: 22
-          envs: COMPOSE_PATH,OVERRIDE_PATH,LANDING_IMAGE,SERVICE_NAME,PAYLOAD_SECRET,DATABASE_URL
-          script: |
-            set -euo pipefail
-            case "${DATABASE_URL:-}" in
-              *"@127.0.0.1:"*|*"@localhost:"*)
-                echo "ERROR: DATABASE_URL points to localhost." >&2
-                exit 1
-                ;;
-            esac
-            BUNDLE="/tmp/landing-deploy"
-            gunzip -c "$BUNDLE/infra-landing-dev.tar.gz" | docker load
-            export OVERRIDE_PATH="$BUNDLE/deployment/compose.landing-deploy.override.yml"
-            bash "$BUNDLE/deploy-landing.sh"
-      - name: Verify deployment logs
-        uses: appleboy/ssh-action@v1.2.0
-        env:
-          COMPOSE_PATH: ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }}
-        with:
-          host: ${{ secrets.DEV_DEPLOY_SSH_HOST }}
-          username: ${{ secrets.DEV_DEPLOY_SSH_USER }}
-          key: ${{ secrets.DEV_DEPLOY_SSH_KEY }}
-          port: 22
-          envs: COMPOSE_PATH
-          script: |
-            docker compose -f "$COMPOSE_PATH" -f /tmp/landing-deploy/deployment/compose.landing-deploy.override.yml logs --tail=30 landing
-
-  deploy-runner:
-    name: Deploy to Development Server (self-hosted)
-    if: ${{ vars.LANDING_DEV_DEPLOY_MODE == 'runner' }}
-    runs-on: [develop-runner]
-    needs: build
-    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v6
