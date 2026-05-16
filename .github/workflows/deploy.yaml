@@ -5,7 +5,7 @@ on:
 jobs:
   build:
     name: Build docker image
-    runs-on: prod-runner
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
