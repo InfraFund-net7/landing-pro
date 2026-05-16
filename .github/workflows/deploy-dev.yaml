@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Build docker image
-    runs-on: [develop-runner]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -38,11 +38,29 @@ jobs:
             --build-arg NEXT_PUBLIC_DASH_LOGIN_URL="$BUILD_ARG_DASH_LOGIN" \
             --build-arg NEXT_PUBLIC_RECAPTCHA_SITE_KEY="$BUILD_ARG_RECAPTCHA" \
             -t infra-landing:dev .
+      - name: Export image for deploy runner
+        run: docker save infra-landing:dev | gzip > infra-landing-dev.tar.gz
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: infra-landing-dev
+          path: infra-landing-dev.tar.gz
+          retention-days: 1
+
   deploy:
     name: Deploy to Development Server
     runs-on: [develop-runner]
     needs: build
     steps:
+      - name: Download image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: infra-landing-dev
+      - name: Load image on deploy runner
+        run: |
+          set -euo pipefail
+          gunzip -c infra-landing-dev.tar.gz | docker load
+          docker tag infra-landing:dev landing-infrafund:latest
       - name: Deploy with Docker Compose
         env:
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
@@ -55,7 +73,7 @@ jobs:
               exit 1
               ;;
           esac
-          docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }} up -d landing --force-recreate
+          docker compose -f ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }} up -d landing --force-recreate --no-build
       - name: Wait for container readiness
         run: |
           echo "Waiting for container to be ready..."
