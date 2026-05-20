@@ -1,3 +1,6 @@
+import { anyone, contentManagers } from '../access/collection-access.js';
+import { canManageContent } from '../access/roles.js';
+
 /** @type {import('payload').CollectionConfig} */
 export const Comments = {
   slug: 'comments',
@@ -8,16 +11,17 @@ export const Comments = {
   },
   access: {
     read: ({ req }) => {
-      if (req.user) return true;
+      if (canManageContent(req.user)) return true;
       return {
         status: {
           equals: 'approved',
         },
       };
     },
-    create: () => true,
-    update: ({ req }) => Boolean(req.user),
-    delete: ({ req }) => Boolean(req.user),
+    create: anyone,
+    update: contentManagers,
+    delete: contentManagers,
+    admin: contentManagers,
   },
   hooks: {
     beforeChange: [

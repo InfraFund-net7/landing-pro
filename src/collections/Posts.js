@@ -1,13 +1,14 @@
+import { contentCollectionAccess } from '../access/collection-access.js';
+
 /** @type {import('payload').CollectionConfig} */
 export const Posts = {
   slug: 'posts',
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'publishedAt', 'published'],
+    group: 'Content',
   },
-  access: {
-    read: () => true,
-  },
+  access: contentCollectionAccess,
   fields: [
     {
       name: 'title',

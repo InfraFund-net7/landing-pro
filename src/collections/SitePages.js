@@ -1,3 +1,6 @@
+import { siteContentReadAccess } from '../access/collection-access.js';
+import { isMasterAdmin } from '../access/roles.js';
+
 /** @type {import('payload').CollectionConfig} */
 export const SitePages = {
   slug: 'site-pages',
@@ -5,10 +8,9 @@ export const SitePages = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
     group: 'Website',
+    hidden: ({ user }) => !isMasterAdmin(user),
   },
-  access: {
-    read: () => true,
-  },
+  access: siteContentReadAccess,
   fields: [
     {
       name: 'title',

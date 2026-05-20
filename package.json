@@ -23,7 +23,8 @@
     "payload": "payload --disable-transpile",
     "seed:home-page": "node --env-file=.env.local src/scripts/seed-home-page.mjs",
     "seed:site-pages": "node --env-file=.env.local src/scripts/seed-site-pages.mjs",
-    "seed:posts": "node --env-file=.env.local src/scripts/seed-posts.mjs"
+    "seed:posts": "node --env-file=.env.local src/scripts/seed-posts.mjs",
+    "promote:master-admin": "node --env-file=.env.local src/scripts/promote-master-admin.mjs"
   },
   "commitlint": {
     "extends": [

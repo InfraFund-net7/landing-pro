@@ -103,6 +103,12 @@ export default buildConfig({
     user: Users.slug,
     // Easier to read than the default dark / system UI (use 'all' to let users switch again).
     theme: 'light',
+    components: {
+      logout: {
+        Button:
+          './app/(payload)/admin/components/payload-sign-out-button#PayloadSignOutButton',
+      },
+    },
     importMap: {
       baseDir: path.resolve(dirname),
     },

@@ -63,6 +63,10 @@ const nextConfig: NextConfig = {
         source: '/login',
         destination: `${dashboardProxyOrigin}/login`,
       },
+      {
+        source: '/sign-out',
+        destination: `${dashboardProxyOrigin}/sign-out`,
+      },
     ];
   },
 };

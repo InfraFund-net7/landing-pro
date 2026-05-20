@@ -1,5 +1,6 @@
 'use client';
 
+import AdminSignOutLink from '@/app/(payload)/admin/components/admin-sign-out-link';
 import type { AdminComment, CommentStatus } from '@/lib/cms-comments';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -76,6 +77,7 @@ export default function CommentManagementPanel({
           >
             View Posts
           </Link>
+          <AdminSignOutLink />
         </div>
 
         {error ? <Alert tone="error" message={error} /> : null}

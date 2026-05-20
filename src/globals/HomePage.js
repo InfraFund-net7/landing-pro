@@ -1,11 +1,13 @@
+import { siteContentReadAccess } from '../access/collection-access.js';
+import { isMasterAdmin } from '../access/roles.js';
+
 /** @type {import('payload').GlobalConfig} */
 export const HomePage = {
   slug: 'home-page',
-  access: {
-    read: () => true,
-  },
+  access: siteContentReadAccess,
   admin: {
     group: 'Website',
+    hidden: ({ user }) => !isMasterAdmin(user),
   },
   fields: [
     {
