@@ -39,6 +39,11 @@ const nextConfig: NextConfig = {
         hostname: 'www.infrafund.net',
         pathname: '/cms/api/media/file/**',
       },
+      {
+        protocol: 'https',
+        hostname: '*.vercel.app',
+        pathname: '/cms/api/media/file/**',
+      },
     ],
   },
   webpack: (webpackConfig) => {

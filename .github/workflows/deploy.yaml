@@ -41,33 +41,32 @@ jobs:
           retention-days: 1
 
   deploy:
-    name: Deploy to Production Server
-    runs-on: prod-runner
+    name: Deploy smoke test (GitHub-hosted)
+    # TEST: ubuntu-latest so the job is picked up without self-hosted runners.
+    # Real server deploy: change runs-on to [self-hosted, prod-runner] and restore steps below (see docs/deploy-self-hosted.md).
+    runs-on: ubuntu-latest
     needs: build
+    timeout-minutes: 15
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
       - name: Download image artifact
         uses: actions/download-artifact@v4
         with:
           name: infra-landing-prod
-      - name: Load image on deploy runner
+      - name: Load and verify image
         run: |
           set -euo pipefail
           gunzip -c infra-landing-prod.tar.gz | docker load
           docker image inspect infra-landing:prod
-      - name: Deploy landing
-        env:
-          COMPOSE_PATH: ${{ vars.DOCKER_COMPOSE_PATH_PRODUCTION }}
-          OVERRIDE_PATH: ${{ github.workspace }}/deployment/compose.landing-deploy.override.yml
-          LANDING_IMAGE: infra-landing:prod
-          SERVICE_NAME: landing
-          PAYLOAD_SECRET: ${{ secrets.PROD_PAYLOAD_SECRET }}
-          DATABASE_URL: ${{ secrets.PROD_PAYLOAD_DATABASE_URL }}
-        run: bash .github/scripts/deploy-landing.sh
-      - name: Verify deployment logs
-        env:
-          COMPOSE_PATH: ${{ vars.DOCKER_COMPOSE_PATH_PRODUCTION }}
-          OVERRIDE_PATH: ${{ github.workspace }}/deployment/compose.landing-deploy.override.yml
-        run: |
-          docker compose -f "$COMPOSE_PATH" -f "$OVERRIDE_PATH" logs --tail=30 landing
+          echo "Deploy smoke test OK (image loads on GitHub runner)."
+          echo "Server compose deploy skipped — switch deploy job to self-hosted for production."
+      # --- Restore for real deploy (self-hosted prod-runner) ---
+      # - uses: actions/checkout@v6
+      # - name: Deploy landing
+      #   env:
+      #     COMPOSE_PATH: ${{ vars.DOCKER_COMPOSE_PATH_PRODUCTION }}
+      #     OVERRIDE_PATH: ${{ github.workspace }}/deployment/compose.landing-deploy.override.yml
+      #     LANDING_IMAGE: infra-landing:prod
+      #     SERVICE_NAME: landing
+      #     PAYLOAD_SECRET: ${{ secrets.PROD_PAYLOAD_SECRET }}
+      #     DATABASE_URL: ${{ secrets.PROD_PAYLOAD_DATABASE_URL }}
+      #   run: bash .github/scripts/deploy-landing.sh

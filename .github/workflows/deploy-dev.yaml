@@ -48,42 +48,32 @@ jobs:
           retention-days: 1
 
   deploy:
-    name: Deploy to Development Server
-    runs-on: develop-runner
+    name: Deploy smoke test (GitHub-hosted)
+    # TEST: ubuntu-latest so the job is picked up without self-hosted runners.
+    # Real server deploy: change runs-on to [self-hosted, develop-runner] and restore steps below (see docs/deploy-self-hosted.md).
+    runs-on: ubuntu-latest
     needs: build
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
       - name: Download image artifact
         uses: actions/download-artifact@v4
         with:
           name: infra-landing-dev
-      - name: Load image on deploy runner
+      - name: Load and verify image
         run: |
           set -euo pipefail
           gunzip -c infra-landing-dev.tar.gz | docker load
           docker image inspect infra-landing:dev
-      - name: Deploy landing
-        env:
-          COMPOSE_PATH: ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }}
-          OVERRIDE_PATH: ${{ github.workspace }}/deployment/compose.landing-deploy.override.yml
-          LANDING_IMAGE: infra-landing:dev
-          SERVICE_NAME: landing
-          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          set -euo pipefail
-          case "${DATABASE_URL:-}" in
-            *"@127.0.0.1:"*|*"@localhost:"*)
-              echo "ERROR: DATABASE_URL points to localhost. Set secret DATABASE_URL to an internal host/service reachable from the container." >&2
-              exit 1
-              ;;
-          esac
-          bash .github/scripts/deploy-landing.sh
-      - name: Verify deployment logs
-        env:
-          COMPOSE_PATH: ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }}
-          OVERRIDE_PATH: ${{ github.workspace }}/deployment/compose.landing-deploy.override.yml
-        run: |
-          docker compose -f "$COMPOSE_PATH" -f "$OVERRIDE_PATH" logs --tail=30 landing
+          echo "Deploy smoke test OK (image loads on GitHub runner)."
+          echo "Server compose deploy skipped — switch deploy job to self-hosted for infrafund-develop."
+      # --- Restore for real deploy (self-hosted develop-runner) ---
+      # - uses: actions/checkout@v6
+      # - name: Deploy landing
+      #   env:
+      #     COMPOSE_PATH: ${{ vars.DOCKER_COMPOSE_PATH_DEVELOP }}
+      #     OVERRIDE_PATH: ${{ github.workspace }}/deployment/compose.landing-deploy.override.yml
+      #     LANDING_IMAGE: infra-landing:dev
+      #     SERVICE_NAME: landing
+      #     PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+      #     DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      #   run: bash .github/scripts/deploy-landing.sh
