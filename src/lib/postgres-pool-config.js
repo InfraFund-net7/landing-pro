@@ -1,16 +1,16 @@
 /**
- * Shared pg pool settings for Payload (@payloadcms/db-postgres) and scripts.
- * Vercel + Neon: use node-pg over TCP with the pooled connection string from Neon.
- * (Neon WebSocket driver breaks when Next bundles `ws` — "mask is not a function".)
+ * Payload Postgres pool: Neon uses @neondatabase/serverless (WebSockets on Vercel).
+ * Local/docker uses node-pg TCP.
  */
 
 import pg from 'pg';
+import * as neonServerless from '@neondatabase/serverless';
 
 /** Modes that pg v8 warns about; map to verify-full (see node pg-connection-string). */
 const PG_LEGACY_SSL_MODES = new Set(['prefer', 'require', 'verify-ca']);
 
 /** @param {string} connectionString */
-function isNeonDatabaseUrl(connectionString) {
+export function isNeonDatabaseUrl(connectionString) {
   try {
     return new URL(connectionString).hostname
       .toLowerCase()
@@ -20,9 +20,23 @@ function isNeonDatabaseUrl(connectionString) {
   }
 }
 
-/** Payload always uses node-pg (Neon pooled URL on Vercel). */
-export function resolvePgForPayload() {
-  return pg;
+/** Use Neon driver for Neon hosts (required for reliable Vercel → Neon). */
+export function resolvePgForPayload(connectionString) {
+  return isNeonDatabaseUrl(connectionString) ? neonServerless : pg;
+}
+
+/**
+ * @param {string} connectionString
+ * @returns {'pooler' | 'direct' | 'other'}
+ */
+export function neonConnectionKind(connectionString) {
+  try {
+    const host = new URL(connectionString).hostname.toLowerCase();
+    if (!host.endsWith('.neon.tech')) return 'other';
+    return host.includes('-pooler') ? 'pooler' : 'direct';
+  } catch {
+    return 'other';
+  }
 }
 
 /**
@@ -56,11 +70,10 @@ export function normalizePgConnectionString(connectionString) {
 
 /** @param {string} connectionString */
 function needsPgSsl(connectionString) {
+  if (isNeonDatabaseUrl(connectionString)) return false;
   try {
     const u = new URL(connectionString);
-    const host = u.hostname.toLowerCase();
     const sslmode = u.searchParams.get('sslmode')?.toLowerCase();
-    if (host.endsWith('.neon.tech')) return true;
     if (
       sslmode &&
       ['require', 'verify-ca', 'verify-full', 'prefer'].includes(sslmode)
@@ -68,7 +81,7 @@ function needsPgSsl(connectionString) {
       return true;
     }
   } catch {
-    /* ignore invalid URL */
+    /* ignore */
   }
   return false;
 }
@@ -85,6 +98,7 @@ export function pgSslOption(connectionString) {
  * @param {string} connectionString
  */
 function shouldSetSearchPathStartup(connectionString) {
+  if (isNeonDatabaseUrl(connectionString)) return false;
   try {
     const host = new URL(connectionString).hostname.toLowerCase();
     if (host.endsWith('.neon.tech')) return false;
@@ -105,8 +119,10 @@ export function buildPayloadPgPool(connectionString) {
     pool.options = '-c search_path=payload,public';
   }
 
-  const ssl = pgSslOption(normalized);
-  if (ssl) pool.ssl = ssl;
+  if (!isNeonDatabaseUrl(normalized)) {
+    const ssl = pgSslOption(normalized);
+    if (ssl) pool.ssl = ssl;
+  }
 
   if (process.env.VERCEL) {
     pool.max = 1;

@@ -77,9 +77,9 @@ Then create the first user at `https://beta.infrafund.net/admin`.
 
 ## Troubleshooting
 
-- **`/admin` 500 / timeout:** pooled `DATABASE_URL`, bootstrapped schema, disable scale-to-zero, redeploy.
+- **`/admin` 500 / timeout:** Use Neon **pooled** URL (`-pooler` in host), not direct. Bootstrap schema, disable scale-to-zero, redeploy. Runtime logs warn if direct host is set on Vercel. App uses `@neondatabase/serverless` + `ws` on Neon (listed in `serverExternalPackages` so Vercel does not bundle them).
 - **`search_path` startup error:** use pooled URL; app does not set `search_path` on Neon.
-- **`b.mask is not a function`:** do not use Neon WebSocket driver on Vercel; use `pg` + pooled URL (current code).
+- **`b.mask is not a function`:** redeploy latest code; `ws`/`@neondatabase/serverless` must stay external in `next.config.ts`.
 - **Slow first load:** scale-to-zero + ISR cold cache; disable scale-to-zero for beta.
 
 ## Backpro API

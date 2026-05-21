@@ -11,8 +11,11 @@ import { Posts } from './collections/Posts.js';
 import { SitePages } from './collections/SitePages.js';
 import { Users } from './collections/Users.js';
 import { HomePage } from './globals/HomePage.js';
+import './lib/neon-pg-setup.js';
 import {
   buildPayloadPgPool,
+  isNeonDatabaseUrl,
+  neonConnectionKind,
   normalizePgConnectionString,
   resolvePgForPayload,
 } from './lib/postgres-pool-config.js';
@@ -87,7 +90,16 @@ const databaseUrl =
   databaseUrlResolved ||
   (!isProd ? devDatabaseUrl : isNextProdBuildContext ? devDatabaseUrl : '');
 
-const pgForPayload = resolvePgForPayload();
+const pgForPayload = resolvePgForPayload(databaseUrl);
+
+if (process.env.VERCEL && databaseUrl && isNeonDatabaseUrl(databaseUrl)) {
+  const kind = neonConnectionKind(databaseUrl);
+  if (kind === 'direct') {
+    console.warn(
+      '[payload] DATABASE_URL uses Neon direct host; for /admin on Vercel use the pooled connection string (-pooler in hostname).'
+    );
+  }
+}
 
 if (isProd && !isNextProdBuildContext) {
   if (!payloadSecretResolved) throw new Error('Missing PAYLOAD_SECRET');
