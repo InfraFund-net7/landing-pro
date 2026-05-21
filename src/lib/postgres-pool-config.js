@@ -57,13 +57,31 @@ export function pgSslOption(connectionString) {
     : undefined;
 }
 
+/**
+ * search_path via pool.options is rejected by Neon (pooler) and unnecessary when
+ * Payload uses schemaName: 'payload'.
+ * @param {string} connectionString
+ */
+function shouldSetSearchPathStartup(connectionString) {
+  try {
+    const host = new URL(connectionString).hostname.toLowerCase();
+    if (host.endsWith('.neon.tech')) return false;
+  } catch {
+    /* ignore */
+  }
+  return true;
+}
+
 /** @param {string} connectionString */
 export function buildPayloadPgPool(connectionString) {
   const normalized = normalizePgConnectionString(connectionString);
   const pool = {
     connectionString: normalized,
-    options: '-c search_path=payload,public',
   };
+
+  if (shouldSetSearchPathStartup(normalized)) {
+    pool.options = '-c search_path=payload,public';
+  }
 
   const ssl = pgSslOption(normalized);
   if (ssl) pool.ssl = ssl;

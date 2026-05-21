@@ -36,7 +36,7 @@ Assign **beta.infrafund.net** to a **Preview** deployment in Vercel → **Settin
 
 | Variable | Example / notes |
 |----------|------------------|
-| `DATABASE_URL` | Neon **direct** (unpooled) URL; use `?sslmode=verify-full` (or `require` — app normalizes it) |
+| `DATABASE_URL` | Neon **direct** URL (host **without** `-pooler`); `?sslmode=verify-full` (or `require` — app normalizes it) |
 | `PAYLOAD_SECRET` | Same long random string as other environments (≥32 chars) |
 | `PAYLOAD_PUBLIC_SERVER_URL` | `https://beta.infrafund.net` (no trailing slash) |
 | `NEXT_PUBLIC_API_BASE_URL` | Dev/staging API |
@@ -49,7 +49,7 @@ Copy these under **Environment Variables → Preview** (not only Production). Re
 
 From the [Neon console](https://console.neon.tech) → your project → **Connect**:
 
-- Use the **direct** / non-pooler host for `DATABASE_URL` (Payload migrations and Drizzle push).
+- Use the **direct** connection string (hostname like `ep-xxx.region.aws.neon.tech`, **not** `ep-xxx-pooler....`). Pooler URLs cause `unsupported startup parameter: search_path` with Payload.
 - Prefer `sslmode=verify-full` (avoids a `pg` driver warning on Vercel; the app also upgrades legacy `require` automatically).
 
 Example shape (do not commit real credentials):
@@ -81,7 +81,11 @@ Optional one-off on Preview only (instead of step 1): set `PAYLOAD_FORCE_DRIZZLE
 
 #### SSL warning in Vercel logs
 
-If you see `(node) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require'...`, set `sslmode=verify-full` on `DATABASE_URL` in Vercel (or redeploy after the app change that normalizes `require` → `verify-full`). The warning is not fatal; a **500** on `/admin` is usually missing env vars, wrong `DATABASE_URL`, or an unbootstrapped `payload` schema.
+If you see `(node) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require'...`, set `sslmode=verify-full` on `DATABASE_URL` in Vercel (or redeploy after the app change that normalizes `require` → `verify-full`). The warning is not fatal.
+
+If you see `unsupported startup parameter in options: search_path`, your `DATABASE_URL` is a **pooler** string or an old deploy still set `search_path` on connect — use Neon’s **direct** connection string (no `-pooler` in the host) and redeploy.
+
+A **500** on `/admin` is usually missing env vars, wrong `DATABASE_URL`, pooler URL, or an unbootstrapped `payload` schema.
 
 ## What GitHub Actions does
 
