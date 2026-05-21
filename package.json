@@ -26,7 +26,7 @@
     "seed:posts": "node --env-file=.env.local src/scripts/seed-posts.mjs",
     "promote:master-admin": "node --env-file=.env.local src/scripts/promote-master-admin.mjs",
     "db:migrate:users-role": "node --env-file=.env.local src/scripts/migrate-users-role.mjs",
-    "db:bootstrap:payload": "node --env-file=.env.local src/scripts/bootstrap-payload-schema.mjs",
+    "db:bootstrap:payload": "node --env-file=.env.local --env-file-if-exists=.env src/scripts/bootstrap-payload-schema.mjs",
     "db:migrate:backpro-neon": "node --env-file=.env.local src/scripts/migrate-backpro-to-neon.mjs"
   },
   "commitlint": {
@@ -47,6 +47,7 @@
     "next": "15.5.7",
     "nodemailer": "^8.0.7",
     "payload": "^3.84.1",
+    "pg": "^8.21.0",
     "react": "19.1.2",
     "react-dom": "19.1.2",
     "react-is": "19.1.2",

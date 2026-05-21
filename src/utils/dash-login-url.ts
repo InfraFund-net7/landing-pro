@@ -1,21 +1,27 @@
+/** Production dashboard (front-pro). Header Login opens this app's /login. */
+const DASHBOARD_ORIGIN = 'https://dashboard.infrafund.net';
+export const DASHBOARD_LOGIN_URL = `${DASHBOARD_ORIGIN}/login`;
+const DASHBOARD_REGISTER_URL = `${DASHBOARD_ORIGIN}/register`;
+
 /**
- * When set to "relative", login/register use same-origin `/login` and `/register`.
+ * When set to "relative", login/register use same-origin `/login` and `/register` on localhost only.
  * Pair with `DASHBOARD_PROXY_ORIGIN` in next.config rewrites so those paths proxy
  * to the dashboard app (OpenFort issues JWT/session there before the dash SPA redirects internally).
  */
 function isRelativeDashAuth(): boolean {
-  return process.env.NEXT_PUBLIC_DASH_AUTH_MODE === 'relative';
+  if (process.env.NEXT_PUBLIC_DASH_AUTH_MODE !== 'relative') return false;
+  if (typeof window === 'undefined') return false;
+  const host = window.location.hostname;
+  return host === 'localhost' || host === '127.0.0.1';
 }
 
 /** Dashboard login URL. Set NEXT_PUBLIC_DASH_LOGIN_URL in .env.local */
 export function getDashLoginUrl(): string {
-  if (isRelativeDashAuth() && typeof window !== 'undefined') {
+  if (isRelativeDashAuth()) {
     return `${window.location.origin}/login`;
   }
-  return (
-    process.env.NEXT_PUBLIC_DASH_LOGIN_URL ??
-    'https://dashboard.infrafund.net/login'
-  );
+  const configured = process.env.NEXT_PUBLIC_DASH_LOGIN_URL?.trim();
+  return configured || DASHBOARD_LOGIN_URL;
 }
 
 /**
@@ -24,7 +30,7 @@ export function getDashLoginUrl(): string {
  * Otherwise: NEXT_PUBLIC_DASH_REGISTER_URL or `/login` → `/register` on NEXT_PUBLIC_DASH_LOGIN_URL host.
  */
 export function getDashRegisterUrl(): string {
-  if (isRelativeDashAuth() && typeof window !== 'undefined') {
+  if (isRelativeDashAuth()) {
     return `${window.location.origin}/register`;
   }
 
@@ -44,5 +50,5 @@ export function getDashRegisterUrl(): string {
     }
   }
 
-  return 'https://dashboard.infrafund.net/register';
+  return DASHBOARD_REGISTER_URL;
 }

@@ -1,6 +1,8 @@
-# Self-hosted runner deploy (develop / main)
+# Self-hosted runner deploy (`develop` only)
 
-Landing deploys via GitHub Actions: build on `ubuntu-latest`, deploy on your VM with Docker Compose.
+**Production (`main`)** deploys on **Vercel** — see [deploy-vercel.md](./deploy-vercel.md). There is no `deploy.yaml` for `main`.
+
+**Develop** can still use Docker on your VM via `deploy-dev.yaml`.
 
 ## Temporary: GitHub-hosted deploy test
 
@@ -10,8 +12,8 @@ When self-hosted access is fixed, change deploy back to `[self-hosted, develop-r
 
 | Branch | Workflow | Deploy runner label | Typical host |
 |--------|----------|---------------------|--------------|
-| `develop` | `deploy-dev.yaml` | `develop-runner` | `infrafund-develop` |
-| `main` | `deploy.yaml` | `prod-runner` | prod server |
+| `develop` | `deploy-dev.yaml` | `develop-runner` (when not smoke test) | `infrafund-develop` |
+| `main` | — | Vercel Git deploy | Vercel edge |
 
 ## Fix: deploy job stuck on "Waiting for a runner"
 

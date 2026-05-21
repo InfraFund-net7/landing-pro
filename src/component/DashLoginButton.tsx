@@ -1,7 +1,7 @@
 'use client';
 
-import { useCallback } from 'react';
-import { getDashLoginUrl } from '@/utils/dash-login-url';
+import { useEffect, useState } from 'react';
+import { DASHBOARD_LOGIN_URL, getDashLoginUrl } from '@/utils/dash-login-url';
 
 interface DashLoginButtonProps {
   className?: string;
@@ -9,20 +9,21 @@ interface DashLoginButtonProps {
   onClose?: () => void;
 }
 
-/** Opens the dashboard login page (OpenFort auth on the dashboard app). */
+/** Links to the dashboard login page (OpenFort auth on dashboard.infrafund.net). */
 export default function DashLoginButton({
   className,
   children = 'Login',
   onClose,
 }: DashLoginButtonProps) {
-  const goToDashboardLogin = useCallback(() => {
-    onClose?.();
-    window.location.href = getDashLoginUrl();
-  }, [onClose]);
+  const [href, setHref] = useState(DASHBOARD_LOGIN_URL);
+
+  useEffect(() => {
+    setHref(getDashLoginUrl());
+  }, []);
 
   return (
-    <button type="button" className={className} onClick={goToDashboardLogin}>
+    <a href={href} className={className} onClick={() => onClose?.()}>
       {children}
-    </button>
+    </a>
   );
 }

@@ -171,7 +171,14 @@
     "turbopack",
     "backpro",
     "unapprove",
-    "unapproved"
+    "unapproved",
+    "Millis",
+    "neondb",
+    "pooler",
+    "RECAPTCHA",
+    "sslmode",
+    "unbootstrapped",
+    "unpooled"
   ],
   "ignorePaths": [
     "node_modules",

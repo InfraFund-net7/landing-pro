@@ -11,6 +11,7 @@ import { Posts } from './collections/Posts.js';
 import { SitePages } from './collections/SitePages.js';
 import { Users } from './collections/Users.js';
 import { HomePage } from './globals/HomePage.js';
+import { buildPayloadPgPool } from './lib/postgres-pool-config.js';
 import { platformSmtpEmailAdapter } from './lib/payload-platform-smtp-email.js';
 
 const filename = fileURLToPath(import.meta.url);
@@ -130,15 +131,12 @@ export default buildConfig({
   db: postgresAdapter({
     // Keep Payload tables out of `public` when the DB is shared (e.g. with backpro).
     // Avoids Drizzle rename prompts against unrelated tables and broken refs like `lockout_audit_logs`.
-    // One-time on existing DB: `CREATE SCHEMA IF NOT EXISTS payload;`
+    // One-time on existing DB: `CREATE SCHEMA IF NOT EXISTS payload;` then `npm run db:bootstrap:payload`
     schemaName: 'payload',
-    pool: {
-      connectionString: databaseUrl,
-      options: '-c search_path=payload,public',
-    },
-    // Dev: sync schema to Postgres on connect (creates `users`, `media`, etc.).
-    // Prod: never push here—ship schema via Payload migrations instead.
-    push: !isProd,
+    pool: buildPayloadPgPool(databaseUrl),
+    // Dev: sync schema on connect. Prod/Vercel: false — bootstrap Neon once (see docs/deploy-vercel.md).
+    // Emergency one-off on Preview: set PAYLOAD_FORCE_DRIZZLE_PUSH=true, redeploy, open /admin, then unset.
+    push: !isProd || process.env.PAYLOAD_FORCE_DRIZZLE_PUSH === 'true',
   }),
   sharp,
   plugins: [],

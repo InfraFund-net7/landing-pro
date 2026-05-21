@@ -1,0 +1,105 @@
+# Production deploy on Vercel (`main`)
+
+Pushes to **`main`** deploy to **Vercel Production** via Git integration (not GitHub Actions Docker).
+
+Pushes to **`develop`** can use:
+
+- **Vercel Preview** (automatic if the Vercel project is linked), and/or
+- **Docker** on `infrafund-develop` via `.github/workflows/deploy-dev.yaml` (see [deploy-self-hosted.md](./deploy-self-hosted.md))
+
+## One-time Vercel setup
+
+1. [vercel.com/new](https://vercel.com/new) → Import **InfraFund-net7/landing-pro**.
+2. **Settings → Git → Production Branch** = **`main`**.
+3. Add environment variables (below) for **Production** and **Preview**.
+4. **Settings → Domains** → assign production domain (e.g. `infrafund.net`) to Production.
+
+After linking, every push to **`main`** triggers a production deployment on Vercel.
+
+## Environment variables (Vercel dashboard)
+
+### Production (`main`)
+
+| Variable | Notes |
+|----------|--------|
+| `DATABASE_URL` | Neon unpooled URL |
+| `PAYLOAD_SECRET` | Same as `PROD_PAYLOAD_SECRET` in GitHub |
+| `PAYLOAD_PUBLIC_SERVER_URL` | `https://infrafund.net` |
+| `NEXT_PUBLIC_API_BASE_URL` | Prod API base URL |
+| `NEXT_PUBLIC_DASH_LOGIN_URL` | `https://dashboard.infrafund.net/login` (header Login) |
+| `SKIP_PAYLOAD_FETCH_AT_BUILD` | `1` |
+| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | Optional |
+
+### Preview (`develop`, `beta.infrafund.net`, etc.)
+
+Assign **beta.infrafund.net** to a **Preview** deployment in Vercel → **Settings → Domains**.
+
+| Variable | Example / notes |
+|----------|------------------|
+| `DATABASE_URL` | Neon **direct** (unpooled) URL, must include `?sslmode=require` |
+| `PAYLOAD_SECRET` | Same long random string as other environments (≥32 chars) |
+| `PAYLOAD_PUBLIC_SERVER_URL` | `https://beta.infrafund.net` (no trailing slash) |
+| `NEXT_PUBLIC_API_BASE_URL` | Dev/staging API |
+| `NEXT_PUBLIC_DASH_LOGIN_URL` | Dev dashboard login URL |
+| `SKIP_PAYLOAD_FETCH_AT_BUILD` | `1` |
+
+Copy these under **Environment Variables → Preview** (not only Production). Redeploy after changing secrets.
+
+#### Neon connection string
+
+From the [Neon console](https://console.neon.tech) → your project → **Connect**:
+
+- Use the **direct** / non-pooler host for `DATABASE_URL` (Payload migrations and Drizzle push).
+- Append `sslmode=require` if it is not already in the URL.
+
+Example shape (do not commit real credentials):
+
+`postgresql://user:pass@ep-xxxx.region.aws.neon.tech/neondb?sslmode=require`
+
+#### `/admin` returns 500 after Neon migration
+
+Production and Preview set `NODE_ENV=production`, so Payload **does not** auto-create tables (`push: false`). A fresh Neon DB has no `payload` schema until you bootstrap it once.
+
+**1. Bootstrap CMS tables (from your machine)**
+
+```bash
+cd landing-pro
+DATABASE_URL='postgresql://...@....neon.tech/neondb?sslmode=require' npm run db:bootstrap:payload
+```
+
+**2. If admin existed before the `role` field was added**
+
+```bash
+DATABASE_URL='...same...' npm run db:migrate:users-role
+```
+
+**3. Redeploy** the Vercel Preview that serves `beta.infrafund.net`.
+
+**4. Create the first admin** at `https://beta.infrafund.net/admin` (first user becomes master admin).
+
+Optional one-off on Preview only (instead of step 1): set `PAYLOAD_FORCE_DRIZZLE_PUSH=true` in Vercel Preview env, redeploy, load `/admin` once, then **remove** the variable and redeploy again.
+
+#### SSL warning in Vercel logs
+
+`(node) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require'...` comes from the `pg` driver and is informational. A **500** on `/admin` is usually missing env vars, wrong `DATABASE_URL`, or an unbootstrapped `payload` schema — check the function log lines **above** that warning for `Missing DATABASE_URL`, `relation "payload.users" does not exist`, or connection errors.
+
+## What GitHub Actions does
+
+| Branch | Workflow | Deploy target |
+|--------|----------|----------------|
+| `main` | `ci.yml` only | **Vercel** (no `deploy.yaml`) |
+| `develop` | `deploy-dev.yaml` | Docker smoke test / optional VM deploy |
+
+There is **no** production Docker workflow; do not re-add `deploy.yaml` unless you intentionally run two prod targets.
+
+## Verify a `main` deploy
+
+1. Merge or push to **`main`**.
+2. Vercel dashboard → **Deployments** → latest **Production** deployment.
+3. Or check production URL after the build completes.
+
+GitHub Actions **CI** may run in parallel; green CI does not replace checking Vercel.
+
+## Backpro API
+
+Waitlist/contact still use **backpro** via `NEXT_PUBLIC_API_BASE_URL`. Vercel only hosts the Next.js / Payload app.
