@@ -1,6 +1,6 @@
 /**
- * Payload Postgres pool: Vercel + Neon pooled URL uses node-pg (TCP).
- * Local Neon can use @neondatabase/serverless; docker/local uses node-pg.
+ * Payload Postgres: Neon on Vercel uses @neondatabase/serverless (HTTP fetch queries).
+ * Local/docker Postgres uses node-pg TCP.
  */
 
 import pg from 'pg';
@@ -20,14 +20,9 @@ export function isNeonDatabaseUrl(connectionString) {
   }
 }
 
-/**
- * Vercel: node-pg + Neon pooler (TCP). Serverless WS/fetch drivers hang on Payload init.
- * Local Neon (optional): @neondatabase/serverless.
- */
+/** Neon hosts use @neondatabase/serverless (see neon-pg-setup.js for Vercel fetch mode). */
 export function resolvePgForPayload(connectionString) {
-  if (!isNeonDatabaseUrl(connectionString)) return pg;
-  if (process.env.VERCEL) return pg;
-  return neonServerless;
+  return isNeonDatabaseUrl(connectionString) ? neonServerless : pg;
 }
 
 /**
@@ -64,7 +59,7 @@ export function normalizePgConnectionString(connectionString) {
       // Copied Neon URIs often include this; node-pg on Vercel can hang with it.
       u.searchParams.delete('channel_binding');
       if (!sslmode) u.searchParams.set('sslmode', 'verify-full');
-      const connectTimeout = process.env.VERCEL ? '15' : '60';
+      const connectTimeout = process.env.VERCEL ? '30' : '60';
       u.searchParams.set('connect_timeout', connectTimeout);
       return u.toString();
     }
@@ -76,7 +71,6 @@ export function normalizePgConnectionString(connectionString) {
 
 /** @param {string} connectionString */
 function needsPgSsl(connectionString) {
-  if (isNeonDatabaseUrl(connectionString) && process.env.VERCEL) return true;
   if (isNeonDatabaseUrl(connectionString)) return false;
   try {
     const u = new URL(connectionString);
@@ -126,14 +120,17 @@ export function buildPayloadPgPool(connectionString) {
     pool.options = '-c search_path=payload,public';
   }
 
-  const ssl = pgSslOption(normalized);
-  if (ssl) pool.ssl = ssl;
+  if (!isNeonDatabaseUrl(normalized)) {
+    const ssl = pgSslOption(normalized);
+    if (ssl) pool.ssl = ssl;
+  }
 
   if (process.env.VERCEL) {
     pool.max = 1;
     pool.idleTimeoutMillis = 20_000;
-    // Fail before Vercel's 60s function cap so logs show a DB error, not only 504.
-    pool.connectionTimeoutMillis = 20_000;
+    pool.connectionTimeoutMillis = isNeonDatabaseUrl(normalized)
+      ? 30_000
+      : 20_000;
   }
 
   return pool;
