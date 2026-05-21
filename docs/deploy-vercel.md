@@ -77,7 +77,8 @@ Then create the first user at `https://beta.infrafund.net/admin`.
 
 ## Troubleshooting
 
-- **`/admin` 500 / timeout:** Use Neon **pooled** URL (`-pooler` in host), not direct. Bootstrap schema, disable scale-to-zero, redeploy. Runtime logs warn if direct host is set on Vercel. App uses `@neondatabase/serverless` + `ws` on Neon (listed in `serverExternalPackages` so Vercel does not bundle them).
+- **`/admin` 504 after 60s:** Click **Redeploy** after changing env vars. Remove **`PAYLOAD_FORCE_DRIZZLE_PUSH`** from Vercel if set. Use Neon **pooled** URL (`-pooler` in host). Bootstrap schema locally, disable scale-to-zero.
+- **`/admin` 500 / DB timeout:** Pooled URL; `channel_binding` is stripped from Neon URLs automatically. Vercel uses **node-pg** + pooler (check logs: `driver=pg push=false`).
 - **`search_path` startup error:** use pooled URL; app does not set `search_path` on Neon.
 - **`b.mask is not a function`:** redeploy latest code; `ws`/`@neondatabase/serverless` must stay external in `next.config.ts`.
 - **Slow first load:** scale-to-zero + ISR cold cache; disable scale-to-zero for beta.

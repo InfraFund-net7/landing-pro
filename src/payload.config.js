@@ -90,7 +90,19 @@ const databaseUrl =
   databaseUrlResolved ||
   (!isProd ? devDatabaseUrl : isNextProdBuildContext ? devDatabaseUrl : '');
 
+/** Never run Drizzle push on Vercel; bootstrap schema locally instead. */
+const drizzlePush =
+  !process.env.VERCEL &&
+  (!isProd || process.env.PAYLOAD_FORCE_DRIZZLE_PUSH === 'true');
+
 const pgForPayload = resolvePgForPayload(databaseUrl);
+
+if (process.env.VERCEL && databaseUrl) {
+  const driver = isNeonDatabaseUrl(databaseUrl) ? 'pg' : 'pg';
+  console.log(
+    `[payload] vercel db: neon=${neonConnectionKind(databaseUrl)} driver=${driver} push=${drizzlePush}`
+  );
+}
 
 if (process.env.VERCEL && databaseUrl && isNeonDatabaseUrl(databaseUrl)) {
   const kind = neonConnectionKind(databaseUrl);
@@ -99,6 +111,12 @@ if (process.env.VERCEL && databaseUrl && isNeonDatabaseUrl(databaseUrl)) {
       '[payload] DATABASE_URL uses Neon direct host; for /admin on Vercel use the pooled connection string (-pooler in hostname).'
     );
   }
+}
+
+if (process.env.VERCEL && process.env.PAYLOAD_FORCE_DRIZZLE_PUSH === 'true') {
+  console.error(
+    '[payload] Unset PAYLOAD_FORCE_DRIZZLE_PUSH on Vercel — Drizzle push on /admin causes 60s timeouts.'
+  );
 }
 
 if (isProd && !isNextProdBuildContext) {
@@ -160,8 +178,7 @@ export default buildConfig({
     pg: pgForPayload,
     pool: buildPayloadPgPool(databaseUrl),
     // Dev: sync schema on connect. Prod/Vercel: false — bootstrap Neon once (see docs/deploy-vercel.md).
-    // Emergency one-off on Preview: set PAYLOAD_FORCE_DRIZZLE_PUSH=true, redeploy, open /admin, then unset.
-    push: !isProd || process.env.PAYLOAD_FORCE_DRIZZLE_PUSH === 'true',
+    push: drizzlePush,
   }),
   sharp,
   plugins: [],
