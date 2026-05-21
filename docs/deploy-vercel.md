@@ -36,7 +36,7 @@ Assign **beta.infrafund.net** to a **Preview** deployment in Vercel → **Settin
 
 | Variable | Example / notes |
 |----------|------------------|
-| `DATABASE_URL` | Neon **direct** URL (host **without** `-pooler`); `?sslmode=verify-full` (or `require` — app normalizes it) |
+| `DATABASE_URL` | Neon URL with `?sslmode=verify-full`. **Runtime (Vercel):** pooled host (`-pooler`) is OK. **Bootstrap script (local):** use direct host (no `-pooler`) |
 | `PAYLOAD_SECRET` | Same long random string as other environments (≥32 chars) |
 | `PAYLOAD_PUBLIC_SERVER_URL` | `https://beta.infrafund.net` (no trailing slash) |
 | `NEXT_PUBLIC_API_BASE_URL` | Dev/staging API |
@@ -49,8 +49,9 @@ Copy these under **Environment Variables → Preview** (not only Production). Re
 
 From the [Neon console](https://console.neon.tech) → your project → **Connect**:
 
-- Use the **direct** connection string (hostname like `ep-xxx.region.aws.neon.tech`, **not** `ep-xxx-pooler....`). Pooler URLs cause `unsupported startup parameter: search_path` with Payload.
-- Prefer `sslmode=verify-full` (avoids a `pg` driver warning on Vercel; the app also upgrades legacy `require` automatically).
+- **Vercel runtime:** Neon **pooled** connection (`ep-xxx-pooler.region.aws.neon.tech`) — faster for serverless, and the app no longer sends `search_path` on connect.
+- **Local `npm run db:bootstrap:payload`:** Neon **direct** connection (`ep-xxx.region.aws.neon.tech`, no `-pooler`).
+- Prefer `sslmode=verify-full` (avoids a `pg` driver warning; the app upgrades legacy `require` and sets `connect_timeout=60` for Neon).
 
 Example shape (do not commit real credentials):
 
@@ -85,7 +86,9 @@ If you see `(node) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require'.
 
 If you see `unsupported startup parameter in options: search_path`, your `DATABASE_URL` is a **pooler** string or an old deploy still set `search_path` on connect — use Neon’s **direct** connection string (no `-pooler` in the host) and redeploy.
 
-A **500** on `/admin` is usually missing env vars, wrong `DATABASE_URL`, pooler URL, or an unbootstrapped `payload` schema.
+If you see `timeout exceeded when trying to connect` on `select count(*) from "payload"."users"`, Neon may be waking from **scale-to-zero** — reload `/admin` after 30–60s, use the **pooled** URL on Vercel, or disable scale-to-zero in the Neon console for that branch.
+
+A **500** on `/admin` is usually missing env vars, wrong `DATABASE_URL`, or an unbootstrapped `payload` schema (run `npm run db:bootstrap:payload` with the **direct** URL).
 
 ## What GitHub Actions does
 

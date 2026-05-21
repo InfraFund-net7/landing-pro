@@ -21,8 +21,13 @@ export function normalizePgConnectionString(connectionString) {
       u.searchParams.set('sslmode', 'verify-full');
       return u.toString();
     }
-    if (!sslmode && u.hostname.toLowerCase().endsWith('.neon.tech')) {
-      u.searchParams.set('sslmode', 'verify-full');
+    const host = u.hostname.toLowerCase();
+    if (host.endsWith('.neon.tech')) {
+      if (!sslmode) u.searchParams.set('sslmode', 'verify-full');
+      // Neon scale-to-zero cold start can exceed 10s on first Vercel request.
+      if (!u.searchParams.has('connect_timeout')) {
+        u.searchParams.set('connect_timeout', '60');
+      }
       return u.toString();
     }
     return connectionString;
@@ -88,8 +93,17 @@ export function buildPayloadPgPool(connectionString) {
 
   if (process.env.VERCEL) {
     pool.max = 1;
-    pool.idleTimeoutMillis = 5_000;
-    pool.connectionTimeoutMillis = 10_000;
+    pool.idleTimeoutMillis = 20_000;
+    let host = '';
+    try {
+      host = new URL(normalized).hostname.toLowerCase();
+    } catch {
+      /* ignore */
+    }
+    // Do not use a 10s cap on Neon — compute wake + TLS often needs longer.
+    pool.connectionTimeoutMillis = host.endsWith('.neon.tech')
+      ? 60_000
+      : 30_000;
   }
 
   return pool;
