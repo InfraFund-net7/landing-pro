@@ -1,7 +1,7 @@
 /**
- * Payload Postgres on Vercel + Neon: HTTP warmup then node-pg TCP (pooler).
- * WebSocket (@neondatabase/serverless Pool) hangs ~60s on Vercel after warmup succeeds.
- * Local Neon dev may use @neondatabase/serverless; docker uses node-pg.
+ * Payload + Neon on Vercel: @neondatabase/serverless with poolQueryViaFetch (HTTPS).
+ * node-pg TCP to Neon pooler times out from Vercel even after HTTP warmup.
+ * Local Neon dev may use serverless driver; docker uses node-pg.
  */
 
 import pg from 'pg';
@@ -21,11 +21,9 @@ export function isNeonDatabaseUrl(connectionString) {
   }
 }
 
-/** Vercel + Neon: node-pg TCP (after HTTP warmup). Other Neon: serverless driver. */
+/** Neon hosts use @neondatabase/serverless (poolQueryViaFetch on Vercel — see neon-pg-setup.js). */
 export function resolvePgForPayload(connectionString) {
-  if (!isNeonDatabaseUrl(connectionString)) return pg;
-  if (process.env.VERCEL) return pg;
-  return neonServerless;
+  return isNeonDatabaseUrl(connectionString) ? neonServerless : pg;
 }
 
 /**
@@ -75,7 +73,6 @@ export function normalizePgConnectionString(connectionString) {
 
 /** @param {string} connectionString */
 function needsPgSsl(connectionString) {
-  if (isNeonDatabaseUrl(connectionString) && process.env.VERCEL) return true;
   if (isNeonDatabaseUrl(connectionString)) return false;
   try {
     const u = new URL(connectionString);
@@ -125,15 +122,16 @@ export function buildPayloadPgPool(connectionString) {
     pool.options = '-c search_path=payload,public';
   }
 
-  const ssl = pgSslOption(normalized);
-  if (ssl) pool.ssl = ssl;
+  if (!isNeonDatabaseUrl(normalized)) {
+    const ssl = pgSslOption(normalized);
+    if (ssl) pool.ssl = ssl;
+  }
 
   if (process.env.VERCEL) {
     pool.max = 1;
     pool.idleTimeoutMillis = 20_000;
-    // Stay under function maxDuration (60s); fail with DB error instead of 504-only.
     pool.connectionTimeoutMillis = isNeonDatabaseUrl(normalized)
-      ? 25_000
+      ? 30_000
       : 20_000;
   }
 

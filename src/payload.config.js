@@ -98,12 +98,11 @@ const drizzlePush =
 const pgForPayload = resolvePgForPayload(databaseUrl);
 
 if (process.env.VERCEL && databaseUrl) {
-  const driver =
-    isNeonDatabaseUrl(databaseUrl) && process.env.VERCEL
-      ? 'pg-tcp'
-      : isNeonDatabaseUrl(databaseUrl)
-        ? 'neon-serverless'
-        : 'pg';
+  const driver = isNeonDatabaseUrl(databaseUrl)
+    ? process.env.VERCEL
+      ? 'neon-fetch'
+      : 'neon-serverless'
+    : 'pg';
   console.log(
     `[payload] vercel db: neon=${neonConnectionKind(databaseUrl)} driver=${driver} push=${drizzlePush}`
   );

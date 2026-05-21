@@ -73,13 +73,23 @@ Optional CMS (off by default): `CMS_REPLACE_EXISTING_PAGES`, `CMS_FETCH_HOME_PAG
 DATABASE_URL='postgresql://...@ep-xxx.region.aws.neon.tech/neondb?sslmode=verify-full' npm run db:bootstrap:payload
 ```
 
-Then create the first user at `https://beta.infrafund.net/admin`.
+Create the first admin **from your machine** (Vercel cannot run Payload’s `registerFirstUser` transaction reliably):
+
+```bash
+# Neon direct (unpooled) URL + same PAYLOAD_SECRET as Vercel Preview
+DATABASE_URL='postgresql://...@ep-xxx.eu-west-2.aws.neon.tech/neondb?sslmode=verify-full' \
+PAYLOAD_SECRET='...' \
+npm run db:create-payload-admin -- admin@yourdomain.com 'YourSecurePassword'
+```
+
+Then sign in at `https://beta.infrafund.net/admin` (do not use “create first user” on Vercel).
 
 ## Troubleshooting
 
 - **`504` / `FUNCTION_INVOCATION_TIMEOUT`:** See [Vercel docs](https://vercel.com/docs/errors/function_invocation_timeout). Function hit `maxDuration` (60s) while waiting on DB. Redeploy after env changes; remove `PAYLOAD_FORCE_DRIZZLE_PUSH`; use pooled Neon URL; disable scale-to-zero.
-- **Logs show `neon warmup: SELECT 1 ok` then 504:** HTTP to Neon works; Payload was hanging on **WebSocket** (`neon-serverless` Pool). Runtime uses **node-pg TCP** after warmup (`driver=pg-tcp`). Ensure latest deploy + redeploy.
-- **`/admin` 500 / DB timeout:** Pooled URL; `channel_binding` stripped. Bootstrap with **direct** URL if tables missing.
+- **Logs show `neon warmup: SELECT 1 ok` then `pg-tcp` timeout:** HTTPS to Neon works; **TCP from Vercel to Neon pooler does not**. Runtime must use `driver=neon-fetch` (`poolQueryViaFetch`). Redeploy latest `develop`.
+- **`cannot begin transaction` on register first user:** Create the admin locally (`npm run db:create-payload-admin`), then log in on Vercel.
+- **`/admin` 500 / DB timeout:** Pooled `DATABASE_URL` on Vercel; bootstrap schema with **direct** URL if tables missing.
 - **`search_path` startup error:** use pooled URL; app does not set `search_path` on Neon.
 - **`b.mask is not a function`:** redeploy latest code; `ws`/`@neondatabase/serverless` must stay external in `next.config.ts`.
 - **Slow first load:** scale-to-zero + ISR cold cache; disable scale-to-zero for beta.

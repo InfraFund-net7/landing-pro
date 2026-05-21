@@ -27,6 +27,7 @@
     "promote:master-admin": "node --env-file=.env.local src/scripts/promote-master-admin.mjs",
     "db:migrate:users-role": "node --env-file=.env.local src/scripts/migrate-users-role.mjs",
     "db:bootstrap:payload": "node --env-file=.env.local --env-file-if-exists=.env src/scripts/bootstrap-payload-schema.mjs",
+    "db:create-payload-admin": "node --env-file=.env.local --env-file-if-exists=.env src/scripts/create-payload-first-user.mjs",
     "db:migrate:backpro-neon": "node --env-file=.env.local src/scripts/migrate-backpro-to-neon.mjs"
   },
   "commitlint": {
