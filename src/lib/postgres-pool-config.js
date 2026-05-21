@@ -59,7 +59,8 @@ export function normalizePgConnectionString(connectionString) {
       // Copied Neon URIs often include this; node-pg on Vercel can hang with it.
       u.searchParams.delete('channel_binding');
       if (!sslmode) u.searchParams.set('sslmode', 'verify-full');
-      const connectTimeout = process.env.VERCEL ? '30' : '60';
+      // Scale-to-zero wake + WebSocket connect can exceed 30s on first hit.
+      const connectTimeout = process.env.VERCEL ? '60' : '60';
       u.searchParams.set('connect_timeout', connectTimeout);
       return u.toString();
     }
@@ -129,7 +130,7 @@ export function buildPayloadPgPool(connectionString) {
     pool.max = 1;
     pool.idleTimeoutMillis = 20_000;
     pool.connectionTimeoutMillis = isNeonDatabaseUrl(normalized)
-      ? 30_000
+      ? 60_000
       : 20_000;
   }
 

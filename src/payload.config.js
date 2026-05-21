@@ -12,6 +12,7 @@ import { SitePages } from './collections/SitePages.js';
 import { Users } from './collections/Users.js';
 import { HomePage } from './globals/HomePage.js';
 import './lib/neon-pg-setup.js';
+import { warmupNeonDatabase } from './lib/neon-warmup.js';
 import {
   buildPayloadPgPool,
   isNeonDatabaseUrl,
@@ -142,6 +143,18 @@ const serverURL = resolveServerURL();
 const email = platformSmtpEmailAdapter();
 
 export default buildConfig({
+  onInit: async () => {
+    if (process.env.VERCEL && databaseUrl && isNeonDatabaseUrl(databaseUrl)) {
+      try {
+        await warmupNeonDatabase(databaseUrl);
+      } catch (err) {
+        console.warn(
+          '[payload] neon warmup on init failed:',
+          err instanceof Error ? err.message : err
+        );
+      }
+    }
+  },
   admin: {
     user: Users.slug,
     // Easier to read than the default dark / system UI (use 'all' to let users switch again).

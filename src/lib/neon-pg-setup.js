@@ -1,13 +1,11 @@
 /**
- * Neon driver for Payload on Vercel: prefer HTTP fetch for Pool queries (avoids
- * WebSocket hangs). WebSocket constructor remains a fallback for sessions.
+ * Neon serverless driver for Payload: WebSocket sessions for transactions (register user, etc.).
+ * Import before Payload opens a Pool (see payload.config.js).
  */
 import { neonConfig } from '@neondatabase/serverless';
 import ws from 'ws';
 
 neonConfig.webSocketConstructor = ws;
 
-if (process.env.VERCEL) {
-  // Pool.query over HTTPS — more reliable than WS on serverless (see Neon CONFIG.md).
-  neonConfig.poolQueryViaFetch = true;
-}
+// Do not set poolQueryViaFetch: true — Payload/Drizzle transactions need a WebSocket session.
+// (Simple queries can use fetch; beginTransaction always connects over WS and timed out at 30s.)
