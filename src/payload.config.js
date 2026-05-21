@@ -14,6 +14,7 @@ import { HomePage } from './globals/HomePage.js';
 import {
   buildPayloadPgPool,
   normalizePgConnectionString,
+  resolvePgForPayload,
 } from './lib/postgres-pool-config.js';
 import { platformSmtpEmailAdapter } from './lib/payload-platform-smtp-email.js';
 
@@ -82,8 +83,11 @@ const secret =
   (!isProd ? devSecret : isNextProdBuildContext ? buildEphemeralSecret : '');
 
 const databaseUrl =
+  process.env.DATABASE_URL?.trim() ||
   databaseUrlResolved ||
   (!isProd ? devDatabaseUrl : isNextProdBuildContext ? devDatabaseUrl : '');
+
+const pgForPayload = resolvePgForPayload(databaseUrl);
 
 if (isProd && !isNextProdBuildContext) {
   if (!payloadSecretResolved) throw new Error('Missing PAYLOAD_SECRET');
@@ -141,6 +145,7 @@ export default buildConfig({
     // Avoids Drizzle rename prompts against unrelated tables and broken refs like `lockout_audit_logs`.
     // One-time on existing DB: `CREATE SCHEMA IF NOT EXISTS payload;` then `npm run db:bootstrap:payload`
     schemaName: 'payload',
+    pg: pgForPayload,
     pool: buildPayloadPgPool(databaseUrl),
     // Dev: sync schema on connect. Prod/Vercel: false — bootstrap Neon once (see docs/deploy-vercel.md).
     // Emergency one-off on Preview: set PAYLOAD_FORCE_DRIZZLE_PUSH=true, redeploy, open /admin, then unset.

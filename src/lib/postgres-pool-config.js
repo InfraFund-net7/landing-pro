@@ -1,10 +1,33 @@
 /**
  * Shared pg pool settings for Payload (@payloadcms/db-postgres) and scripts.
- * Neon requires SSL; Vercel serverless needs a small pool (max 1).
+ * Neon on Vercel uses @neondatabase/serverless (WebSockets); local/docker uses pg TCP.
  */
+
+import pg from 'pg';
+import * as neonServerless from '@neondatabase/serverless';
+import { neonConfig } from '@neondatabase/serverless';
+import ws from 'ws';
+
+neonConfig.webSocketConstructor = ws;
 
 /** Modes that pg v8 warns about; map to verify-full (see node pg-connection-string). */
 const PG_LEGACY_SSL_MODES = new Set(['prefer', 'require', 'verify-ca']);
+
+/** @param {string} connectionString */
+function isNeonDatabaseUrl(connectionString) {
+  try {
+    return new URL(connectionString).hostname
+      .toLowerCase()
+      .endsWith('.neon.tech');
+  } catch {
+    return false;
+  }
+}
+
+/** @param {string} connectionString */
+export function resolvePgForPayload(connectionString) {
+  return isNeonDatabaseUrl(connectionString) ? neonServerless : pg;
+}
 
 /**
  * Avoid pg "SECURITY WARNING" for sslmode=require on Neon/Vercel.
@@ -88,8 +111,11 @@ export function buildPayloadPgPool(connectionString) {
     pool.options = '-c search_path=payload,public';
   }
 
-  const ssl = pgSslOption(normalized);
-  if (ssl) pool.ssl = ssl;
+  // Neon serverless driver uses WebSockets; ssl in pool config is for node-pg TCP only.
+  if (!isNeonDatabaseUrl(normalized)) {
+    const ssl = pgSslOption(normalized);
+    if (ssl) pool.ssl = ssl;
+  }
 
   if (process.env.VERCEL) {
     pool.max = 1;

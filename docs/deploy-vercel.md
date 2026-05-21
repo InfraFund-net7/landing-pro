@@ -53,7 +53,7 @@ Copy these under **Environment Variables → Preview** (not only Production). Re
 
 From the [Neon console](https://console.neon.tech) → your project → **Connect**:
 
-- **Vercel runtime:** Neon **pooled** connection (`ep-xxx-pooler.region.aws.neon.tech`) — faster for serverless, and the app no longer sends `search_path` on connect.
+- **Vercel runtime:** Neon connection string (pooled or direct). The app uses `@neondatabase/serverless` over WebSockets for `*.neon.tech` (avoids TCP connect timeouts on serverless).
 - **Local `npm run db:bootstrap:payload`:** Neon **direct** connection (`ep-xxx.region.aws.neon.tech`, no `-pooler`).
 - Prefer `sslmode=verify-full` (avoids a `pg` driver warning; the app upgrades legacy `require` and sets `connect_timeout=60` for Neon).
 
@@ -90,7 +90,7 @@ If you see `(node) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require'.
 
 If you see `unsupported startup parameter in options: search_path`, your `DATABASE_URL` is a **pooler** string or an old deploy still set `search_path` on connect — use Neon’s **direct** connection string (no `-pooler` in the host) and redeploy.
 
-If you see `timeout exceeded when trying to connect` on `select count(*) from "payload"."users"`, Neon may be waking from **scale-to-zero** — reload `/admin` after 30–60s, use the **pooled** URL on Vercel, or disable scale-to-zero in the Neon console for that branch.
+If you see `timeout exceeded when trying to connect` on `select count(*) from "payload"."users"`, redeploy with the latest code (Neon serverless driver), confirm `DATABASE_URL` is a valid Neon URI, reload `/admin` once after scale-to-zero wake, or disable scale-to-zero in the Neon console for that branch.
 
 A **500** on `/admin` is usually missing env vars, wrong `DATABASE_URL`, or an unbootstrapped `payload` schema (run `npm run db:bootstrap:payload` with the **direct** URL).
 
