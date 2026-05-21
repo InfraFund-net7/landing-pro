@@ -88,7 +88,7 @@ Then sign in at `https://beta.infrafund.net/admin` (do not use “create first u
 
 - **`504` / `FUNCTION_INVOCATION_TIMEOUT`:** See [Vercel docs](https://vercel.com/docs/errors/function_invocation_timeout). Function hit `maxDuration` (60s) while waiting on DB. Redeploy after env changes; remove `PAYLOAD_FORCE_DRIZZLE_PUSH`; use pooled Neon URL; disable scale-to-zero.
 - **Logs show `neon warmup: SELECT 1 ok` then `pg-tcp` timeout:** HTTPS to Neon works; **TCP from Vercel to Neon pooler does not**. Runtime must use `driver=neon-fetch` (`poolQueryViaFetch`). Redeploy latest `develop`.
-- **`cannot begin transaction` on register first user:** Create the admin locally (`npm run db:create-payload-admin`), then log in on Vercel.
+- **`POST 500` on `/cms/api/users/first-register`:** Do not create the first user on Vercel. Run `npm run db:create-payload-admin` locally (direct Neon URL), then use `/admin/login`. Latest deploy uses **direct** host for Payload WS while `DATABASE_URL` stays pooled.
 - **`/admin` 500 / DB timeout:** Pooled `DATABASE_URL` on Vercel; bootstrap schema with **direct** URL if tables missing.
 - **`search_path` startup error:** use pooled URL; app does not set `search_path` on Neon.
 - **`b.mask is not a function`:** redeploy latest code; `ws`/`@neondatabase/serverless` must stay external in `next.config.ts`.

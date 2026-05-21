@@ -9,5 +9,6 @@ import ws from 'ws';
 neonConfig.webSocketConstructor = ws;
 
 if (process.env.VERCEL) {
+  // Simple queries over HTTPS; transactions use WebSocket to direct host (see resolvePayloadDatabaseUrl).
   neonConfig.poolQueryViaFetch = true;
 }

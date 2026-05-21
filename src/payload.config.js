@@ -17,6 +17,7 @@ import {
   isNeonDatabaseUrl,
   neonConnectionKind,
   normalizePgConnectionString,
+  resolvePayloadDatabaseUrl,
   resolvePgForPayload,
 } from './lib/postgres-pool-config.js';
 import { platformSmtpEmailAdapter } from './lib/payload-platform-smtp-email.js';
@@ -103,8 +104,11 @@ if (process.env.VERCEL && databaseUrl) {
       ? 'neon-fetch'
       : 'neon-serverless'
     : 'pg';
+  const payloadDb = isNeonDatabaseUrl(databaseUrl)
+    ? resolvePayloadDatabaseUrl(databaseUrl)
+    : databaseUrl;
   console.log(
-    `[payload] vercel db: neon=${neonConnectionKind(databaseUrl)} driver=${driver} push=${drizzlePush}`
+    `[payload] vercel db: env=${neonConnectionKind(databaseUrl)} payload=${neonConnectionKind(payloadDb)} driver=${driver} push=${drizzlePush}`
   );
 }
 

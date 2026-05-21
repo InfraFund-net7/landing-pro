@@ -41,6 +41,28 @@ export function neonConnectionKind(connectionString) {
 }
 
 /**
+ * Payload pool on Vercel: use direct Neon host for WebSocket transactions (first-register).
+ * Keep pooled DATABASE_URL in Vercel env; optional DATABASE_URL_UNPOOLED overrides.
+ * @param {string} connectionString
+ */
+export function resolvePayloadDatabaseUrl(connectionString) {
+  if (!process.env.VERCEL || !isNeonDatabaseUrl(connectionString)) {
+    return connectionString;
+  }
+  const unpooled = process.env.DATABASE_URL_UNPOOLED?.trim();
+  if (unpooled) return unpooled;
+  try {
+    const u = new URL(connectionString);
+    if (u.hostname.includes('-pooler')) {
+      u.hostname = u.hostname.replace('-pooler', '');
+    }
+    return u.toString();
+  } catch {
+    return connectionString;
+  }
+}
+
+/**
  * Avoid pg "SECURITY WARNING" for sslmode=require on Neon/Vercel.
  * @param {string} connectionString
  */
@@ -113,7 +135,8 @@ function shouldSetSearchPathStartup(connectionString) {
 
 /** @param {string} connectionString */
 export function buildPayloadPgPool(connectionString) {
-  const normalized = normalizePgConnectionString(connectionString);
+  const resolved = resolvePayloadDatabaseUrl(connectionString);
+  const normalized = normalizePgConnectionString(resolved);
   const pool = {
     connectionString: normalized,
   };
