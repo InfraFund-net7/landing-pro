@@ -87,7 +87,7 @@ const databaseUrl =
   databaseUrlResolved ||
   (!isProd ? devDatabaseUrl : isNextProdBuildContext ? devDatabaseUrl : '');
 
-const pgForPayload = resolvePgForPayload(databaseUrl);
+const pgForPayload = resolvePgForPayload();
 
 if (isProd && !isNextProdBuildContext) {
   if (!payloadSecretResolved) throw new Error('Missing PAYLOAD_SECRET');

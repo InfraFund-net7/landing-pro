@@ -36,7 +36,6 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.1",
-    "@neondatabase/serverless": "^1.1.0",
     "@payloadcms/db-postgres": "^3.84.1",
     "@payloadcms/next": "^3.84.1",
     "@payloadcms/richtext-lexical": "^3.84.1",
@@ -56,7 +55,6 @@
     "recharts": "^3.3.0",
     "sass": "^1.99.0",
     "sharp": "^0.34.5",
-    "ws": "^8.20.1",
     "zod": "^4.1.12",
     "zustand": "^5.0.11"
   },

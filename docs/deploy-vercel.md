@@ -53,7 +53,7 @@ Copy these under **Environment Variables → Preview** (not only Production). Re
 
 From the [Neon console](https://console.neon.tech) → your project → **Connect**:
 
-- **Vercel runtime:** Neon connection string (pooled or direct). The app uses `@neondatabase/serverless` over WebSockets for `*.neon.tech` (avoids TCP connect timeouts on serverless).
+- **Vercel runtime:** Neon **pooled** connection string (`ep-xxx-pooler.region.aws.neon.tech`) with `node-pg` + SSL. Do not use the WebSocket/serverless driver on Vercel (Next bundles `ws` incorrectly → `mask is not a function`).
 - **Local `npm run db:bootstrap:payload`:** Neon **direct** connection (`ep-xxx.region.aws.neon.tech`, no `-pooler`).
 - Prefer `sslmode=verify-full` (avoids a `pg` driver warning; the app upgrades legacy `require` and sets `connect_timeout=60` for Neon).
 
@@ -90,7 +90,9 @@ If you see `(node) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require'.
 
 If you see `unsupported startup parameter in options: search_path`, your `DATABASE_URL` is a **pooler** string or an old deploy still set `search_path` on connect — use Neon’s **direct** connection string (no `-pooler` in the host) and redeploy.
 
-If you see `timeout exceeded when trying to connect` on `select count(*) from "payload"."users"`, redeploy with the latest code (Neon serverless driver), confirm `DATABASE_URL` is a valid Neon URI, reload `/admin` once after scale-to-zero wake, or disable scale-to-zero in the Neon console for that branch.
+If you see `b.mask is not a function`, redeploy after removing the Neon WebSocket driver — use **pooled** `DATABASE_URL` with standard `pg` only.
+
+If you see `timeout exceeded when trying to connect` on `select count(*) from "payload"."users"`, confirm `DATABASE_URL` is the **pooled** Neon URI, reload `/admin` after scale-to-zero wake, or disable scale-to-zero in the Neon console for that branch.
 
 A **500** on `/admin` is usually missing env vars, wrong `DATABASE_URL`, or an unbootstrapped `payload` schema (run `npm run db:bootstrap:payload` with the **direct** URL).
 

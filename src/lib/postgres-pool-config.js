@@ -1,14 +1,10 @@
 /**
  * Shared pg pool settings for Payload (@payloadcms/db-postgres) and scripts.
- * Neon on Vercel uses @neondatabase/serverless (WebSockets); local/docker uses pg TCP.
+ * Vercel + Neon: use node-pg over TCP with the pooled connection string from Neon.
+ * (Neon WebSocket driver breaks when Next bundles `ws` — "mask is not a function".)
  */
 
 import pg from 'pg';
-import * as neonServerless from '@neondatabase/serverless';
-import { neonConfig } from '@neondatabase/serverless';
-import ws from 'ws';
-
-neonConfig.webSocketConstructor = ws;
 
 /** Modes that pg v8 warns about; map to verify-full (see node pg-connection-string). */
 const PG_LEGACY_SSL_MODES = new Set(['prefer', 'require', 'verify-ca']);
@@ -24,9 +20,9 @@ function isNeonDatabaseUrl(connectionString) {
   }
 }
 
-/** @param {string} connectionString */
-export function resolvePgForPayload(connectionString) {
-  return isNeonDatabaseUrl(connectionString) ? neonServerless : pg;
+/** Payload always uses node-pg (Neon pooled URL on Vercel). */
+export function resolvePgForPayload() {
+  return pg;
 }
 
 /**
@@ -47,7 +43,6 @@ export function normalizePgConnectionString(connectionString) {
     const host = u.hostname.toLowerCase();
     if (host.endsWith('.neon.tech')) {
       if (!sslmode) u.searchParams.set('sslmode', 'verify-full');
-      // Neon scale-to-zero cold start can exceed 10s on first Vercel request.
       if (!u.searchParams.has('connect_timeout')) {
         u.searchParams.set('connect_timeout', '60');
       }
@@ -86,8 +81,7 @@ export function pgSslOption(connectionString) {
 }
 
 /**
- * search_path via pool.options is rejected by Neon (pooler) and unnecessary when
- * Payload uses schemaName: 'payload'.
+ * search_path via pool.options is rejected by Neon pooler; Payload uses schemaName.
  * @param {string} connectionString
  */
 function shouldSetSearchPathStartup(connectionString) {
@@ -111,11 +105,8 @@ export function buildPayloadPgPool(connectionString) {
     pool.options = '-c search_path=payload,public';
   }
 
-  // Neon serverless driver uses WebSockets; ssl in pool config is for node-pg TCP only.
-  if (!isNeonDatabaseUrl(normalized)) {
-    const ssl = pgSslOption(normalized);
-    if (ssl) pool.ssl = ssl;
-  }
+  const ssl = pgSslOption(normalized);
+  if (ssl) pool.ssl = ssl;
 
   if (process.env.VERCEL) {
     pool.max = 1;
@@ -126,7 +117,6 @@ export function buildPayloadPgPool(connectionString) {
     } catch {
       /* ignore */
     }
-    // Do not use a 10s cap on Neon — compute wake + TLS often needs longer.
     pool.connectionTimeoutMillis = host.endsWith('.neon.tech')
       ? 60_000
       : 30_000;

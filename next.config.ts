@@ -12,6 +12,8 @@ const dashboardProxyOrigin = (
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  // Keep native drivers out of the server bundle (avoids ws "mask is not a function" on Vercel).
+  serverExternalPackages: ['pg', 'payload', '@payloadcms/db-postgres'],
   images: {
     localPatterns: [
       { pathname: '/cms/api/media/file/**' },
