@@ -77,9 +77,9 @@ Then create the first user at `https://beta.infrafund.net/admin`.
 
 ## Troubleshooting
 
-- **`/admin` 504 after 60s:** Click **Redeploy** after changing env vars. Remove **`PAYLOAD_FORCE_DRIZZLE_PUSH`** from Vercel if set. Use Neon **pooled** URL (`-pooler` in host). Bootstrap schema locally, disable scale-to-zero.
-- **`cannot begin transaction: timeout exceeded when trying to connect`:** Payload needs a **WebSocket** session to Neon (e.g. register first user). Disable scale-to-zero on beta; confirm pooled `DATABASE_URL`. App runs HTTP `SELECT 1` warmup on cold start (`instrumentation.ts`). Do not enable `poolQueryViaFetch` (breaks transaction path).
-- **`/admin` 500 / DB timeout:** Pooled URL; `channel_binding` stripped automatically. Logs: `driver=neon-serverless push=false`. Bootstrap with **direct** URL if tables missing.
+- **`504` / `FUNCTION_INVOCATION_TIMEOUT`:** See [Vercel docs](https://vercel.com/docs/errors/function_invocation_timeout). Function hit `maxDuration` (60s) while waiting on DB. Redeploy after env changes; remove `PAYLOAD_FORCE_DRIZZLE_PUSH`; use pooled Neon URL; disable scale-to-zero.
+- **Logs show `neon warmup: SELECT 1 ok` then 504:** HTTP to Neon works; Payload was hanging on **WebSocket** (`neon-serverless` Pool). Runtime uses **node-pg TCP** after warmup (`driver=pg-tcp`). Ensure latest deploy + redeploy.
+- **`/admin` 500 / DB timeout:** Pooled URL; `channel_binding` stripped. Bootstrap with **direct** URL if tables missing.
 - **`search_path` startup error:** use pooled URL; app does not set `search_path` on Neon.
 - **`b.mask is not a function`:** redeploy latest code; `ws`/`@neondatabase/serverless` must stay external in `next.config.ts`.
 - **Slow first load:** scale-to-zero + ISR cold cache; disable scale-to-zero for beta.
