@@ -2,6 +2,7 @@ import type { Blog } from '@/data/mockBlog';
 import type { StaticImageData } from 'next/image';
 import config from '@payload-config';
 import { getPayload } from 'payload';
+import { skipPayloadFetchAtBuild } from '@/lib/skip-payload-fetch-at-build';
 
 type FeaturedImage = null | number | { url?: string };
 
@@ -15,14 +16,6 @@ function mediaUrl(img: FeaturedImage): string | undefined {
     return img.url;
   }
   return undefined;
-}
-
-/**
- * Set only in `deployment/Dockerfile` for `npm run build` (no DB in the builder).
- * Do not set in develop/prod runtime — the app should use your real `DATABASE_URL` there.
- */
-function skipPayloadFetchAtImageBuild(): boolean {
-  return process.env.SKIP_PAYLOAD_FETCH_AT_BUILD === '1';
 }
 
 function formatPostDate(value: null | string | Date | undefined): string {
@@ -46,7 +39,7 @@ export type BlogListItem = {
 };
 
 export async function fetchCmsPostsForListing(): Promise<BlogListItem[]> {
-  if (skipPayloadFetchAtImageBuild()) return [];
+  if (skipPayloadFetchAtBuild()) return [];
   try {
     const payload = await getPayload({ config });
     const { docs } = await payload.find({
@@ -71,7 +64,7 @@ export async function fetchCmsPostsForListing(): Promise<BlogListItem[]> {
 }
 
 export async function fetchCmsPostBySlug(slug: string): Promise<Blog | null> {
-  if (skipPayloadFetchAtImageBuild()) return null;
+  if (skipPayloadFetchAtBuild()) return null;
   try {
     const payload = await getPayload({ config });
     const { docs } = await payload.find({

@@ -27,8 +27,12 @@ After linking, every push to **`main`** triggers a production deployment on Verc
 | `PAYLOAD_PUBLIC_SERVER_URL` | `https://infrafund.net` |
 | `NEXT_PUBLIC_API_BASE_URL` | Prod API base URL |
 | `NEXT_PUBLIC_DASH_LOGIN_URL` | `https://dashboard.infrafund.net/login` (header Login) |
-| `SKIP_PAYLOAD_FETCH_AT_BUILD` | `1` |
+| `SKIP_PAYLOAD_FETCH_AT_BUILD` | `1` (optional if using current `develop` — build auto-skips CMS when `NEXT_PHASE` is production build) |
 | `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | Optional |
+
+#### Build fails: “Failed to build … because it took more than 60 seconds”
+
+Next was statically generating marketing pages and opening many parallel Neon connections during `npm run build`. The app now skips Payload during production build and uses `force-dynamic` on the `(website)` layout so CMS data loads at **request** time, not at build time. Redeploy after pulling latest `develop`; keep `DATABASE_URL` on Preview/Production for runtime only.
 
 ### Preview (`develop`, `beta.infrafund.net`, etc.)
 

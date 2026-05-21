@@ -1,5 +1,6 @@
 import config from '@payload-config';
 import { getPayload } from 'payload';
+import { skipPayloadFetchAtBuild } from '@/lib/skip-payload-fetch-at-build';
 
 export type CommentStatus = 'approved' | 'pending' | 'spam' | 'unapproved';
 
@@ -50,10 +51,6 @@ type PayloadWithComments = {
   }) => Promise<unknown>;
   delete: (args: { collection: 'comments'; id: number }) => Promise<unknown>;
 };
-
-function skipPayloadFetchAtImageBuild(): boolean {
-  return process.env.SKIP_PAYLOAD_FETCH_AT_BUILD === '1';
-}
 
 function parentId(parent: CommentRecord['parent']): number | null {
   if (typeof parent === 'number') return parent;
@@ -109,7 +106,7 @@ async function getPayloadWithComments(): Promise<PayloadWithComments> {
 export async function fetchApprovedCommentsForPost(
   postId: number
 ): Promise<BlogComment[]> {
-  if (skipPayloadFetchAtImageBuild()) return [];
+  if (skipPayloadFetchAtBuild()) return [];
 
   try {
     const payload = await getPayloadWithComments();
@@ -150,7 +147,7 @@ type AdminCommentRecord = CommentRecord & {
 export async function fetchCommentsForAdmin(
   status?: CommentStatus | 'all'
 ): Promise<AdminComment[]> {
-  if (skipPayloadFetchAtImageBuild()) return [];
+  if (skipPayloadFetchAtBuild()) return [];
 
   try {
     const payload = await getPayloadWithComments();

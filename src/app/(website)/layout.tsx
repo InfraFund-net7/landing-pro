@@ -3,6 +3,9 @@ import PathnameWrapper from './PathnameWrapper';
 import Script from 'next/script';
 import '../globals.css';
 
+/** CMS pages read Neon at request time; avoids 60s SSG timeouts during Vercel build. */
+export const dynamic = 'force-dynamic';
+
 export default function WebsiteLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {

@@ -1,11 +1,8 @@
 import config from '@payload-config';
 import { getPayload } from 'payload';
+import { skipPayloadFetchAtBuild } from '@/lib/skip-payload-fetch-at-build';
 
 type MediaRelation = null | number | { url?: string };
-
-function skipPayloadFetchAtImageBuild(): boolean {
-  return process.env.SKIP_PAYLOAD_FETCH_AT_BUILD === '1';
-}
 
 function mediaUrl(media: MediaRelation): string | undefined {
   if (media && typeof media === 'object' && 'url' in media) return media.url;
@@ -151,7 +148,7 @@ type PayloadWithHomeGlobal = {
 };
 
 export async function fetchHomePageContent(): Promise<HomePageContent | null> {
-  if (skipPayloadFetchAtImageBuild()) return null;
+  if (skipPayloadFetchAtBuild()) return null;
   try {
     const payload = (await getPayload({
       config,
