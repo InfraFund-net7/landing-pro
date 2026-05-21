@@ -2,6 +2,7 @@ import type { Blog } from '@/data/mockBlog';
 import type { StaticImageData } from 'next/image';
 import config from '@payload-config';
 import { getPayload } from 'payload';
+import { shouldFetchBlogFromCms } from '@/lib/cms-runtime';
 import { skipPayloadFetchAtBuild } from '@/lib/skip-payload-fetch-at-build';
 
 type FeaturedImage = null | number | { url?: string };
@@ -39,6 +40,7 @@ export type BlogListItem = {
 };
 
 export async function fetchCmsPostsForListing(): Promise<BlogListItem[]> {
+  if (!shouldFetchBlogFromCms()) return [];
   if (skipPayloadFetchAtBuild()) return [];
   try {
     const payload = await getPayload({ config });
@@ -64,6 +66,7 @@ export async function fetchCmsPostsForListing(): Promise<BlogListItem[]> {
 }
 
 export async function fetchCmsPostBySlug(slug: string): Promise<Blog | null> {
+  if (!shouldFetchBlogFromCms()) return null;
   if (skipPayloadFetchAtBuild()) return null;
   try {
     const payload = await getPayload({ config });

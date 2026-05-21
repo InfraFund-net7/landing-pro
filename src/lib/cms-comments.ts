@@ -1,5 +1,6 @@
 import config from '@payload-config';
 import { getPayload } from 'payload';
+import { shouldFetchBlogFromCms } from '@/lib/cms-runtime';
 import { skipPayloadFetchAtBuild } from '@/lib/skip-payload-fetch-at-build';
 
 export type CommentStatus = 'approved' | 'pending' | 'spam' | 'unapproved';
@@ -106,6 +107,7 @@ async function getPayloadWithComments(): Promise<PayloadWithComments> {
 export async function fetchApprovedCommentsForPost(
   postId: number
 ): Promise<BlogComment[]> {
+  if (!shouldFetchBlogFromCms()) return [];
   if (skipPayloadFetchAtBuild()) return [];
 
   try {
@@ -147,6 +149,7 @@ type AdminCommentRecord = CommentRecord & {
 export async function fetchCommentsForAdmin(
   status?: CommentStatus | 'all'
 ): Promise<AdminComment[]> {
+  if (!shouldFetchBlogFromCms()) return [];
   if (skipPayloadFetchAtBuild()) return [];
 
   try {

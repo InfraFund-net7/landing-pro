@@ -111,13 +111,7 @@ export function buildPayloadPgPool(connectionString) {
   if (process.env.VERCEL) {
     pool.max = 1;
     pool.idleTimeoutMillis = 20_000;
-    let host = '';
-    try {
-      host = new URL(normalized).hostname.toLowerCase();
-    } catch {
-      /* ignore */
-    }
-    pool.connectionTimeoutMillis = host.endsWith('.neon.tech')
+    pool.connectionTimeoutMillis = isNeonDatabaseUrl(normalized)
       ? 60_000
       : 30_000;
   }

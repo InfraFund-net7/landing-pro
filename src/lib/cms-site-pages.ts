@@ -1,12 +1,14 @@
 import config from '@payload-config';
 import { getPayload } from 'payload';
+import {
+  isCmsPageReplacementEnabled,
+  shouldFetchSitePagesFromCms,
+} from '@/lib/cms-runtime';
 import { skipPayloadFetchAtBuild } from '@/lib/skip-payload-fetch-at-build';
 
 type MediaRelation = null | number | { url?: string };
-const cmsReplacementFlag = process.env.CMS_REPLACE_EXISTING_PAGES;
 
-export const isCmsPageReplacementEnabled =
-  cmsReplacementFlag === '1' || cmsReplacementFlag === 'true';
+export { isCmsPageReplacementEnabled };
 
 function mediaUrl(media: MediaRelation): string | undefined {
   if (media && typeof media === 'object' && 'url' in media) return media.url;
@@ -119,6 +121,7 @@ type PayloadWithSitePages = {
 export async function fetchSitePageBySlug(
   slug: string
 ): Promise<CmsSitePage | null> {
+  if (!shouldFetchSitePagesFromCms()) return null;
   if (skipPayloadFetchAtBuild()) return null;
   try {
     const payload = (await getPayload({

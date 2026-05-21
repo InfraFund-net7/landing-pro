@@ -1,5 +1,6 @@
 import config from '@payload-config';
 import { getPayload } from 'payload';
+import { shouldFetchHomePageFromCms } from '@/lib/cms-runtime';
 import { skipPayloadFetchAtBuild } from '@/lib/skip-payload-fetch-at-build';
 
 type MediaRelation = null | number | { url?: string };
@@ -148,6 +149,7 @@ type PayloadWithHomeGlobal = {
 };
 
 export async function fetchHomePageContent(): Promise<HomePageContent | null> {
+  if (!shouldFetchHomePageFromCms()) return null;
   if (skipPayloadFetchAtBuild()) return null;
   try {
     const payload = (await getPayload({

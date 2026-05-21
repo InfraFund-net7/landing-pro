@@ -1,20 +1,44 @@
-# Production deploy on Vercel (`main`)
+# Deploy on Vercel (`main` and `develop`)
 
-Pushes to **`main`** deploy to **Vercel Production** via Git integration (not GitHub Actions Docker).
+All deploys go through **Vercel Git integration** — no GitHub Actions Docker build for landing.
 
-Pushes to **`develop`** can use:
+| Branch | Deploy |
+|--------|--------|
+| `main` | Vercel **Production** |
+| `develop` | Vercel **Preview** (e.g. `beta.infrafund.net`) |
 
-- **Vercel Preview** (automatic if the Vercel project is linked), and/or
-- **Docker** on `infrafund-develop` via `.github/workflows/deploy-dev.yaml` (see [deploy-self-hosted.md](./deploy-self-hosted.md))
+GitHub Actions runs **CI only** (`ci.yml`: lint/format on push/PR).
 
 ## One-time Vercel setup
 
 1. [vercel.com/new](https://vercel.com/new) → Import **InfraFund-net7/landing-pro**.
 2. **Settings → Git → Production Branch** = **`main`**.
 3. Add environment variables (below) for **Production** and **Preview**.
-4. **Settings → Domains** → assign production domain (e.g. `infrafund.net`) to Production.
+4. **Settings → Domains** → assign domains (e.g. `infrafund.net` → Production, `beta.infrafund.net` → Preview).
 
-After linking, every push to **`main`** triggers a production deployment on Vercel.
+Every push to the linked branch triggers a Vercel deployment.
+
+## Performance (marketing pages)
+
+Marketing routes use **ISR** (`revalidate: 60`) and **do not** query Neon unless you opt in:
+
+| Variable | When set to `1` |
+|----------|------------------|
+| `CMS_REPLACE_EXISTING_PAGES` | Fetch **site-pages** from CMS and allow replacement UI |
+| `CMS_FETCH_HOME_PAGE` | Fetch **home-page** global from CMS (otherwise handcrafted fallbacks) |
+| `CMS_FETCH_BLOG` | Fetch **posts** from CMS (otherwise mock blog data) |
+
+Leave all unset on Preview/Production for fastest loads. Enable after you seed content in Payload.
+
+`/admin` always uses the database.
+
+## Neon: disable scale-to-zero (beta / faster first hit)
+
+In [Neon console](https://console.neon.tech) → your project → branch used by beta → **Settings**:
+
+- Turn off **Scale to zero** (or set a longer suspend delay).
+
+Otherwise the first request after idle waits for the compute to wake (slow `/admin` and CMS-backed pages).
 
 ## Environment variables (Vercel dashboard)
 
@@ -22,97 +46,42 @@ After linking, every push to **`main`** triggers a production deployment on Verc
 
 | Variable | Notes |
 |----------|--------|
-| `DATABASE_URL` | Neon unpooled URL |
-| `PAYLOAD_SECRET` | Same as `PROD_PAYLOAD_SECRET` in GitHub |
+| `DATABASE_URL` | Neon **pooled** URL (`-pooler` host), `?sslmode=verify-full` |
+| `PAYLOAD_SECRET` | ≥32 chars |
 | `PAYLOAD_PUBLIC_SERVER_URL` | `https://infrafund.net` |
-| `NEXT_PUBLIC_API_BASE_URL` | Prod API base URL |
-| `NEXT_PUBLIC_DASH_LOGIN_URL` | `https://dashboard.infrafund.net/login` (header Login) |
-| `SKIP_PAYLOAD_FETCH_AT_BUILD` | `1` (optional if using current `develop` — build auto-skips CMS when `NEXT_PHASE` is production build) |
+| `NEXT_PUBLIC_API_BASE_URL` | Prod API |
+| `NEXT_PUBLIC_DASH_LOGIN_URL` | `https://dashboard.infrafund.net/login` |
+| `SKIP_PAYLOAD_FETCH_AT_BUILD` | `1` (optional; build skips CMS without it too) |
 | `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | Optional |
 
-#### Build fails: “Failed to build … because it took more than 60 seconds”
+### Preview (`develop`, `beta.infrafund.net`)
 
-Next was statically generating marketing pages and opening many parallel Neon connections during `npm run build`. The app now skips Payload during production build and uses `force-dynamic` on the `(website)` layout so CMS data loads at **request** time, not at build time. Redeploy after pulling latest `develop`; keep `DATABASE_URL` on Preview/Production for runtime only.
-
-### Preview (`develop`, `beta.infrafund.net`, etc.)
-
-Assign **beta.infrafund.net** to a **Preview** deployment in Vercel → **Settings → Domains**.
-
-| Variable | Example / notes |
-|----------|------------------|
-| `DATABASE_URL` | Neon URL with `?sslmode=verify-full`. **Runtime (Vercel):** pooled host (`-pooler`) is OK. **Bootstrap script (local):** use direct host (no `-pooler`) |
-| `PAYLOAD_SECRET` | Same long random string as other environments (≥32 chars) |
-| `PAYLOAD_PUBLIC_SERVER_URL` | `https://beta.infrafund.net` (no trailing slash) |
+| Variable | Notes |
+|----------|--------|
+| `DATABASE_URL` | Neon **pooled** URL for runtime; **direct** URL only for local `npm run db:bootstrap:payload` |
+| `PAYLOAD_SECRET` | Same as other envs |
+| `PAYLOAD_PUBLIC_SERVER_URL` | `https://beta.infrafund.net` |
 | `NEXT_PUBLIC_API_BASE_URL` | Dev/staging API |
-| `NEXT_PUBLIC_DASH_LOGIN_URL` | Dev dashboard login URL |
-| `SKIP_PAYLOAD_FETCH_AT_BUILD` | `1` |
+| `NEXT_PUBLIC_DASH_LOGIN_URL` | Dev dashboard login |
+| `SKIP_PAYLOAD_FETCH_AT_BUILD` | `1` (optional) |
 
-Copy these under **Environment Variables → Preview** (not only Production). Redeploy after changing secrets.
+Optional CMS (off by default): `CMS_REPLACE_EXISTING_PAGES`, `CMS_FETCH_HOME_PAGE`, `CMS_FETCH_BLOG`.
 
-#### Neon connection string
-
-From the [Neon console](https://console.neon.tech) → your project → **Connect**:
-
-- **Vercel runtime:** Neon **pooled** connection string (`ep-xxx-pooler.region.aws.neon.tech`) with `node-pg` + SSL. Do not use the WebSocket/serverless driver on Vercel (Next bundles `ws` incorrectly → `mask is not a function`).
-- **Local `npm run db:bootstrap:payload`:** Neon **direct** connection (`ep-xxx.region.aws.neon.tech`, no `-pooler`).
-- Prefer `sslmode=verify-full` (avoids a `pg` driver warning; the app upgrades legacy `require` and sets `connect_timeout=60` for Neon).
-
-Example shape (do not commit real credentials):
-
-`postgresql://user:pass@ep-xxxx.region.aws.neon.tech/neondb?sslmode=verify-full`
-
-#### `/admin` returns 500 after Neon migration
-
-Production and Preview set `NODE_ENV=production`, so Payload **does not** auto-create tables (`push: false`). A fresh Neon DB has no `payload` schema until you bootstrap it once.
-
-**1. Bootstrap CMS tables (from your machine)**
+## Bootstrap Payload on Neon (once)
 
 ```bash
-cd landing-pro
-DATABASE_URL='postgresql://...@....neon.tech/neondb?sslmode=verify-full' npm run db:bootstrap:payload
+DATABASE_URL='postgresql://...@ep-xxx.region.aws.neon.tech/neondb?sslmode=verify-full' npm run db:bootstrap:payload
 ```
 
-**2. If admin existed before the `role` field was added**
+Then create the first user at `https://beta.infrafund.net/admin`.
 
-```bash
-DATABASE_URL='...same...' npm run db:migrate:users-role
-```
+## Troubleshooting
 
-**3. Redeploy** the Vercel Preview that serves `beta.infrafund.net`.
-
-**4. Create the first admin** at `https://beta.infrafund.net/admin` (first user becomes master admin).
-
-Optional one-off on Preview only (instead of step 1): set `PAYLOAD_FORCE_DRIZZLE_PUSH=true` in Vercel Preview env, redeploy, load `/admin` once, then **remove** the variable and redeploy again.
-
-#### SSL warning in Vercel logs
-
-If you see `(node) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require'...`, set `sslmode=verify-full` on `DATABASE_URL` in Vercel (or redeploy after the app change that normalizes `require` → `verify-full`). The warning is not fatal.
-
-If you see `unsupported startup parameter in options: search_path`, your `DATABASE_URL` is a **pooler** string or an old deploy still set `search_path` on connect — use Neon’s **direct** connection string (no `-pooler` in the host) and redeploy.
-
-If you see `b.mask is not a function`, redeploy after removing the Neon WebSocket driver — use **pooled** `DATABASE_URL` with standard `pg` only.
-
-If you see `timeout exceeded when trying to connect` on `select count(*) from "payload"."users"`, confirm `DATABASE_URL` is the **pooled** Neon URI, reload `/admin` after scale-to-zero wake, or disable scale-to-zero in the Neon console for that branch.
-
-A **500** on `/admin` is usually missing env vars, wrong `DATABASE_URL`, or an unbootstrapped `payload` schema (run `npm run db:bootstrap:payload` with the **direct** URL).
-
-## What GitHub Actions does
-
-| Branch | Workflow | Deploy target |
-|--------|----------|----------------|
-| `main` | `ci.yml` only | **Vercel** (no `deploy.yaml`) |
-| `develop` | `deploy-dev.yaml` | Docker smoke test / optional VM deploy |
-
-There is **no** production Docker workflow; do not re-add `deploy.yaml` unless you intentionally run two prod targets.
-
-## Verify a `main` deploy
-
-1. Merge or push to **`main`**.
-2. Vercel dashboard → **Deployments** → latest **Production** deployment.
-3. Or check production URL after the build completes.
-
-GitHub Actions **CI** may run in parallel; green CI does not replace checking Vercel.
+- **`/admin` 500 / timeout:** pooled `DATABASE_URL`, bootstrapped schema, disable scale-to-zero, redeploy.
+- **`search_path` startup error:** use pooled URL; app does not set `search_path` on Neon.
+- **`b.mask is not a function`:** do not use Neon WebSocket driver on Vercel; use `pg` + pooled URL (current code).
+- **Slow first load:** scale-to-zero + ISR cold cache; disable scale-to-zero for beta.
 
 ## Backpro API
 
-Waitlist/contact still use **backpro** via `NEXT_PUBLIC_API_BASE_URL`. Vercel only hosts the Next.js / Payload app.
+Waitlist/contact use **backpro** via `NEXT_PUBLIC_API_BASE_URL`.
