@@ -11,7 +11,10 @@ import { Posts } from './collections/Posts.js';
 import { SitePages } from './collections/SitePages.js';
 import { Users } from './collections/Users.js';
 import { HomePage } from './globals/HomePage.js';
-import { buildPayloadPgPool } from './lib/postgres-pool-config.js';
+import {
+  buildPayloadPgPool,
+  normalizePgConnectionString,
+} from './lib/postgres-pool-config.js';
 import { platformSmtpEmailAdapter } from './lib/payload-platform-smtp-email.js';
 
 const filename = fileURLToPath(import.meta.url);
@@ -67,6 +70,11 @@ if (payloadSecretResolved && !process.env.PAYLOAD_SECRET?.trim()) {
 }
 if (databaseUrlResolved && !process.env.DATABASE_URL?.trim()) {
   process.env.DATABASE_URL = databaseUrlResolved;
+}
+if (process.env.DATABASE_URL?.trim()) {
+  process.env.DATABASE_URL = normalizePgConnectionString(
+    process.env.DATABASE_URL.trim()
+  );
 }
 
 const secret =

@@ -2,19 +2,24 @@
  * One-time: create Payload schema + tables on an empty Postgres (e.g. new Neon on Vercel).
  * Uses Drizzle push (dev only). Production runtime still has push: false in payload.config.js.
  *
- *   DATABASE_URL='postgresql://...@....neon.tech/neondb?sslmode=require' npm run db:bootstrap:payload
+ *   DATABASE_URL='postgresql://...@....neon.tech/neondb?sslmode=verify-full' npm run db:bootstrap:payload
  */
 import pg from 'pg';
 import { getPayload } from 'payload';
-import { pgSslOption } from '../lib/postgres-pool-config.js';
+import {
+  normalizePgConnectionString,
+  pgSslOption,
+} from '../lib/postgres-pool-config.js';
 import config from '../payload.config.js';
 
-const databaseUrl = process.env.DATABASE_URL?.trim();
+const databaseUrl = normalizePgConnectionString(
+  process.env.DATABASE_URL?.trim() ?? ''
+);
 if (!databaseUrl) {
   console.error(
     'DATABASE_URL is required.\n' +
       '  Option A: put your Neon URI in .env.local as DATABASE_URL=postgresql://...\n' +
-      "  Option B: DATABASE_URL='postgresql://...@ep-xxx.region.aws.neon.tech/neondb?sslmode=require' npm run db:bootstrap:payload\n" +
+      "  Option B: DATABASE_URL='postgresql://...@ep-xxx.region.aws.neon.tech/neondb?sslmode=verify-full' npm run db:bootstrap:payload\n" +
       'Copy from Neon → Connect → Connection string (URI), not a placeholder or psql command.'
   );
   process.exit(1);

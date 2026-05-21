@@ -3,6 +3,34 @@
  * Neon requires SSL; Vercel serverless needs a small pool (max 1).
  */
 
+/** Modes that pg v8 warns about; map to verify-full (see node pg-connection-string). */
+const PG_LEGACY_SSL_MODES = new Set(['prefer', 'require', 'verify-ca']);
+
+/**
+ * Avoid pg "SECURITY WARNING" for sslmode=require on Neon/Vercel.
+ * @param {string} connectionString
+ */
+export function normalizePgConnectionString(connectionString) {
+  try {
+    const u = new URL(connectionString);
+    if (u.searchParams.get('uselibpqcompat') === 'true') {
+      return connectionString;
+    }
+    const sslmode = u.searchParams.get('sslmode')?.toLowerCase();
+    if (sslmode && PG_LEGACY_SSL_MODES.has(sslmode)) {
+      u.searchParams.set('sslmode', 'verify-full');
+      return u.toString();
+    }
+    if (!sslmode && u.hostname.toLowerCase().endsWith('.neon.tech')) {
+      u.searchParams.set('sslmode', 'verify-full');
+      return u.toString();
+    }
+    return connectionString;
+  } catch {
+    return connectionString;
+  }
+}
+
 /** @param {string} connectionString */
 function needsPgSsl(connectionString) {
   try {
@@ -31,12 +59,13 @@ export function pgSslOption(connectionString) {
 
 /** @param {string} connectionString */
 export function buildPayloadPgPool(connectionString) {
+  const normalized = normalizePgConnectionString(connectionString);
   const pool = {
-    connectionString,
+    connectionString: normalized,
     options: '-c search_path=payload,public',
   };
 
-  const ssl = pgSslOption(connectionString);
+  const ssl = pgSslOption(normalized);
   if (ssl) pool.ssl = ssl;
 
   if (process.env.VERCEL) {

@@ -36,7 +36,7 @@ Assign **beta.infrafund.net** to a **Preview** deployment in Vercel → **Settin
 
 | Variable | Example / notes |
 |----------|------------------|
-| `DATABASE_URL` | Neon **direct** (unpooled) URL, must include `?sslmode=require` |
+| `DATABASE_URL` | Neon **direct** (unpooled) URL; use `?sslmode=verify-full` (or `require` — app normalizes it) |
 | `PAYLOAD_SECRET` | Same long random string as other environments (≥32 chars) |
 | `PAYLOAD_PUBLIC_SERVER_URL` | `https://beta.infrafund.net` (no trailing slash) |
 | `NEXT_PUBLIC_API_BASE_URL` | Dev/staging API |
@@ -50,11 +50,11 @@ Copy these under **Environment Variables → Preview** (not only Production). Re
 From the [Neon console](https://console.neon.tech) → your project → **Connect**:
 
 - Use the **direct** / non-pooler host for `DATABASE_URL` (Payload migrations and Drizzle push).
-- Append `sslmode=require` if it is not already in the URL.
+- Prefer `sslmode=verify-full` (avoids a `pg` driver warning on Vercel; the app also upgrades legacy `require` automatically).
 
 Example shape (do not commit real credentials):
 
-`postgresql://user:pass@ep-xxxx.region.aws.neon.tech/neondb?sslmode=require`
+`postgresql://user:pass@ep-xxxx.region.aws.neon.tech/neondb?sslmode=verify-full`
 
 #### `/admin` returns 500 after Neon migration
 
@@ -64,7 +64,7 @@ Production and Preview set `NODE_ENV=production`, so Payload **does not** auto-c
 
 ```bash
 cd landing-pro
-DATABASE_URL='postgresql://...@....neon.tech/neondb?sslmode=require' npm run db:bootstrap:payload
+DATABASE_URL='postgresql://...@....neon.tech/neondb?sslmode=verify-full' npm run db:bootstrap:payload
 ```
 
 **2. If admin existed before the `role` field was added**
@@ -81,7 +81,7 @@ Optional one-off on Preview only (instead of step 1): set `PAYLOAD_FORCE_DRIZZLE
 
 #### SSL warning in Vercel logs
 
-`(node) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require'...` comes from the `pg` driver and is informational. A **500** on `/admin` is usually missing env vars, wrong `DATABASE_URL`, or an unbootstrapped `payload` schema — check the function log lines **above** that warning for `Missing DATABASE_URL`, `relation "payload.users" does not exist`, or connection errors.
+If you see `(node) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require'...`, set `sslmode=verify-full` on `DATABASE_URL` in Vercel (or redeploy after the app change that normalizes `require` → `verify-full`). The warning is not fatal; a **500** on `/admin` is usually missing env vars, wrong `DATABASE_URL`, or an unbootstrapped `payload` schema.
 
 ## What GitHub Actions does
 
