@@ -250,5 +250,20 @@ export default buildConfig({
       );
       patchPayloadDbFindOneOnVercel(payload);
     }
+    if (blobAccess === 'private' && blobToken) {
+      const { createPrivateVercelBlobMediaHandler } = await import(
+        './lib/vercel-blob-private-media-handler.js'
+      );
+      const media = payload.config.collections.find((c) => c.slug === 'media');
+      if (media?.upload && typeof media.upload === 'object') {
+        const privateHandler = createPrivateVercelBlobMediaHandler({
+          token: blobToken,
+        });
+        media.upload.handlers = [
+          privateHandler,
+          ...(media.upload.handlers || []),
+        ];
+      }
+    }
   },
 });
