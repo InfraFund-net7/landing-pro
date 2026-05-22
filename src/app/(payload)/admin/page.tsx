@@ -4,6 +4,7 @@ import config from '@payload-config';
 import { generatePageMetadata } from '@payloadcms/next/views';
 import { redirect } from 'next/navigation';
 import { formatAdminURL } from 'payload/shared';
+import { payloadAdminDashboardPage } from '@/lib/payload-admin-dashboard-page';
 import { probeNeonHasPayloadUser } from '@/lib/neon-user-probe.js';
 import { payloadAdminRootPage } from '@/lib/payload-admin-root.js';
 import { importMap } from './importMap';
@@ -38,6 +39,14 @@ const Page = async (args: Args) => {
           path: cfg.admin.routes.createFirstUser,
         })
       );
+    }
+    if (hasUser === true) {
+      return payloadAdminDashboardPage({
+        config,
+        importMap,
+        params: Promise.resolve({ segments: [] }),
+        searchParams: args.searchParams,
+      });
     }
   }
 
