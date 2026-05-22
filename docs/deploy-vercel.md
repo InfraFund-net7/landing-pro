@@ -121,7 +121,15 @@ DATABASE_URL='postgresql://...@ep-xxx-pooler....neon.tech/neondb?sslmode=verify-
 node src/scripts/verify-payload-users.mjs
 ```
 
-If this shows your email but beta still opens create-first-user, redeploy latest `develop` (Neon HTTP user probe + pooled `DATABASE_URL`). If it persists, Vercel `DATABASE_URL` or `PAYLOAD_SECRET` does not match what you used locally.
+Test login with the **same pooled** URL and password you use in the browser:
+
+```bash
+DATABASE_URL='postgresql://...@ep-xxx-pooler....neon.tech/neondb?sslmode=verify-full' \
+PAYLOAD_SECRET='...' \
+npm run db:verify-payload-login -- your@email.com 'YourPassword'
+```
+
+If this shows your email but beta still opens create-first-user, redeploy latest `develop` (Neon HTTP user probe + pooled `DATABASE_URL`). If users exist but login says wrong password, redeploy after fixing pooled runtime URL (Payload must not use `DATABASE_URL_UNPOOLED` for queries). If it persists, Vercel `DATABASE_URL` or `PAYLOAD_SECRET` does not match what you used locally.
 
 ## Troubleshooting
 

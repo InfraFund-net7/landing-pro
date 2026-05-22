@@ -31,6 +31,7 @@
     "db:create-payload-master-admin": "node src/scripts/create-payload-master-admin.mjs",
     "db:test-payload-email": "node src/scripts/test-payload-email.mjs",
     "db:verify-payload-users": "node src/scripts/verify-payload-users.mjs",
+    "db:verify-payload-login": "node src/scripts/verify-payload-login.mjs",
     "db:migrate:backpro-neon": "node --env-file=.env.local src/scripts/migrate-backpro-to-neon.mjs"
   },
   "commitlint": {

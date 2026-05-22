@@ -41,14 +41,12 @@ export function neonConnectionKind(connectionString) {
 }
 
 /**
- * Payload pool uses DATABASE_URL as-is (pooled on Vercel). Stripping `-pooler` for a
- * "direct" host broke RootPage db.findOne — login redirected to create-first-user.
+ * Payload pool uses DATABASE_URL as-is (pooled on Vercel). Replacing the pooled host
+ * with a direct host broke db.findOne — admin login reported wrong credentials even
+ * when payload.users had rows (Neon HTTP probe still saw them on the pooled URL).
  * @param {string} connectionString
  */
 export function resolvePayloadDatabaseUrl(connectionString) {
-  if (process.env.VERCEL && process.env.DATABASE_URL_UNPOOLED?.trim()) {
-    return process.env.DATABASE_URL_UNPOOLED.trim();
-  }
   return connectionString;
 }
 

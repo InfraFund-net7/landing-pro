@@ -3,10 +3,12 @@
  * db.findOne fails on Vercel but payload.users has rows.
  */
 import { neon } from '@neondatabase/serverless';
+import { resolvePayloadDatabaseUrl } from './postgres-pool-config.js';
 
 /** @param {string} [connectionString] */
 export async function probeNeonHasPayloadUser(connectionString) {
-  const url = (connectionString ?? process.env.DATABASE_URL)?.trim();
+  const raw = (connectionString ?? process.env.DATABASE_URL)?.trim();
+  const url = raw ? resolvePayloadDatabaseUrl(raw) : '';
   if (!url?.includes('.neon.tech')) return null;
 
   try {
