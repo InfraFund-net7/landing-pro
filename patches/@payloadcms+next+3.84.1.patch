@@ -7,8 +7,8 @@ index 1111111..2222222 100644
    });
    req.routeParams = routeParams;
 -  const dbHasUser = req.user || (await req.payload.db.findOne({
-+  const vercelKnownHasUser = process.env.PAYLOAD_VERCEL_KNOWN_HAS_USER === '1';
-+  const dbHasUser = req.user || vercelKnownHasUser || (await req.payload.db.findOne({
++  const vercelKnownHasUserFlag = globalThis.__payloadVercelKnownHasUser === true;
++  const dbHasUser = req.user || vercelKnownHasUserFlag || (await req.payload.db.findOne({
      collection: userSlug,
      req
    })?.then(doc => !!doc));

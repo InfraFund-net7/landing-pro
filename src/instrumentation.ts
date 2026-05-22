@@ -17,8 +17,12 @@ export async function register() {
       const { probeNeonHasPayloadUser } = await import(
         './lib/neon-user-probe.js'
       );
+      const { markVercelKnownHasUser } = await import(
+        './lib/payload-vercel-known-user.js'
+      );
       const hasUser = await probeNeonHasPayloadUser(databaseUrl);
       if (hasUser === true) {
+        markVercelKnownHasUser();
         process.env.PAYLOAD_VERCEL_KNOWN_HAS_USER = '1';
         console.log('[payload] neon user probe (cold start): hasUser=true');
       }
