@@ -9,6 +9,16 @@ export const Posts = {
     group: 'Content',
   },
   access: contentCollectionAccess,
+  hooks: {
+    beforeChange: [
+      ({ data }) => {
+        if (data.published && !data.publishedAt) {
+          data.publishedAt = new Date().toISOString();
+        }
+        return data;
+      },
+    ],
+  },
   fields: [
     {
       name: 'title',

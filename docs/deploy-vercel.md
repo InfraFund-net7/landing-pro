@@ -26,7 +26,7 @@ Marketing routes use **ISR** (`revalidate: 60`) and **do not** query Neon unless
 |----------|------------------|
 | `CMS_REPLACE_EXISTING_PAGES` | Fetch **site-pages** from CMS and allow replacement UI |
 | `CMS_FETCH_HOME_PAGE` | Fetch **home-page** global from CMS (otherwise handcrafted fallbacks) |
-| `CMS_FETCH_BLOG` | Fetch **posts** from CMS (otherwise mock blog data) |
+| (blog) | Posts load from Payload when `DATABASE_URL` is set; `CMS_USE_MOCK_BLOG=1` forces mock data |
 
 Leave all unset on Preview/Production for fastest loads. Enable after you seed content in Payload.
 
@@ -75,6 +75,7 @@ Also set manually (not from Neon): `PAYLOAD_PUBLIC_SERVER_URL`, `INFRA_CONTACT_F
 | `INFRA_CONTACT_FORM_RECEIVER` | Team inbox for waitlist/contact notifications |
 | `NEXT_PUBLIC_DASH_LOGIN_URL` | `https://dashboard.infrafund.net/login` |
 | `SKIP_PAYLOAD_FETCH_AT_BUILD` | `1` (optional; build skips CMS without it too) |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob (CMS media uploads) |
 
 ### Preview (`develop`, `beta.infrafund.net`)
 
@@ -89,8 +90,26 @@ Also set manually (not from Neon): `PAYLOAD_PUBLIC_SERVER_URL`, `INFRA_CONTACT_F
 | `INFRA_CONTACT_FORM_RECEIVER` | Same as Production |
 | `NEXT_PUBLIC_DASH_LOGIN_URL` | Dev dashboard login |
 | `SKIP_PAYLOAD_FETCH_AT_BUILD` | `1` (optional) |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob (CMS media uploads) |
 
-Optional CMS (off by default): `CMS_REPLACE_EXISTING_PAGES`, `CMS_FETCH_HOME_PAGE`, `CMS_FETCH_BLOG`.
+Optional CMS: `CMS_REPLACE_EXISTING_PAGES`, `CMS_FETCH_HOME_PAGE`. Blog uses Payload automatically when `DATABASE_URL` is set.
+
+### Seed CMS content (once per Neon branch)
+
+From your machine (Neon **direct** or pooled URL in `.env.local`):
+
+```bash
+npm run db:bootstrap:payload
+npm run seed:all
+```
+
+This loads home page global, site pages, and blog posts (with images from `public/image/`). Re-run with `npm run seed:all -- --force` to update existing slugs.
+
+### Vercel Blob (CMS images)
+
+1. Vercel project → **Storage** → Create **Blob** store → link to `landing-pro`.
+2. `BLOB_READ_WRITE_TOKEN` is added automatically — enable for **Production** and **Preview**.
+3. Redeploy. Without Blob, post **text** saves to Neon but **uploads** do not persist on serverless.
 
 ## Bootstrap Payload on Neon (once)
 

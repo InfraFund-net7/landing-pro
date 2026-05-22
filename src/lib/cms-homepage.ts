@@ -1,14 +1,10 @@
 import config from '@payload-config';
 import { getPayload } from 'payload';
+import { cmsMediaFromRelation } from '@/lib/cms-media-url';
 import { shouldFetchHomePageFromCms } from '@/lib/cms-runtime';
 import { skipPayloadFetchAtBuild } from '@/lib/skip-payload-fetch-at-build';
 
-type MediaRelation = null | number | { url?: string };
-
-function mediaUrl(media: MediaRelation): string | undefined {
-  if (media && typeof media === 'object' && 'url' in media) return media.url;
-  return undefined;
-}
+type MediaRelation = null | number | { url?: string | null };
 
 function toArray<T>(value: T[] | null | undefined): T[] {
   return Array.isArray(value) ? value : [];
@@ -165,7 +161,7 @@ export async function fetchHomePageContent(): Promise<HomePageContent | null> {
         title: global.operatingSystem?.title ?? '',
         subtitle: global.operatingSystem?.subtitle ?? '',
         images: toArray(global.operatingSystem?.images).map((item) => ({
-          image: mediaUrl(item.image ?? null),
+          image: cmsMediaFromRelation(item.image ?? null),
           alt: item.alt ?? '',
         })),
       },
@@ -174,7 +170,7 @@ export async function fetchHomePageContent(): Promise<HomePageContent | null> {
         cards: toArray(global.whyChoose?.cards).map((item) => ({
           title: item.title ?? '',
           description: item.description ?? '',
-          icon: mediaUrl(item.icon ?? null),
+          icon: cmsMediaFromRelation(item.icon ?? null),
           bottomSpacing: item.bottomSpacing ?? '',
           order: typeof item.order === 'number' ? item.order : undefined,
         })),
@@ -185,7 +181,7 @@ export async function fetchHomePageContent(): Promise<HomePageContent | null> {
         steps: toArray(global.transparency?.steps).map((item) => ({
           title: item.title ?? '',
           description: item.description ?? '',
-          image: mediaUrl(item.image ?? null),
+          image: cmsMediaFromRelation(item.image ?? null),
         })),
       },
       funding: {
@@ -194,7 +190,7 @@ export async function fetchHomePageContent(): Promise<HomePageContent | null> {
           title: item.title ?? '',
           description: item.description ?? '',
           iconKey: item.iconKey ?? '',
-          backgroundImage: mediaUrl(item.backgroundImage ?? null),
+          backgroundImage: cmsMediaFromRelation(item.backgroundImage ?? null),
         })),
       },
       investment: {
@@ -209,7 +205,7 @@ export async function fetchHomePageContent(): Promise<HomePageContent | null> {
           projectedReturn: item.projectedReturn ?? '',
           fundingStatus:
             typeof item.fundingStatus === 'number' ? item.fundingStatus : 0,
-          image: mediaUrl(item.image ?? null),
+          image: cmsMediaFromRelation(item.image ?? null),
         })),
         modalTabs: toArray(global.investment?.modalTabs).map((item) => ({
           name: item.name ?? '',
@@ -220,7 +216,7 @@ export async function fetchHomePageContent(): Promise<HomePageContent | null> {
         title: global.trusted?.title ?? '',
         partners: toArray(global.trusted?.partners).map((item) => ({
           name: item.name ?? '',
-          logo: mediaUrl(item.logo ?? null),
+          logo: cmsMediaFromRelation(item.logo ?? null),
           alt: item.alt ?? '',
         })),
         testimonials: toArray(global.trusted?.testimonials).map(
@@ -229,7 +225,7 @@ export async function fetchHomePageContent(): Promise<HomePageContent | null> {
             quote: item.quote ?? '',
             name: item.name ?? '',
             title: item.title ?? '',
-            image: mediaUrl(item.avatar ?? null),
+            image: cmsMediaFromRelation(item.avatar ?? null),
           })
         ),
       },

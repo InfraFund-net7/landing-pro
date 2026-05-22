@@ -1,11 +1,12 @@
 import { mediaCollectionAccess } from '../access/collection-access.js';
-import { isMasterAdmin } from '../access/roles.js';
+import { canManageContent } from '../access/roles.js';
 
 /** @type {import('payload').CollectionConfig} */
 export const Media = {
   slug: 'media',
   admin: {
-    hidden: ({ user }) => !isMasterAdmin(user),
+    hidden: ({ user }) => !canManageContent(user),
+    group: 'Content',
   },
   access: mediaCollectionAccess,
   fields: [
@@ -15,5 +16,8 @@ export const Media = {
       required: true,
     },
   ],
-  upload: true,
+  upload: {
+    staticDir: 'media',
+    mimeTypes: ['image/*'],
+  },
 };

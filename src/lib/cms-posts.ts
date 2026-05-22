@@ -2,22 +2,9 @@ import type { Blog } from '@/data/mockBlog';
 import type { StaticImageData } from 'next/image';
 import config from '@payload-config';
 import { getPayload } from 'payload';
+import { cmsMediaFromRelation } from '@/lib/cms-media-url';
 import { shouldFetchBlogFromCms } from '@/lib/cms-runtime';
 import { skipPayloadFetchAtBuild } from '@/lib/skip-payload-fetch-at-build';
-
-type FeaturedImage = null | number | { url?: string };
-
-function mediaUrl(img: FeaturedImage): string | undefined {
-  if (
-    img &&
-    typeof img === 'object' &&
-    'url' in img &&
-    typeof img.url === 'string'
-  ) {
-    return img.url;
-  }
-  return undefined;
-}
 
 function formatPostDate(value: null | string | Date | undefined): string {
   if (!value) return '';
@@ -39,6 +26,24 @@ export type BlogListItem = {
   image?: string | StaticImageData;
 };
 
+function mapPostDoc(doc: {
+  slug: string;
+  title: string;
+  description: string;
+  publishedAt?: string | Date | null;
+  readTime?: string | null;
+  featuredImage?: null | number | { url?: string | null };
+}): BlogListItem {
+  return {
+    slug: String(doc.slug),
+    title: String(doc.title),
+    description: String(doc.description),
+    date: formatPostDate(doc.publishedAt ?? undefined) || '—',
+    readTime: String(doc.readTime ?? ''),
+    image: cmsMediaFromRelation(doc.featuredImage),
+  };
+}
+
 export async function fetchCmsPostsForListing(): Promise<BlogListItem[]> {
   if (!shouldFetchBlogFromCms()) return [];
   if (skipPayloadFetchAtBuild()) return [];
@@ -52,15 +57,9 @@ export async function fetchCmsPostsForListing(): Promise<BlogListItem[]> {
       depth: 1,
     });
 
-    return docs.map((doc) => ({
-      slug: String(doc.slug),
-      title: String(doc.title),
-      description: String(doc.description),
-      date: formatPostDate(doc.publishedAt as Date | string | undefined) || '—',
-      readTime: String(doc.readTime ?? ''),
-      image: mediaUrl(doc.featuredImage as FeaturedImage),
-    }));
-  } catch {
+    return docs.map((doc) => mapPostDoc(doc));
+  } catch (error) {
+    console.error('[cms-posts] fetchCmsPostsForListing failed:', error);
     return [];
   }
 }
@@ -87,13 +86,31 @@ export async function fetchCmsPostBySlug(slug: string): Promise<Blog | null> {
       title: String(doc.title),
       description: String(doc.description),
       mainContent: String(doc.mainContent ?? ''),
-      date: formatPostDate(doc.publishedAt as Date | string | undefined) || '—',
+      date: formatPostDate(doc.publishedAt ?? undefined) || '—',
       readTime: String(doc.readTime ?? ''),
       author: String(doc.author ?? ''),
       category: String(doc.category ?? ''),
-      image: mediaUrl(doc.featuredImage as FeaturedImage),
+      image: cmsMediaFromRelation(doc.featuredImage),
     };
-  } catch {
+  } catch (error) {
+    console.error('[cms-posts] fetchCmsPostBySlug failed:', error);
     return null;
+  }
+}
+
+export async function fetchCmsPostSlugs(): Promise<string[]> {
+  if (!shouldFetchBlogFromCms()) return [];
+  if (skipPayloadFetchAtBuild()) return [];
+  try {
+    const payload = await getPayload({ config });
+    const { docs } = await payload.find({
+      collection: 'posts',
+      where: { published: { equals: true } },
+      limit: 200,
+      depth: 0,
+    });
+    return docs.map((doc) => String(doc.slug));
+  } catch {
+    return [];
   }
 }

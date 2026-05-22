@@ -23,6 +23,8 @@ const posts = [
     published: true,
     publishedAt: '2024-06-15T09:00:00.000Z',
     imagePath: 'image/solar.jpg',
+    mainContent:
+      'Tokenization is reshaping how green infrastructure assets are funded, traded, and held. This article outlines how on-chain instruments can improve transparency and liquidity for investors.',
   },
   {
     slug: 'wind-energy-investment',
@@ -126,6 +128,7 @@ async function upsertPost(payload, post) {
     title: post.title,
     slug: post.slug,
     description: post.description,
+    mainContent: post.mainContent ?? '',
     published: post.published,
     publishedAt: post.publishedAt,
     readTime: post.readTime,

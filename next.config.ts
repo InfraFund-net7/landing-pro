@@ -50,8 +50,18 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'beta.infrafund.net',
+        pathname: '/cms/api/media/file/**',
+      },
+      {
+        protocol: 'https',
         hostname: '*.vercel.app',
         pathname: '/cms/api/media/file/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.public.blob.vercel-storage.com',
+        pathname: '/**',
       },
     ],
   },

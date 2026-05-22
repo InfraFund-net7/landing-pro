@@ -1,12 +1,23 @@
 /**
- * When to hit Payload/Neon for marketing pages. Default: handcrafted fallbacks only.
- * Enable CMS after seeding: CMS_REPLACE_EXISTING_PAGES=1 (site pages), optional
- * CMS_FETCH_HOME_PAGE=1 / CMS_FETCH_BLOG=1 for home or blog only.
+ * When to hit Payload/Neon for marketing pages.
+ * Blog: on by default when DATABASE_URL/POSTGRES_URL is set (Vercel + local with Neon).
+ * Site pages / home: opt-in via CMS_REPLACE_EXISTING_PAGES / CMS_FETCH_HOME_PAGE.
  */
 
 function envFlag(name: string): boolean {
   const v = process.env[name]?.trim().toLowerCase();
   return v === '1' || v === 'true';
+}
+
+function envDisabled(name: string): boolean {
+  const v = process.env[name]?.trim().toLowerCase();
+  return v === '0' || v === 'false';
+}
+
+function hasPayloadDatabase(): boolean {
+  return Boolean(
+    process.env.DATABASE_URL?.trim() || process.env.POSTGRES_URL?.trim()
+  );
 }
 
 export const isCmsPageReplacementEnabled = envFlag(
@@ -22,5 +33,12 @@ export function shouldFetchHomePageFromCms(): boolean {
 }
 
 export function shouldFetchBlogFromCms(): boolean {
-  return isCmsPageReplacementEnabled || envFlag('CMS_FETCH_BLOG');
+  if (envFlag('CMS_USE_MOCK_BLOG') || envDisabled('CMS_FETCH_BLOG')) {
+    return false;
+  }
+  return (
+    isCmsPageReplacementEnabled ||
+    envFlag('CMS_FETCH_BLOG') ||
+    hasPayloadDatabase()
+  );
 }

@@ -24,6 +24,7 @@ import {
   logPayloadEmailConfigStatus,
   platformSmtpEmailAdapter,
 } from './lib/payload-platform-smtp-email.js';
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -155,8 +156,24 @@ const serverURL = resolveServerURL();
 
 const email = platformSmtpEmailAdapter();
 
+const blobToken = process.env.BLOB_READ_WRITE_TOKEN?.trim();
+const storagePlugins = blobToken
+  ? [
+      vercelBlobStorage({
+        collections: { media: true },
+        token: blobToken,
+        clientUploads: Boolean(process.env.VERCEL),
+      }),
+    ]
+  : [];
+
 if (!isNextProdBuildContext) {
   logPayloadEmailConfigStatus(serverURL);
+  if (process.env.VERCEL && !blobToken) {
+    console.warn(
+      '[payload] BLOB_READ_WRITE_TOKEN is missing — media uploads on Vercel will not persist. Add Vercel Blob storage to the project.'
+    );
+  }
 }
 
 export default buildConfig({
@@ -199,7 +216,7 @@ export default buildConfig({
     push: drizzlePush,
   }),
   sharp,
-  plugins: [],
+  plugins: storagePlugins,
   onInit: async (payload) => {
     if (process.env.VERCEL) {
       const { patchPayloadDbFindOneOnVercel } = await import(

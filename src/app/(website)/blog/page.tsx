@@ -3,7 +3,7 @@ import { fetchCmsPostsForListing } from '@/lib/cms-posts';
 import { fetchSitePageBySlug } from '@/lib/cms-site-pages';
 import React from 'react';
 
-/** ISR; CMS blog when CMS_FETCH_BLOG=1 or CMS_REPLACE_EXISTING_PAGES=1. */
+/** ISR; blog posts from Payload when DATABASE_URL is configured. */
 export const revalidate = 60;
 
 export default async function page() {
