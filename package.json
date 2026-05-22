@@ -18,7 +18,7 @@
     "fix:lint": "eslint --fix .",
     "postinstall": "patch-package",
     "prepare": "husky",
-    "generate:importmap": "node --env-file=.env.local --env-file-if-exists=.env src/scripts/generate-importmap.mjs",
+    "generate:importmap": "node --env-file-if-exists=.env.local --env-file-if-exists=.env src/scripts/generate-importmap.mjs",
     "generate:types": "payload generate:types",
     "payload": "payload --disable-transpile",
     "seed:home-page": "node --env-file=.env.local src/scripts/seed-home-page.mjs",
