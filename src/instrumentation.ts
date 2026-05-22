@@ -14,6 +14,14 @@ export async function register() {
       const { warmupNeonDatabase } = await import('./lib/neon-warmup.js');
       await warmupNeonDatabase(databaseUrl);
       console.log('[payload] neon warmup: SELECT 1 ok');
+      const { probeNeonHasPayloadUser } = await import(
+        './lib/neon-user-probe.js'
+      );
+      const hasUser = await probeNeonHasPayloadUser(databaseUrl);
+      if (hasUser === true) {
+        process.env.PAYLOAD_VERCEL_KNOWN_HAS_USER = '1';
+        console.log('[payload] neon user probe (cold start): hasUser=true');
+      }
     } catch (err) {
       console.warn(
         '[payload] neon warmup failed (scale-to-zero or DATABASE_URL); transactions may timeout:',

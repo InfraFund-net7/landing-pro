@@ -41,25 +41,15 @@ export function neonConnectionKind(connectionString) {
 }
 
 /**
- * Payload pool on Vercel: use direct Neon host for WebSocket transactions (first-register).
- * Keep pooled DATABASE_URL in Vercel env; optional DATABASE_URL_UNPOOLED overrides.
+ * Payload pool uses DATABASE_URL as-is (pooled on Vercel). Stripping `-pooler` for a
+ * "direct" host broke RootPage db.findOne — login redirected to create-first-user.
  * @param {string} connectionString
  */
 export function resolvePayloadDatabaseUrl(connectionString) {
-  if (!process.env.VERCEL || !isNeonDatabaseUrl(connectionString)) {
-    return connectionString;
+  if (process.env.VERCEL && process.env.DATABASE_URL_UNPOOLED?.trim()) {
+    return process.env.DATABASE_URL_UNPOOLED.trim();
   }
-  const unpooled = process.env.DATABASE_URL_UNPOOLED?.trim();
-  if (unpooled) return unpooled;
-  try {
-    const u = new URL(connectionString);
-    if (u.hostname.includes('-pooler')) {
-      u.hostname = u.hostname.replace('-pooler', '');
-    }
-    return u.toString();
-  } catch {
-    return connectionString;
-  }
+  return connectionString;
 }
 
 /**

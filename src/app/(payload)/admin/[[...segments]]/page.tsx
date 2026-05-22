@@ -3,7 +3,8 @@
 import type { Metadata } from 'next';
 
 import config from '@payload-config';
-import { RootPage, generatePageMetadata } from '@payloadcms/next/views';
+import { generatePageMetadata } from '@payloadcms/next/views';
+import { payloadAdminRootPage } from '@/lib/payload-admin-root.js';
 import { importMap } from '../importMap';
 
 type Args = {
@@ -22,6 +23,6 @@ export const generateMetadata = ({
   generatePageMetadata({ config, params, searchParams });
 
 const Page = ({ params, searchParams }: Args) =>
-  RootPage({ config, params, searchParams, importMap });
+  payloadAdminRootPage({ config, params, searchParams, importMap });
 
 export default Page;
