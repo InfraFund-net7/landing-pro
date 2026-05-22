@@ -98,7 +98,7 @@ If this shows your email but beta still opens create-first-user, redeploy latest
 - **`504` / `FUNCTION_INVOCATION_TIMEOUT`:** See [Vercel docs](https://vercel.com/docs/errors/function_invocation_timeout). Function hit `maxDuration` (60s) while waiting on DB. Redeploy after env changes; remove `PAYLOAD_FORCE_DRIZZLE_PUSH`; use pooled Neon URL; disable scale-to-zero.
 - **Logs show `neon warmup: SELECT 1 ok` then `pg-tcp` timeout:** HTTPS to Neon works; **TCP from Vercel to Neon pooler does not**. Runtime must use `driver=neon-fetch` (`poolQueryViaFetch`). Redeploy latest `develop`.
 - **`POST 500` on `/cms/api/users/first-register`:** Do not create the first user on Vercel. Run `npm run db:create-payload-admin` locally (direct Neon URL), then use `/admin/login`.
-- **`/admin/login` redirects to create-first-user`:** User exists in Neon but Payload `db.findOne` fails on Vercel. Use **pooled** `DATABASE_URL` on Vercel; check logs for `neon user probe: hasUser=true`.
+- **`/admin/login` redirects to create-first-user` or loops `/admin` ↔ `/login` ↔ `/create-first-user`:** User exists in Neon (`hasUser=true` in logs) but bundled `RootPage` still redirects. Use dedicated routes (`/admin/login` bypasses `RootPage`); redeploy latest `develop`. Check logs for `admin login page (bypass RootPage)`.
 - **`/admin` 500 / DB timeout:** Pooled `DATABASE_URL` on Vercel; bootstrap schema with **direct** URL if tables missing.
 - **`search_path` startup error:** use pooled URL; app does not set `search_path` on Neon.
 - **`b.mask is not a function`:** redeploy latest code; `ws`/`@neondatabase/serverless` must stay external in `next.config.ts`.

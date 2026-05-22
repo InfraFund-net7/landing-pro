@@ -61,6 +61,13 @@ const nextConfig: NextConfig = {
       '.js': ['.ts', '.tsx', '.js', '.jsx'],
       '.mjs': ['.mts', '.mjs'],
     };
+    webpackConfig.resolve.alias = {
+      ...webpackConfig.resolve.alias,
+      'payload-init-req': path.resolve(
+        dirname,
+        'node_modules/@payloadcms/next/dist/utilities/initReq.js'
+      ),
+    };
     return webpackConfig;
   },
   turbopack: {
