@@ -36,8 +36,13 @@ export async function verifyRecaptchaToken(
     throw new Error('failed to verify captcha');
   }
 
-  const data = (await response.json()) as { success?: boolean };
+  const data = (await response.json()) as {
+    success?: boolean;
+    'error-codes'?: string[];
+  };
   if (!data.success) {
-    throw new Error('captcha verification failed');
+    const codes = data['error-codes']?.join(', ') ?? 'unknown';
+    console.error('[recaptcha] siteverify failed', codes);
+    throw new Error(`captcha verification failed (${codes})`);
   }
 }

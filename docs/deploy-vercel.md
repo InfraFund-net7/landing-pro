@@ -70,11 +70,11 @@ Also set manually (not from Neon): `PAYLOAD_PUBLIC_SERVER_URL`, `INFRA_CONTACT_F
 | `INFRA_CONTACT_FORM_SMTP_PASSWORD` | SMTP password (Vercel **Secret**) |
 | `INFRA_CONTACT_FORM_SMTP_USERNAME` | Optional; defaults to `SENDER` |
 | `INFRA_CONTACT_FORM_SMTP_REQUIRE_TLS` | `true` for port 587 (TLS) |
-| `RECAPTCHA_SECRET` or `INFRA_REST_RECAPTCHA_GOOGLE_SECRET` | Server verify for waitlist/contact/non-resident |
+| `RECAPTCHA_SECRET` or `INFRA_REST_RECAPTCHA_GOOGLE_SECRET` | Same **secret** as backpro (`GOOGLE_RECAPTCHA_SECRET` / `INFRA_REST_RECAPTCHA_GOOGLE_SECRET`) |
+| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | **Required** — matching **site** key from the same reCAPTCHA v3 app (baked in at build; redeploy after change) |
 | `INFRA_CONTACT_FORM_RECEIVER` | Team inbox for waitlist/contact notifications |
 | `NEXT_PUBLIC_DASH_LOGIN_URL` | `https://dashboard.infrafund.net/login` |
 | `SKIP_PAYLOAD_FETCH_AT_BUILD` | `1` (optional; build skips CMS without it too) |
-| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | Optional |
 
 ### Preview (`develop`, `beta.infrafund.net`)
 
@@ -84,7 +84,8 @@ Also set manually (not from Neon): `PAYLOAD_PUBLIC_SERVER_URL`, `INFRA_CONTACT_F
 | `PAYLOAD_SECRET` | Same as other envs |
 | `PAYLOAD_PUBLIC_SERVER_URL` | `https://beta.infrafund.net` |
 | `INFRA_CONTACT_FORM_SMTP_*` | Same as Production (forgot-password on `/admin/forgot`) |
-| `RECAPTCHA_SECRET` or `INFRA_REST_RECAPTCHA_GOOGLE_SECRET` | Same as Production |
+| `RECAPTCHA_SECRET` or `INFRA_REST_RECAPTCHA_GOOGLE_SECRET` | Same secret as Production / backpro |
+| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | Same site key as Production (redeploy Preview after change) |
 | `INFRA_CONTACT_FORM_RECEIVER` | Same as Production |
 | `NEXT_PUBLIC_DASH_LOGIN_URL` | Dev dashboard login |
 | `SKIP_PAYLOAD_FETCH_AT_BUILD` | `1` (optional) |
@@ -166,3 +167,5 @@ If this shows your email but beta still opens create-first-user, redeploy latest
 ## Landing forms (waitlist, contact, locations, non-resident)
 
 These run as **Next.js API routes** on the same Vercel project, using the Neon `DATABASE_URL` / `POSTGRES_URL` (public schema: `waitlist`, `contact_forms`, `non_resident_waitlists`, `countries`). Bootstrap once with `npm run db:migrate:backpro-neon` if tables are missing. Set `RECAPTCHA_SECRET` (or `INFRA_REST_RECAPTCHA_GOOGLE_SECRET`) and `INFRA_CONTACT_FORM_*` for captcha + notification email.
+
+**reCAPTCHA on beta:** In [Google reCAPTCHA admin](https://www.google.com/recaptcha/admin), open the same v3 key pair backpro uses. Under **Domains**, add `beta.infrafund.net` and `infrafund.net` (and `localhost` for local dev). On Vercel **Preview**, set both `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` (site key) and `INFRA_REST_RECAPTCHA_GOOGLE_SECRET` (secret key), then **redeploy** — the site key is embedded at build time. If the UI says “reCAPTCHA failed” with no `POST /api/waitlists` in Network, the browser could not obtain a token (domain/key mismatch). If `POST /api/waitlists` returns 401, the secret on Vercel does not match the site key.

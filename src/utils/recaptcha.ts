@@ -44,7 +44,15 @@ export const getRecaptchaToken = async (
       rejectRecaptcha('reCAPTCHA token is missing or invalid.');
     }
     return token;
-  } catch {
-    return rejectRecaptcha('reCAPTCHA verification failed. Please try again.');
+  } catch (err: unknown) {
+    console.error('[recaptcha] execute failed', { action, err });
+    if (err instanceof Error && err.message.trim()) {
+      rejectRecaptcha(
+        `reCAPTCHA failed (${err.message}). Check that beta.infrafund.net is listed under Domains in Google reCAPTCHA admin.`
+      );
+    }
+    rejectRecaptcha(
+      'reCAPTCHA failed. Add beta.infrafund.net (and infrafund.net) to Domains in Google reCAPTCHA admin, confirm NEXT_PUBLIC_RECAPTCHA_SITE_KEY matches your secret key pair, then redeploy.'
+    );
   }
 };
