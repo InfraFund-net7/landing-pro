@@ -1,14 +1,19 @@
 /**
  * Reliable user-exists check over Neon HTTP (same as warmup). Used when Payload
  * db.findOne fails on Vercel but payload.users has rows.
+ *
+ * Do not import postgres-pool-config here — it pulls in `pg` → `pgpass` → `fs` and
+ * breaks the instrumentation bundle (see neon-warmup.js).
  */
 import { neon } from '@neondatabase/serverless';
-import { resolvePayloadDatabaseUrl } from './postgres-pool-config.js';
 
 /** @param {string} [connectionString] */
 export async function probeNeonHasPayloadUser(connectionString) {
-  const raw = (connectionString ?? process.env.DATABASE_URL)?.trim();
-  const url = raw ? resolvePayloadDatabaseUrl(raw) : '';
+  const url = (
+    connectionString ??
+    process.env.DATABASE_URL ??
+    process.env.POSTGRES_URL
+  )?.trim();
   if (!url?.includes('.neon.tech')) return null;
 
   try {

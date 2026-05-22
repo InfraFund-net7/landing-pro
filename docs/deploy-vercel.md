@@ -42,11 +42,26 @@ Otherwise the first request after idle waits for the compute to wake (slow `/adm
 
 ## Environment variables (Vercel dashboard)
 
+### Vercel + Neon integration (your setup)
+
+Neon adds `POSTGRES_URL`, `DATABASE_URL_UNPOOLED`, `PGHOST`, etc. **landing-pro only needs two database-related names at runtime:**
+
+| You must have | Value |
+|---------------|--------|
+| `DATABASE_URL` **or** `POSTGRES_URL` | Same as Neon **pooled** URL (`POSTGRES_URL` in the integration — hostname contains `-pooler`) |
+| `PAYLOAD_SECRET` | ≥32 characters; **same** value you use when running `npm run db:create-payload-admin` locally |
+
+The app reads `DATABASE_URL` first; if it is missing, it uses `POSTGRES_URL` automatically. You do **not** need to copy `DATABASE_URL_UNPOOLED`, `PGHOST`, or `POSTGRES_PRISMA_URL` for Payload — those are for other tools.
+
+Also set manually (not from Neon): `PAYLOAD_PUBLIC_SERVER_URL`, `INFRA_CONTACT_FORM_SMTP_*`, `NEXT_PUBLIC_*` (see tables below).
+
+**Preview vs Production:** In Vercel, confirm Neon linked **Preview** and **Production** to the branch you bootstrapped. If Preview uses a different branch than where you created the admin user, login will fail even with the right password.
+
 ### Production (`main`)
 
 | Variable | Notes |
 |----------|--------|
-| `DATABASE_URL` | Neon **pooled** URL (`-pooler` host), `?sslmode=verify-full` |
+| `DATABASE_URL` or `POSTGRES_URL` | Neon **pooled** URL (`-pooler` host), `?sslmode=verify-full` |
 | `PAYLOAD_SECRET` | ≥32 chars |
 | `PAYLOAD_PUBLIC_SERVER_URL` | `https://infrafund.net` |
 | `INFRA_CONTACT_FORM_SMTP_HOST` | Same as backpro (e.g. Office365 / SendGrid SMTP host) |
@@ -64,7 +79,7 @@ Otherwise the first request after idle waits for the compute to wake (slow `/adm
 
 | Variable | Notes |
 |----------|--------|
-| `DATABASE_URL` | Neon **pooled** URL for runtime; **direct** URL only for local `npm run db:bootstrap:payload` |
+| `DATABASE_URL` or `POSTGRES_URL` | Neon **pooled** URL for runtime; **direct** URL only for local `npm run db:bootstrap:payload` |
 | `PAYLOAD_SECRET` | Same as other envs |
 | `PAYLOAD_PUBLIC_SERVER_URL` | `https://beta.infrafund.net` |
 | `INFRA_CONTACT_FORM_SMTP_*` | Same as Production (forgot-password on `/admin/forgot`) |

@@ -64,6 +64,9 @@ function resolvePayloadSecret() {
 function resolveDatabaseUrl() {
   const fromEnv = process.env.DATABASE_URL?.trim();
   if (fromEnv) return fromEnv;
+  // Vercel Neon integration injects POSTGRES_URL (pooled), not DATABASE_URL.
+  const postgresUrl = process.env.POSTGRES_URL?.trim();
+  if (postgresUrl) return postgresUrl;
   return (
     readSecretFile(process.env.DATABASE_URL_FILE) ||
     readSecretFile('/run/secrets/database_url')

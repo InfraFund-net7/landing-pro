@@ -175,6 +175,8 @@
     "Millis",
     "neondb",
     "neondatabase",
+    "PGHOST",
+    "pgpass",
     "pooler",
     "RECAPTCHA",
     "sslmode",
