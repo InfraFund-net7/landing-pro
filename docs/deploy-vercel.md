@@ -117,6 +117,16 @@ This loads home page global, site pages, and blog posts (with images from `publi
 
 `npm run build` regenerates the Payload admin import map first so the UI includes `VercelBlobClientUploadHandler`. If `/admin` logs `PayloadComponent not found` for that key, commit an updated `src/app/(payload)/admin/importMap.js` and redeploy.
 
+### Preview URL returns 401 (Deployment Protection)
+
+If `https://beta.infrafund.net/cms/api/media/file/…` (or `/blog`) returns **401** with a Vercel SSO page, the preview deployment is behind **Vercel Deployment Protection**, not a CMS bug. Anonymous browsers (and `<img>` tags without your SSO session) cannot load media.
+
+Fix (pick one):
+
+1. Vercel → **Project** → **Settings** → **Deployment Protection** → relax protection for **Preview** (e.g. only protect non-production URLs, or disable for the team preview domain).
+2. Test media on **Production** (`https://infrafund.net/cms/api/media/file/…`) if production is public.
+3. When testing in a browser, stay logged into the Vercel SSO gate on `beta` first, then open `/admin` on the same tab.
+
 ## Bootstrap Payload on Neon (once)
 
 ```bash
