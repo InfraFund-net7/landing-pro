@@ -154,6 +154,22 @@ function resolveServerURL() {
 
 const serverURL = resolveServerURL();
 
+/** Serve media via Payload (auth to private Blob); do not use raw *.private.blob URLs in admin. */
+function buildCmsMediaFileUrl({ filename, prefix }) {
+  const encoded = encodeURIComponent(filename);
+  let path = `/cms/api/media/file/${encoded}`;
+  if (prefix) {
+    path += `?prefix=${encodeURIComponent(prefix)}`;
+  }
+  if (serverURL) return `${serverURL}${path}`;
+  const vercelHost = process.env.VERCEL_URL?.trim();
+  if (vercelHost) {
+    const host = vercelHost.replace(/^https?:\/\//, '');
+    return `https://${host}${path}`;
+  }
+  return path;
+}
+
 const email = platformSmtpEmailAdapter();
 
 const blobToken = process.env.BLOB_READ_WRITE_TOKEN?.trim();
@@ -165,7 +181,11 @@ const blobAccess =
 const storagePlugins = blobToken
   ? [
       vercelBlobStorage({
-        collections: { media: true },
+        collections: {
+          media: {
+            generateFileURL: buildCmsMediaFileUrl,
+          },
+        },
         token: blobToken,
         access: blobAccess,
         clientUploads: Boolean(process.env.VERCEL),

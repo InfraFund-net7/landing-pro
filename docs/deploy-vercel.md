@@ -111,7 +111,7 @@ This loads home page global, site pages, and blog posts (with images from `publi
 
 1. Vercel project → **Storage** → Create **Blob** store → link to `landing-pro`.
 2. For marketing/CMS images, create the store with **Public** access (Payload defaults to public uploads). Access mode cannot be changed after creation.
-3. If the store is **Private**, set `BLOB_STORAGE_ACCESS=private` on Vercel and locally when seeding.
+3. If the store is **Private**, set `BLOB_STORAGE_ACCESS=private` on Vercel and locally when seeding. Set `PAYLOAD_PUBLIC_SERVER_URL` to your site origin (e.g. `https://beta.infrafund.net`) so admin and blog image URLs use `/cms/api/media/file/…` instead of unauthenticated private blob URLs.
 4. `BLOB_READ_WRITE_TOKEN` is added automatically — enable for **Production** and **Preview**.
 5. Redeploy. Without Blob, post **text** saves to Neon but **uploads** do not persist on serverless.
 
