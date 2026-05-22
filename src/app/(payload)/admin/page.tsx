@@ -27,13 +27,15 @@ export const generateMetadata = (args: Args): Promise<Metadata> =>
 const Page = async (args: Args) => {
   if (process.env.VERCEL) {
     const hasUser = await probeNeonHasPayloadUser();
-    if (hasUser === true) {
+    if (hasUser === false) {
       const cfg = await config;
-      console.log('[payload] /admin: hasUser=true → redirect login');
+      console.log(
+        '[payload] /admin: hasUser=false → redirect create-first-user'
+      );
       redirect(
         formatAdminURL({
           adminRoute: cfg.routes.admin,
-          path: cfg.admin.routes.login,
+          path: cfg.admin.routes.createFirstUser,
         })
       );
     }
