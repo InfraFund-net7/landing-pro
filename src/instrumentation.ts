@@ -8,7 +8,9 @@ export async function register() {
     process.env.PAYLOAD_FORCE_DRIZZLE_PUSH = 'true';
   }
 
-  const databaseUrl = process.env.DATABASE_URL?.trim();
+  const databaseUrl = (
+    process.env.DATABASE_URL ?? process.env.POSTGRES_URL
+  )?.trim();
   if (process.env.VERCEL && databaseUrl?.includes('.neon.tech')) {
     try {
       const { warmupNeonDatabase } = await import('./lib/neon-warmup.js');

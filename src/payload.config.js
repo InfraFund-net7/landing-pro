@@ -200,4 +200,12 @@ export default buildConfig({
   }),
   sharp,
   plugins: [],
+  onInit: async (payload) => {
+    if (process.env.VERCEL) {
+      const { patchPayloadDbFindOneOnVercel } = await import(
+        './lib/payload-vercel-db-findone-patch.js'
+      );
+      patchPayloadDbFindOneOnVercel(payload);
+    }
+  },
 });
