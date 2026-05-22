@@ -20,7 +20,10 @@ import {
   resolvePayloadDatabaseUrl,
   resolvePgForPayload,
 } from './lib/postgres-pool-config.js';
-import { platformSmtpEmailAdapter } from './lib/payload-platform-smtp-email.js';
+import {
+  logPayloadEmailConfigStatus,
+  platformSmtpEmailAdapter,
+} from './lib/payload-platform-smtp-email.js';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -148,6 +151,10 @@ function resolveServerURL() {
 const serverURL = resolveServerURL();
 
 const email = platformSmtpEmailAdapter();
+
+if (!isNextProdBuildContext) {
+  logPayloadEmailConfigStatus(serverURL);
+}
 
 export default buildConfig({
   admin: {

@@ -1,9 +1,9 @@
-import nodemailer from 'nodemailer';
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer';
 
 /**
  * Same SMTP env vars as backpro contact form / waitlist (`INFRA_CONTACT_FORM_SMTP_*`).
  *
- * @returns {{ sender: string, fromName: string, transportOptions: import('nodemailer').TransportOptions } | null}
+ * @returns {import('@payloadcms/email-nodemailer').NodemailerAdapterArgs | null}
  */
 function resolvePlatformSmtpEnv() {
   const host = process.env.INFRA_CONTACT_FORM_SMTP_HOST?.trim();
@@ -31,8 +31,8 @@ function resolvePlatformSmtpEnv() {
   const secure = portStr === '465' || portNum === 465;
 
   return {
-    sender,
-    fromName,
+    defaultFromAddress: sender,
+    defaultFromName: fromName,
     transportOptions: {
       host,
       port: portNum,
@@ -49,28 +49,58 @@ function resolvePlatformSmtpEnv() {
   };
 }
 
-/**
- * Payload `email` adapter (forgot password, etc.) using platform SMTP.
- * Payload calls `email({ payload })` and expects `{ name, sendEmail, ... }`.
- */
+/** @returns {ReturnType<typeof nodemailerAdapter> | undefined} */
 export function platformSmtpEmailAdapter() {
   const smtp = resolvePlatformSmtpEnv();
   if (!smtp) {
     return undefined;
   }
 
-  return (adapterContext) => {
-    void adapterContext.payload;
-    const transport = nodemailer.createTransport(smtp.transportOptions);
-    return {
-      name: 'platform-smtp',
-      defaultFromAddress: smtp.sender,
-      defaultFromName: smtp.fromName,
-      sendEmail: async (message) =>
-        transport.sendMail({
-          from: `${smtp.fromName} <${smtp.sender}>`,
-          ...message,
-        }),
-    };
-  };
+  return nodemailerAdapter({
+    defaultFromAddress: smtp.defaultFromAddress,
+    defaultFromName: smtp.defaultFromName,
+    transportOptions: smtp.transportOptions,
+    // Avoid blocking cold starts on Vercel if the provider rejects VERIFY from edge IPs.
+    skipVerify: Boolean(process.env.VERCEL),
+  });
+}
+
+/** Log missing email config at startup (Vercel / production). */
+export function logPayloadEmailConfigStatus(serverURL) {
+  const smtp = resolvePlatformSmtpEnv();
+  if (smtp) {
+    console.log(
+      `[payload] email: platform-smtp (${smtp.transportOptions.host}:${smtp.transportOptions.port})`
+    );
+    return;
+  }
+
+  const missing = [];
+  if (!process.env.INFRA_CONTACT_FORM_SMTP_HOST?.trim()) {
+    missing.push('INFRA_CONTACT_FORM_SMTP_HOST');
+  }
+  if (!process.env.INFRA_CONTACT_FORM_SMTP_PORT?.trim()) {
+    missing.push('INFRA_CONTACT_FORM_SMTP_PORT');
+  }
+  if (!process.env.INFRA_CONTACT_FORM_SMTP_SENDER?.trim()) {
+    missing.push('INFRA_CONTACT_FORM_SMTP_SENDER');
+  }
+  if (!process.env.INFRA_CONTACT_FORM_SMTP_PASSWORD?.trim()) {
+    missing.push('INFRA_CONTACT_FORM_SMTP_PASSWORD');
+  }
+
+  if (missing.length > 0) {
+    console.warn(
+      `[payload] email disabled — set ${missing.join(', ')} for forgot-password mail (console-only until then).`
+    );
+  }
+
+  if (
+    !serverURL &&
+    (process.env.VERCEL || process.env.NODE_ENV === 'production')
+  ) {
+    console.warn(
+      '[payload] PAYLOAD_PUBLIC_SERVER_URL is missing or invalid — reset links in emails will be wrong.'
+    );
+  }
 }

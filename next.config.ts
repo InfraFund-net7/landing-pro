@@ -67,6 +67,10 @@ const nextConfig: NextConfig = {
         dirname,
         'node_modules/@payloadcms/next/dist/utilities/initReq.js'
       ),
+      'payload-forgot-view': path.resolve(
+        dirname,
+        'node_modules/@payloadcms/next/dist/views/ForgotPassword/index.js'
+      ),
     };
     return webpackConfig;
   },

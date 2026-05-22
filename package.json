@@ -28,6 +28,8 @@
     "db:migrate:users-role": "node --env-file=.env.local src/scripts/migrate-users-role.mjs",
     "db:bootstrap:payload": "node --env-file=.env.local --env-file-if-exists=.env src/scripts/bootstrap-payload-schema.mjs",
     "db:create-payload-admin": "node src/scripts/create-payload-first-user.mjs",
+    "db:create-payload-master-admin": "node src/scripts/create-payload-master-admin.mjs",
+    "db:test-payload-email": "node src/scripts/test-payload-email.mjs",
     "db:verify-payload-users": "node src/scripts/verify-payload-users.mjs",
     "db:migrate:backpro-neon": "node --env-file=.env.local src/scripts/migrate-backpro-to-neon.mjs"
   },
@@ -40,6 +42,7 @@
     "@ant-design/icons": "^6.1.1",
     "@neondatabase/serverless": "^1.1.0",
     "@payloadcms/db-postgres": "^3.84.1",
+    "@payloadcms/email-nodemailer": "^3.84.1",
     "@payloadcms/next": "^3.84.1",
     "@payloadcms/richtext-lexical": "^3.84.1",
     "@payloadcms/ui": "^3.84.1",
