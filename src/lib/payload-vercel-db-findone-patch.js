@@ -1,6 +1,7 @@
 /**
- * On Vercel, Payload Drizzle findOne for users+email often misses rows that exist in
- * payload.users (Neon HTTP sees them). Patch findOne to use HTTP for that lookup.
+ * Vercel + Neon runtime fixes for Payload:
+ * - findOne(users): Drizzle often misses rows; use Neon HTTP (same as user probe).
+ * - beginTransaction: WebSocket transactions timeout; login runs without a DB transaction.
  */
 import {
   extractEmailEqualsFromWhere,
@@ -12,6 +13,13 @@ import {
 /** @param {import('payload').Payload} payload */
 export function patchPayloadDbFindOneOnVercel(payload) {
   if (!process.env.VERCEL) return;
+
+  if (typeof payload.db.beginTransaction === 'function') {
+    payload.db.beginTransaction = async () => {
+      // poolQueryViaFetch handles single queries; drizzle.transaction uses WebSocket and times out.
+      return null;
+    };
+  }
 
   const originalFindOne = payload.db.findOne.bind(payload.db);
 

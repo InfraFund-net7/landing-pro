@@ -14,7 +14,8 @@ export const Users = {
       'Master admins can invite other admins and assign the Content Editor role.',
     hidden: ({ user }) => !isMasterAdmin(user),
   },
-  auth: true,
+  // Vercel: skip session rows in DB (updateOne + transactions use WebSocket and timeout).
+  auth: process.env.VERCEL ? { useSessions: false } : true,
   access: {
     admin: adminPanelUsers,
     read: masterAdminOrSelf,
