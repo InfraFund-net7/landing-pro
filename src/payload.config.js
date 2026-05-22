@@ -157,11 +157,17 @@ const serverURL = resolveServerURL();
 const email = platformSmtpEmailAdapter();
 
 const blobToken = process.env.BLOB_READ_WRITE_TOKEN?.trim();
+/** Match Vercel store access at creation time (cannot be changed later). Default: public. */
+const blobAccess =
+  process.env.BLOB_STORAGE_ACCESS?.trim().toLowerCase() === 'private'
+    ? 'private'
+    : 'public';
 const storagePlugins = blobToken
   ? [
       vercelBlobStorage({
         collections: { media: true },
         token: blobToken,
+        access: blobAccess,
         clientUploads: Boolean(process.env.VERCEL),
       }),
     ]

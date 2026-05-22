@@ -10,7 +10,10 @@
  * Shell DATABASE_URL wins over .env.local for this run; child scripts inherit it
  * (they do not reload .env.local).
  *
- * Optional: --force to update existing rows.
+ * Media on Vercel: set BLOB_READ_WRITE_TOKEN (from Vercel → Storage → Blob) when seeding
+ * against Neon, or files stay on your laptop and /admin thumbnails break on Vercel.
+ *
+ * Optional: --force to update existing rows and re-upload media files.
  */
 import { spawn } from 'node:child_process';
 import path from 'node:path';
@@ -39,7 +42,28 @@ function run(scriptName) {
   });
 }
 
+function warnIfRemoteDbWithoutBlob() {
+  const dbUrl = (
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL ||
+    ''
+  ).toLowerCase();
+  const remoteDb =
+    dbUrl.includes('neon.tech') ||
+    dbUrl.includes('vercel-storage.com') ||
+    (dbUrl && !dbUrl.includes('127.0.0.1') && !dbUrl.includes('localhost'));
+  const hasBlob = Boolean(process.env.BLOB_READ_WRITE_TOKEN?.trim());
+  if (remoteDb && !hasBlob) {
+    console.warn(
+      '\n[seed] BLOB_READ_WRITE_TOKEN is not set. Media binaries will be saved locally only;\n' +
+        '      Vercel /admin and the site will show broken images until you re-seed with your\n' +
+        '      Vercel Blob token (and --force to re-upload existing media rows).\n'
+    );
+  }
+}
+
 async function main() {
+  warnIfRemoteDbWithoutBlob();
   console.log('Seeding Payload (home-page → site-pages → posts)…\n');
   await run('seed-home-page.mjs');
   await run('seed-site-pages.mjs');

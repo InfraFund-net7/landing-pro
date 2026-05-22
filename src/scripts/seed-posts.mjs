@@ -105,7 +105,16 @@ async function upsertMedia(payload, relativePath, alt) {
     limit: 1,
     depth: 0,
   });
-  if (existing.docs[0]) return existing.docs[0].id;
+  if (existing.docs[0]) {
+    if (!force) return existing.docs[0].id;
+    const updated = await payload.update({
+      collection: 'media',
+      id: existing.docs[0].id,
+      data: { alt },
+      filePath,
+    });
+    return updated.id;
+  }
 
   const created = await payload.create({
     collection: 'media',

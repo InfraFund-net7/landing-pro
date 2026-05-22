@@ -105,11 +105,15 @@ npm run seed:all
 
 This loads home page global, site pages, and blog posts (with images from `public/image/`). Re-run with `npm run seed:all -- --force` to update existing slugs.
 
+**Media must use Vercel Blob when the DB is Neon:** copy `BLOB_READ_WRITE_TOKEN` from Vercel → Storage → your Blob store into `.env.local` (or export it in the shell) **before** `npm run seed:all`. Without it, seed only writes media **rows** to Neon and saves files under `media/` on your machine — `/admin` on Vercel shows empty thumbnails. After adding the token, run `npm run seed:all -- --force` to re-upload binaries to Blob (or delete broken media in `/admin` first).
+
 ### Vercel Blob (CMS images)
 
 1. Vercel project → **Storage** → Create **Blob** store → link to `landing-pro`.
-2. `BLOB_READ_WRITE_TOKEN` is added automatically — enable for **Production** and **Preview**.
-3. Redeploy. Without Blob, post **text** saves to Neon but **uploads** do not persist on serverless.
+2. For marketing/CMS images, create the store with **Public** access (Payload defaults to public uploads). Access mode cannot be changed after creation.
+3. If the store is **Private**, set `BLOB_STORAGE_ACCESS=private` on Vercel and locally when seeding.
+4. `BLOB_READ_WRITE_TOKEN` is added automatically — enable for **Production** and **Preview**.
+5. Redeploy. Without Blob, post **text** saves to Neon but **uploads** do not persist on serverless.
 
 `npm run build` regenerates the Payload admin import map first so the UI includes `VercelBlobClientUploadHandler`. If `/admin` logs `PayloadComponent not found` for that key, commit an updated `src/app/(payload)/admin/importMap.js` and redeploy.
 
