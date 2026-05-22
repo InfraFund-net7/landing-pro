@@ -166,7 +166,9 @@ async function main() {
   console.log('posts seed complete.');
 }
 
-main().catch((error) => {
-  console.error('Failed to seed posts:', error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error('Failed to seed posts:', error);
+    process.exit(1);
+  });

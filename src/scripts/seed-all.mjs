@@ -4,6 +4,12 @@
  *   npm run db:bootstrap:payload   # once, if schema missing
  *   npm run seed:all               # uses .env.local DATABASE_URL
  *
+ * One-off Neon URL (zsh: quote the URL — `&` and `?` break unquoted strings):
+ *   DATABASE_URL='postgresql://user:pass@ep-….pooler….neon.tech/neondb?sslmode=verify-full' npm run seed:all
+ *
+ * Shell DATABASE_URL wins over .env.local for this run; child scripts inherit it
+ * (they do not reload .env.local).
+ *
  * Optional: --force to update existing rows.
  */
 import { spawn } from 'node:child_process';
@@ -16,13 +22,14 @@ const force = process.argv.includes('--force');
 
 function run(scriptName) {
   const script = path.join(dirname, scriptName);
-  const args = ['--env-file=.env.local', '--env-file-if-exists=.env', script];
+  const args = [script];
   if (force) args.push('--force');
 
   return new Promise((resolve, reject) => {
     const child = spawn('node', args, {
       cwd: root,
       stdio: 'inherit',
+      env: process.env,
     });
     child.on('error', reject);
     child.on('close', (code) => {

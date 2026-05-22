@@ -887,7 +887,9 @@ async function main() {
   console.log('site-pages seed complete.');
 }
 
-main().catch((error) => {
-  console.error('Failed to seed site-pages:', error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error('Failed to seed site-pages:', error);
+    process.exit(1);
+  });

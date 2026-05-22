@@ -455,8 +455,10 @@ async function main() {
   console.log('home-page global seeded successfully.');
 }
 
-main().catch((error) => {
-  fatalErrorHandled = true;
-  console.error('Failed to seed home-page:', error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    fatalErrorHandled = true;
+    console.error('Failed to seed home-page:', error);
+    process.exit(1);
+  });
