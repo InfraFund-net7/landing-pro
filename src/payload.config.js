@@ -25,6 +25,7 @@ import {
   platformSmtpEmailAdapter,
 } from './lib/payload-platform-smtp-email.js';
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob';
+import { buildPayloadMediaFileUrl } from './lib/payload-media-file-url.js';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -154,22 +155,6 @@ function resolveServerURL() {
 
 const serverURL = resolveServerURL();
 
-/** Serve media via Payload (auth to private Blob); do not use raw *.private.blob URLs in admin. */
-function buildCmsMediaFileUrl({ filename, prefix }) {
-  const encoded = encodeURIComponent(filename);
-  let path = `/cms/api/media/file/${encoded}`;
-  if (prefix) {
-    path += `?prefix=${encodeURIComponent(prefix)}`;
-  }
-  if (serverURL) return `${serverURL}${path}`;
-  const vercelHost = process.env.VERCEL_URL?.trim();
-  if (vercelHost) {
-    const host = vercelHost.replace(/^https?:\/\//, '');
-    return `https://${host}${path}`;
-  }
-  return path;
-}
-
 const email = platformSmtpEmailAdapter();
 
 const blobToken = process.env.BLOB_READ_WRITE_TOKEN?.trim();
@@ -183,7 +168,7 @@ const storagePlugins = blobToken
       vercelBlobStorage({
         collections: {
           media: {
-            generateFileURL: buildCmsMediaFileUrl,
+            generateFileURL: buildPayloadMediaFileUrl,
           },
         },
         token: blobToken,
@@ -198,6 +183,20 @@ if (!isNextProdBuildContext) {
   if (process.env.VERCEL && !blobToken) {
     console.warn(
       '[payload] BLOB_READ_WRITE_TOKEN is missing — media uploads on Vercel will not persist. Add Vercel Blob storage to the project.'
+    );
+  }
+  if (blobToken && blobAccess === 'public') {
+    console.warn(
+      '[payload] BLOB_STORAGE_ACCESS is not "private". If your Vercel Blob store is private, set BLOB_STORAGE_ACCESS=private on Vercel and redeploy or /cms/api/media/file will 404.'
+    );
+  }
+  if (
+    process.env.VERCEL &&
+    blobToken &&
+    !process.env.PAYLOAD_PUBLIC_SERVER_URL?.trim()
+  ) {
+    console.warn(
+      '[payload] PAYLOAD_PUBLIC_SERVER_URL is unset on Vercel — set it to https://beta.infrafund.net (or your production origin) for admin media thumbnails.'
     );
   }
 }

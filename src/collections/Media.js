@@ -1,5 +1,6 @@
 import { mediaCollectionAccess } from '../access/collection-access.js';
 import { canManageContent } from '../access/roles.js';
+import { buildPayloadMediaFileUrl } from '../lib/payload-media-file-url.js';
 
 /** @type {import('payload').CollectionConfig} */
 export const Media = {
@@ -9,6 +10,20 @@ export const Media = {
     group: 'Content',
   },
   access: mediaCollectionAccess,
+  hooks: {
+    afterRead: [
+      ({ doc }) => {
+        if (!doc?.filename) return doc;
+        return {
+          ...doc,
+          url: buildPayloadMediaFileUrl({
+            filename: doc.filename,
+            prefix: doc.prefix,
+          }),
+        };
+      },
+    ],
+  },
   fields: [
     {
       name: 'alt',
