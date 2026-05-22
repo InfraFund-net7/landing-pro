@@ -1,30 +1,27 @@
-import axios from 'axios';
-import { NextResponse, NextRequest } from 'next/server';
-import { getServerUrl } from '@/utils/get-server-url.util';
+import { NextRequest, NextResponse } from 'next/server';
+import { listCountries } from '@/lib/landing-forms/locations';
+import { handleLandingRouteError } from '@/lib/landing-api-errors';
 
 export const revalidate = 86400;
 
 export async function GET(request: NextRequest) {
-  const headers = request.headers;
-
   try {
-    const { data } = await axios.get(getServerUrl('locations/countries'), {
-      headers: {
-        Authorization: headers.get('Authorization') ?? '',
-      },
+    const { searchParams } = new URL(request.url);
+    const query = searchParams.get('query') ?? '';
+    const offset = Number.parseInt(searchParams.get('offset') ?? '0', 10);
+    const limit = Number.parseInt(searchParams.get('limit') ?? '300', 10);
+
+    const data = await listCountries({
+      query,
+      offset: Number.isNaN(offset) ? 0 : offset,
+      limit: Number.isNaN(limit) ? 300 : limit,
     });
 
-    return NextResponse.json(data, {
-      status: 200,
+    return NextResponse.json({
+      code: 'OK',
+      data,
     });
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error)) {
-      return NextResponse.json(
-        { cause: error.message },
-        { status: error.response?.status ?? 500 }
-      );
-    }
-
-    return NextResponse.json({ cause: 'Unexpected error' }, { status: 500 });
+  } catch (error) {
+    return handleLandingRouteError(error);
   }
 }

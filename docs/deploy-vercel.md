@@ -70,7 +70,8 @@ Also set manually (not from Neon): `PAYLOAD_PUBLIC_SERVER_URL`, `INFRA_CONTACT_F
 | `INFRA_CONTACT_FORM_SMTP_PASSWORD` | SMTP password (Vercel **Secret**) |
 | `INFRA_CONTACT_FORM_SMTP_USERNAME` | Optional; defaults to `SENDER` |
 | `INFRA_CONTACT_FORM_SMTP_REQUIRE_TLS` | `true` for port 587 (TLS) |
-| `NEXT_PUBLIC_API_BASE_URL` | Prod API |
+| `RECAPTCHA_SECRET` or `INFRA_REST_RECAPTCHA_GOOGLE_SECRET` | Server verify for waitlist/contact/non-resident |
+| `INFRA_CONTACT_FORM_RECEIVER` | Team inbox for waitlist/contact notifications |
 | `NEXT_PUBLIC_DASH_LOGIN_URL` | `https://dashboard.infrafund.net/login` |
 | `SKIP_PAYLOAD_FETCH_AT_BUILD` | `1` (optional; build skips CMS without it too) |
 | `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | Optional |
@@ -83,7 +84,8 @@ Also set manually (not from Neon): `PAYLOAD_PUBLIC_SERVER_URL`, `INFRA_CONTACT_F
 | `PAYLOAD_SECRET` | Same as other envs |
 | `PAYLOAD_PUBLIC_SERVER_URL` | `https://beta.infrafund.net` |
 | `INFRA_CONTACT_FORM_SMTP_*` | Same as Production (forgot-password on `/admin/forgot`) |
-| `NEXT_PUBLIC_API_BASE_URL` | Dev/staging API |
+| `RECAPTCHA_SECRET` or `INFRA_REST_RECAPTCHA_GOOGLE_SECRET` | Same as Production |
+| `INFRA_CONTACT_FORM_RECEIVER` | Same as Production |
 | `NEXT_PUBLIC_DASH_LOGIN_URL` | Dev dashboard login |
 | `SKIP_PAYLOAD_FETCH_AT_BUILD` | `1` (optional) |
 
@@ -161,6 +163,6 @@ If this shows your email but beta still opens create-first-user, redeploy latest
 - **`b.mask is not a function`:** redeploy latest code; `ws`/`@neondatabase/serverless` must stay external in `next.config.ts`.
 - **Slow first load:** scale-to-zero + ISR cold cache; disable scale-to-zero for beta.
 
-## Backpro API
+## Landing forms (waitlist, contact, locations, non-resident)
 
-Waitlist/contact use **backpro** via `NEXT_PUBLIC_API_BASE_URL`.
+These run as **Next.js API routes** on the same Vercel project, using the Neon `DATABASE_URL` / `POSTGRES_URL` (public schema: `waitlist`, `contact_forms`, `non_resident_waitlists`, `countries`). Bootstrap once with `npm run db:migrate:backpro-neon` if tables are missing. Set `RECAPTCHA_SECRET` (or `INFRA_REST_RECAPTCHA_GOOGLE_SECRET`) and `INFRA_CONTACT_FORM_*` for captcha + notification email.

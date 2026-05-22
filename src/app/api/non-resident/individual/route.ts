@@ -1,20 +1,28 @@
-import axios from 'axios';
-import { NextResponse, NextRequest } from 'next/server';
-import { getServerUrl } from '@/utils/get-server-url.util';
+import { NextRequest } from 'next/server';
+import { createNonResidentIndividual } from '@/lib/landing-forms/non-resident-waitlist';
+import {
+  emptySuccess,
+  requireCaptcha,
+  runLandingPostRoute,
+} from '@/lib/landing-api-route';
 
 export async function POST(request: NextRequest) {
-  const payload = await request.json();
-  const headers = request.headers;
+  return runLandingPostRoute(request, async () => {
+    await requireCaptcha(request);
+    const body = (await request.json()) as {
+      first_name?: string;
+      last_name?: string;
+      email?: string;
+      country_id?: number;
+    };
 
-  return await axios
-    .post(getServerUrl('non-resident-waitlist/individual'), payload, {
-      headers: {
-        Authorization: headers.get('Authorization') ?? '',
-        'X-Captcha-Token': headers.get('X-Captcha-Token') ?? '',
-      },
-    })
-    .then(({ data }) => NextResponse.json(data))
-    .catch(({ response }) =>
-      NextResponse.json(response.data, { status: response.status })
-    );
+    await createNonResidentIndividual({
+      first_name: body.first_name ?? '',
+      last_name: body.last_name ?? '',
+      email: body.email ?? '',
+      country_id: Number(body.country_id),
+    });
+
+    return emptySuccess();
+  });
 }

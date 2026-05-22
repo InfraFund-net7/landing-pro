@@ -183,7 +183,9 @@
     "sslmode",
     "unbootstrapped",
     "unpooled",
-    "uselibpqcompat"
+    "uselibpqcompat",
+    "ILIKE",
+    "remoteip"
   ],
   "ignorePaths": [
     "node_modules",
