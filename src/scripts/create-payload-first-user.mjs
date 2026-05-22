@@ -32,6 +32,23 @@ if (!process.env.PAYLOAD_SECRET?.trim()) {
   process.exit(1);
 }
 
+let dbHost = '';
+try {
+  dbHost = new URL(process.env.DATABASE_URL).hostname;
+} catch {
+  /* ignore */
+}
+
+if (dbHost === '127.0.0.1' || dbHost === 'localhost') {
+  console.error(
+    `DATABASE_URL host is ${dbHost} — that is local Postgres, not Neon.\n` +
+      'Do not use --env-file=.env.local for this script. Pass Neon direct URL on the command line.'
+  );
+  process.exit(1);
+}
+
+console.log(`Using database host: ${dbHost}`);
+
 const payload = await getPayload({ config });
 
 const { totalDocs } = await payload.count({

@@ -8,10 +8,7 @@ const payloadPost = REST_POST(config);
  * Payload first-register uses a DB transaction (Neon WebSocket). Unreliable on Vercel.
  * Block on Vercel with instructions; delegate to Payload locally.
  */
-export async function POST(
-  request: Request,
-  _context: { params: Promise<{ slug?: string[] }> }
-) {
+export async function POST(request: Request) {
   if (process.env.VERCEL) {
     return NextResponse.json(
       {

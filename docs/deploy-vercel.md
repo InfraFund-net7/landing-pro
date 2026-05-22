@@ -82,7 +82,16 @@ PAYLOAD_SECRET='...' \
 npm run db:create-payload-admin -- admin@yourdomain.com 'YourSecurePassword'
 ```
 
-Then sign in at `https://beta.infrafund.net/admin` (do not use “create first user” on Vercel).
+Then sign in at `https://beta.infrafund.net/admin/login` (do not use “create first user” on Vercel).
+
+Verify the user is on the **same** Neon DB Vercel uses:
+
+```bash
+DATABASE_URL='postgresql://...@ep-xxx-pooler....neon.tech/neondb?sslmode=verify-full' \
+node src/scripts/verify-payload-users.mjs
+```
+
+If this shows your email but beta still opens create-first-user, Vercel `DATABASE_URL` or `PAYLOAD_SECRET` does not match what you used locally.
 
 ## Troubleshooting
 
