@@ -22,7 +22,8 @@ interface ApiService {
 }
 
 function reWriteUrl(url: string) {
-  return `api${url}`;
+  const path = url.startsWith('/') ? url : `/${url}`;
+  return `/api${path}`;
 }
 
 function getAxiosRequestConfig(

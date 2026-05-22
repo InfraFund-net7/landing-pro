@@ -41,7 +41,7 @@ export async function requireCaptcha(request: NextRequest): Promise<void> {
 }
 
 export function emptySuccess(): NextResponse {
-  return new NextResponse(null, { status: 204 });
+  return NextResponse.json({ success: true }, { status: 200 });
 }
 
 export async function runLandingPostRoute(
