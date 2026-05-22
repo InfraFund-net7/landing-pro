@@ -111,6 +111,8 @@ This loads home page global, site pages, and blog posts (with images from `publi
 2. `BLOB_READ_WRITE_TOKEN` is added automatically — enable for **Production** and **Preview**.
 3. Redeploy. Without Blob, post **text** saves to Neon but **uploads** do not persist on serverless.
 
+`npm run build` regenerates the Payload admin import map first so the UI includes `VercelBlobClientUploadHandler`. If `/admin` logs `PayloadComponent not found` for that key, commit an updated `src/app/(payload)/admin/importMap.js` and redeploy.
+
 ## Bootstrap Payload on Neon (once)
 
 ```bash
