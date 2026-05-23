@@ -3,6 +3,7 @@
 import Image, { StaticImageData } from 'next/image';
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { cmsImageNeedsUnoptimized } from '@/lib/cms-next-image';
 
 interface BlogCardProps {
   slug: string;
@@ -54,6 +55,7 @@ export default function BlogCard({
             src={image}
             alt={title}
             fill
+            unoptimized={cmsImageNeedsUnoptimized(image)}
             className="object-cover transition-transform duration-500 ease-out hover:scale-105"
             sizes="(max-width: 768px) 100vw, (min-width: 768px) 33vw, 400px"
           />

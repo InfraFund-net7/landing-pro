@@ -111,21 +111,25 @@ This loads home page global, site pages, and blog posts (with images from `publi
 
 1. Vercel project → **Storage** → Create **Blob** store → link to `landing-pro`.
 2. For marketing/CMS images, create the store with **Public** access (Payload defaults to public uploads). Access mode cannot be changed after creation.
-3. If the store is **Private**, set `BLOB_STORAGE_ACCESS=private` on Vercel and locally when seeding. Set `PAYLOAD_PUBLIC_SERVER_URL` to your site origin (e.g. `https://beta.infrafund.net`) so admin and blog image URLs use `/cms/api/media/file/…`. The app serves private blobs via the Vercel SDK `get()` API (public `fetch()` to `*.private.blob` URLs does not work).
-4. `BLOB_READ_WRITE_TOKEN` is added automatically — enable for **Production** and **Preview**.
-5. Redeploy. Without Blob, post **text** saves to Neon but **uploads** do not persist on serverless.
+3. If the store is **Private**, set `BLOB_STORAGE_ACCESS=private` on Vercel and locally when seeding. Set `PAYLOAD_PUBLIC_SERVER_URL` to your site origin (e.g. `https://beta.infrafund.net`) so admin thumbnails use `/cms/api/media/file/…`. The app serves private blobs via the Vercel SDK `get()` API (public `fetch()` to `*.private.blob` URLs does not work).
+4. If the store is **Public** (recommended for marketing images), **do not** set `BLOB_STORAGE_ACCESS=private`. Blog and CMS pages use direct `https://<store>.public.blob.vercel-storage.com/…` URLs so images work even when Preview is behind Vercel Deployment Protection.
+5. `BLOB_READ_WRITE_TOKEN` is added automatically — enable for **Production** and **Preview**.
+6. After switching from private → public Blob (or changing token), delete old **Media** rows in `/admin` and run `npm run seed:all -- --force` with the new token in `.env.local`, then redeploy.
+7. Redeploy. Without Blob, post **text** saves to Neon but **uploads** do not persist on serverless.
 
 `npm run build` regenerates the Payload admin import map first so the UI includes `VercelBlobClientUploadHandler`. If `/admin` logs `PayloadComponent not found` for that key, commit an updated `src/app/(payload)/admin/importMap.js` and redeploy.
 
 ### Preview URL returns 401 (Deployment Protection)
 
-If `https://beta.infrafund.net/cms/api/media/file/…` (or `/blog`) returns **401** with a Vercel SSO page, the preview deployment is behind **Vercel Deployment Protection**, not a CMS bug. Anonymous browsers (and `<img>` tags without your SSO session) cannot load media.
+If `https://beta.infrafund.net/blog` or `/cms/api/media/file/…` returns **401** with a Vercel SSO page, the preview deployment is behind **Vercel Deployment Protection**, not a CMS bug.
 
-Fix (pick one):
+**Blog images** on a protected Preview: use a **public** Blob store (no `BLOB_STORAGE_ACCESS=private`) and re-seed so thumbnails are `*.public.blob.vercel-storage.com` URLs. The app no longer routes public-blob files through `/cms/api/media/file/…` (that path still 401s for anonymous visitors and for `next/image` optimization).
 
-1. Vercel → **Project** → **Settings** → **Deployment Protection** → relax protection for **Preview** (e.g. only protect non-production URLs, or disable for the team preview domain).
-2. Test media on **Production** (`https://infrafund.net/cms/api/media/file/…`) if production is public.
-3. When testing in a browser, stay logged into the Vercel SSO gate on `beta` first, then open `/admin` on the same tab.
+Other fixes (pick one):
+
+1. Vercel → **Project** → **Settings** → **Deployment Protection** → relax protection for **Preview**.
+2. Test on **Production** (`https://infrafund.net`) if production is not protected.
+3. For private Blob only: stay logged into the Vercel SSO gate on `beta` in the same browser session (images use `unoptimized` for `/cms/api/media/file/…` so the browser sends your SSO cookie).
 
 ## Bootstrap Payload on Neon (once)
 

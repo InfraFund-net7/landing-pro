@@ -26,6 +26,10 @@ import {
 } from './lib/payload-platform-smtp-email.js';
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob';
 import { buildPayloadMediaFileUrl } from './lib/payload-media-file-url.js';
+import {
+  isCmsMediaFileProxy,
+  vercelBlobAccess,
+} from './lib/blob-storage-mode.js';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -159,16 +163,16 @@ const email = platformSmtpEmailAdapter();
 
 const blobToken = process.env.BLOB_READ_WRITE_TOKEN?.trim();
 /** Match Vercel store access at creation time (cannot be changed later). Default: public. */
-const blobAccess =
-  process.env.BLOB_STORAGE_ACCESS?.trim().toLowerCase() === 'private'
-    ? 'private'
-    : 'public';
+const blobAccess = vercelBlobAccess();
+const cmsMediaFileProxy = isCmsMediaFileProxy();
 const storagePlugins = blobToken
   ? [
       vercelBlobStorage({
         collections: {
           media: {
-            generateFileURL: buildPayloadMediaFileUrl,
+            ...(cmsMediaFileProxy
+              ? { generateFileURL: buildPayloadMediaFileUrl }
+              : {}),
           },
         },
         token: blobToken,
@@ -185,9 +189,18 @@ if (!isNextProdBuildContext) {
       '[payload] BLOB_READ_WRITE_TOKEN is missing — media uploads on Vercel will not persist. Add Vercel Blob storage to the project.'
     );
   }
-  if (blobToken && blobAccess === 'public') {
+  if (
+    blobToken &&
+    blobAccess === 'public' &&
+    process.env.BLOB_STORAGE_ACCESS?.trim().toLowerCase() === 'private'
+  ) {
     console.warn(
-      '[payload] BLOB_STORAGE_ACCESS is not "private". If your Vercel Blob store is private, set BLOB_STORAGE_ACCESS=private on Vercel and redeploy or /cms/api/media/file will 404.'
+      '[payload] BLOB_STORAGE_ACCESS=private is set but the linked store is public — remove it on Vercel so images use *.public.blob.vercel-storage.com URLs, then re-seed media.'
+    );
+  }
+  if (blobToken && blobAccess === 'private' && !cmsMediaFileProxy) {
+    console.warn(
+      '[payload] Vercel Blob store is private — set BLOB_STORAGE_ACCESS=private on Vercel and redeploy or /cms/api/media/file will 404.'
     );
   }
   if (

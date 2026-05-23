@@ -1,6 +1,7 @@
 import { mediaCollectionAccess } from '../access/collection-access.js';
 import { canManageContent } from '../access/roles.js';
 import { buildPayloadMediaFileUrl } from '../lib/payload-media-file-url.js';
+import { isCmsMediaFileProxy } from '../lib/blob-storage-mode.js';
 
 /** @type {import('payload').CollectionConfig} */
 export const Media = {
@@ -13,7 +14,7 @@ export const Media = {
   hooks: {
     afterRead: [
       ({ doc }) => {
-        if (!doc?.filename) return doc;
+        if (!doc?.filename || !isCmsMediaFileProxy()) return doc;
         return {
           ...doc,
           url: buildPayloadMediaFileUrl({
