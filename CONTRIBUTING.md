@@ -42,4 +42,10 @@ Once the developer has completed the pre-review checklist, the formal review pro
 
 ---
 
+## Git operations
+
+- **[Backup branch and recovering `main`](docs/git-backup-branch-recovery.md)** — Create a safety-net branch before risky work on `main`, and how to restore `main` from `backup` (including force-push warnings for team repos).
+
+---
+
 For questions, please contact the code owners or maintainers.
