@@ -29,19 +29,25 @@ export default function FooterHome() {
           flex flex-col lg:flex-row 
           justify-center lg:justify-between 
           items-center lg:items-center 
-          relative gap-10 lg:gap-0
+          relative isolate overflow-hidden gap-10 lg:gap-0
         "
       >
-        <div className="hidden sm:block absolute bottom-4 right-4 -z-10 w-[200px] sm:w-[300px] lg:w-auto opacity-70">
-          <Image src={world} alt="world-footer" className="w-full h-auto" />
-          <Image
-            src={Uk}
-            className="absolute right-[34%] top-[27%] w-[18px] sm:w-[25px] lg:w-auto"
-            alt="Uk"
-          />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-0 flex items-end justify-end p-4 sm:p-6 lg:p-8 opacity-70"
+        >
+          <div className="relative w-[min(100%,200px)] sm:w-[300px] lg:w-auto lg:max-w-[848px]">
+            <Image src={world} alt="" className="h-auto w-full" unoptimized />
+            <Image
+              src={Uk}
+              className="absolute right-[34%] top-[27%] w-[18px] sm:w-[25px] lg:w-auto"
+              alt=""
+              unoptimized
+            />
+          </div>
         </div>
 
-        <div className="w-full lg:w-[749px] h-fit flex flex-col gap-4 text-sm sm:text-base font-normal text-[#D6D6D6] text-center lg:text-left">
+        <div className="relative z-10 w-full lg:w-[749px] h-fit flex flex-col gap-4 text-sm sm:text-base font-normal text-[#D6D6D6] text-center lg:text-left">
           <div className="flex justify-center lg:justify-start">
             <Image src={infrafund} width={261} height={63} alt="InfraFund" />
           </div>
@@ -108,11 +114,11 @@ export default function FooterHome() {
 
         <div
           className="
+            relative z-10
             w-full lg:w-[511px] 
             h-auto lg:h-full 
             flex justify-center lg:justify-center 
-            items-start lg:items-end 
-            relative z-10
+            items-start lg:items-end
           "
         >
           <div
