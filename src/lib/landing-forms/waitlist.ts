@@ -33,7 +33,7 @@ export async function createWaitlistEntry(email: string): Promise<void> {
   }
 
   if (isLandingEmailEnabled()) {
-    void notifyWaitlistSignup(normalized);
+    await notifyWaitlistSignup(normalized);
   }
 }
 

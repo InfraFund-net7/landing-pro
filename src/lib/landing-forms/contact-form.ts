@@ -60,7 +60,7 @@ export async function createContactFormEntry(
   `;
 
   if (isLandingEmailEnabled()) {
-    void notifyContactForm({
+    await notifyContactForm({
       firstName,
       lastName,
       email,
