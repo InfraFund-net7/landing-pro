@@ -23,6 +23,8 @@ const posts = [
     published: true,
     publishedAt: '2024-06-15T09:00:00.000Z',
     imagePath: 'image/solar.jpg',
+    mainContent:
+      'Tokenization is reshaping how green infrastructure assets are funded, traded, and held. This article outlines how on-chain instruments can improve transparency and liquidity for investors.',
   },
   {
     slug: 'wind-energy-investment',
@@ -103,7 +105,16 @@ async function upsertMedia(payload, relativePath, alt) {
     limit: 1,
     depth: 0,
   });
-  if (existing.docs[0]) return existing.docs[0].id;
+  if (existing.docs[0]) {
+    if (!force) return existing.docs[0].id;
+    const updated = await payload.update({
+      collection: 'media',
+      id: existing.docs[0].id,
+      data: { alt },
+      filePath,
+    });
+    return updated.id;
+  }
 
   const created = await payload.create({
     collection: 'media',
@@ -126,6 +137,7 @@ async function upsertPost(payload, post) {
     title: post.title,
     slug: post.slug,
     description: post.description,
+    mainContent: post.mainContent ?? '',
     published: post.published,
     publishedAt: post.publishedAt,
     readTime: post.readTime,
@@ -163,7 +175,9 @@ async function main() {
   console.log('posts seed complete.');
 }
 
-main().catch((error) => {
-  console.error('Failed to seed posts:', error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error('Failed to seed posts:', error);
+    process.exit(1);
+  });

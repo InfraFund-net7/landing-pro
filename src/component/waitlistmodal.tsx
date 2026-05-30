@@ -60,7 +60,9 @@ export default function Waitlistmodal({
           ? error.detail
           : error instanceof Error
             ? error.message
-            : 'Failed to join the waitlist. Please try again.';
+            : typeof error === 'string'
+              ? error
+              : 'Failed to join the waitlist. Please try again.';
       setMessage(msg);
     }
   };

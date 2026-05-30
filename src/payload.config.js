@@ -11,6 +11,25 @@ import { Posts } from './collections/Posts.js';
 import { SitePages } from './collections/SitePages.js';
 import { Users } from './collections/Users.js';
 import { HomePage } from './globals/HomePage.js';
+import './lib/neon-pg-setup.js';
+import {
+  buildPayloadPgPool,
+  isNeonDatabaseUrl,
+  neonConnectionKind,
+  normalizePgConnectionString,
+  resolvePayloadDatabaseUrl,
+  resolvePgForPayload,
+} from './lib/postgres-pool-config.js';
+import {
+  logPayloadEmailConfigStatus,
+  platformSmtpEmailAdapter,
+} from './lib/payload-platform-smtp-email.js';
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob';
+import { buildPayloadMediaFileUrl } from './lib/payload-media-file-url.js';
+import {
+  isCmsMediaFileProxy,
+  vercelBlobAccess,
+} from './lib/blob-storage-mode.js';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -51,6 +70,9 @@ function resolvePayloadSecret() {
 function resolveDatabaseUrl() {
   const fromEnv = process.env.DATABASE_URL?.trim();
   if (fromEnv) return fromEnv;
+  // Vercel Neon integration injects POSTGRES_URL (pooled), not DATABASE_URL.
+  const postgresUrl = process.env.POSTGRES_URL?.trim();
+  if (postgresUrl) return postgresUrl;
   return (
     readSecretFile(process.env.DATABASE_URL_FILE) ||
     readSecretFile('/run/secrets/database_url')
@@ -66,27 +88,143 @@ if (payloadSecretResolved && !process.env.PAYLOAD_SECRET?.trim()) {
 if (databaseUrlResolved && !process.env.DATABASE_URL?.trim()) {
   process.env.DATABASE_URL = databaseUrlResolved;
 }
+if (process.env.DATABASE_URL?.trim()) {
+  process.env.DATABASE_URL = normalizePgConnectionString(
+    process.env.DATABASE_URL.trim()
+  );
+}
 
 const secret =
   payloadSecretResolved ||
   (!isProd ? devSecret : isNextProdBuildContext ? buildEphemeralSecret : '');
 
 const databaseUrl =
+  process.env.DATABASE_URL?.trim() ||
   databaseUrlResolved ||
   (!isProd ? devDatabaseUrl : isNextProdBuildContext ? devDatabaseUrl : '');
+
+/** Never run Drizzle push on Vercel; bootstrap schema locally instead. */
+const drizzlePush =
+  !process.env.VERCEL &&
+  (!isProd || process.env.PAYLOAD_FORCE_DRIZZLE_PUSH === 'true');
+
+const pgForPayload = resolvePgForPayload(databaseUrl);
+
+if (process.env.VERCEL && databaseUrl) {
+  const driver = isNeonDatabaseUrl(databaseUrl)
+    ? process.env.VERCEL
+      ? 'neon-fetch'
+      : 'neon-serverless'
+    : 'pg';
+  const payloadDb = isNeonDatabaseUrl(databaseUrl)
+    ? resolvePayloadDatabaseUrl(databaseUrl)
+    : databaseUrl;
+  console.log(
+    `[payload] vercel db: env=${neonConnectionKind(databaseUrl)} payload=${neonConnectionKind(payloadDb)} driver=${driver} push=${drizzlePush}`
+  );
+}
+
+if (process.env.VERCEL && databaseUrl && isNeonDatabaseUrl(databaseUrl)) {
+  const kind = neonConnectionKind(databaseUrl);
+  if (kind === 'direct') {
+    console.warn(
+      '[payload] DATABASE_URL uses Neon direct host; for /admin on Vercel use the pooled connection string (-pooler in hostname).'
+    );
+  }
+}
+
+if (process.env.VERCEL && process.env.PAYLOAD_FORCE_DRIZZLE_PUSH === 'true') {
+  console.error(
+    '[payload] Unset PAYLOAD_FORCE_DRIZZLE_PUSH on Vercel — Drizzle push on /admin causes 60s timeouts.'
+  );
+}
 
 if (isProd && !isNextProdBuildContext) {
   if (!payloadSecretResolved) throw new Error('Missing PAYLOAD_SECRET');
   if (!databaseUrlResolved) throw new Error('Missing DATABASE_URL');
 }
 
-const serverURL = process.env.PAYLOAD_PUBLIC_SERVER_URL;
+/** Public origin for Payload (reset links, admin). Drops invalid values like `http://` with no host. */
+function resolveServerURL() {
+  const raw = process.env.PAYLOAD_PUBLIC_SERVER_URL?.trim();
+  if (!raw) return undefined;
+  try {
+    const u = new URL(raw);
+    if (!u.hostname) return undefined;
+    return u.origin;
+  } catch {
+    return undefined;
+  }
+}
+
+const serverURL = resolveServerURL();
+
+const email = platformSmtpEmailAdapter();
+
+const blobToken = process.env.BLOB_READ_WRITE_TOKEN?.trim();
+/** Match Vercel store access at creation time (cannot be changed later). Default: public. */
+const blobAccess = vercelBlobAccess();
+const cmsMediaFileProxy = isCmsMediaFileProxy();
+const storagePlugins = blobToken
+  ? [
+      vercelBlobStorage({
+        collections: {
+          media: {
+            ...(cmsMediaFileProxy
+              ? { generateFileURL: buildPayloadMediaFileUrl }
+              : {}),
+          },
+        },
+        token: blobToken,
+        access: blobAccess,
+        clientUploads: Boolean(process.env.VERCEL),
+      }),
+    ]
+  : [];
+
+if (!isNextProdBuildContext) {
+  logPayloadEmailConfigStatus(serverURL);
+  if (process.env.VERCEL && !blobToken) {
+    console.warn(
+      '[payload] BLOB_READ_WRITE_TOKEN is missing — media uploads on Vercel will not persist. Add Vercel Blob storage to the project.'
+    );
+  }
+  if (
+    blobToken &&
+    blobAccess === 'public' &&
+    process.env.BLOB_STORAGE_ACCESS?.trim().toLowerCase() === 'private'
+  ) {
+    console.warn(
+      '[payload] BLOB_STORAGE_ACCESS=private is set but the linked store is public — remove it on Vercel so images use *.public.blob.vercel-storage.com URLs, then re-seed media.'
+    );
+  }
+  if (blobToken && blobAccess === 'private' && !cmsMediaFileProxy) {
+    console.warn(
+      '[payload] Vercel Blob store is private — set BLOB_STORAGE_ACCESS=private on Vercel and redeploy or /cms/api/media/file will 404.'
+    );
+  }
+  if (
+    process.env.VERCEL &&
+    blobToken &&
+    !process.env.PAYLOAD_PUBLIC_SERVER_URL?.trim()
+  ) {
+    console.warn(
+      '[payload] PAYLOAD_PUBLIC_SERVER_URL is unset on Vercel — set it to https://beta.infrafund.net (or your production origin) for admin media thumbnails.'
+    );
+  }
+}
 
 export default buildConfig({
   admin: {
     user: Users.slug,
     // Easier to read than the default dark / system UI (use 'all' to let users switch again).
     theme: 'light',
+    components: {
+      logout: {
+        Button:
+          './app/(payload)/admin/components/payload-sign-out-button#PayloadSignOutButton',
+      },
+    },
     importMap: {
       baseDir: path.resolve(dirname),
     },
@@ -97,6 +235,7 @@ export default buildConfig({
     graphQLPlayground: '/cms/graphql-playground',
   },
   ...(serverURL ? { serverURL } : {}),
+  ...(email ? { email } : {}),
   collections: [Users, Media, Posts, Comments, SitePages],
   globals: [HomePage],
   editor: lexicalEditor(),
@@ -107,16 +246,36 @@ export default buildConfig({
   db: postgresAdapter({
     // Keep Payload tables out of `public` when the DB is shared (e.g. with backpro).
     // Avoids Drizzle rename prompts against unrelated tables and broken refs like `lockout_audit_logs`.
-    // One-time on existing DB: `CREATE SCHEMA IF NOT EXISTS payload;`
+    // One-time on existing DB: `CREATE SCHEMA IF NOT EXISTS payload;` then `npm run db:bootstrap:payload`
     schemaName: 'payload',
-    pool: {
-      connectionString: databaseUrl,
-      options: '-c search_path=payload,public',
-    },
-    // Dev: sync schema to Postgres on connect (creates `users`, `media`, etc.).
-    // Prod: never push here—ship schema via Payload migrations instead.
-    push: !isProd,
+    pg: pgForPayload,
+    pool: buildPayloadPgPool(databaseUrl),
+    // Dev: sync schema on connect. Prod/Vercel: false — bootstrap Neon once (see docs/deploy-vercel.md).
+    push: drizzlePush,
   }),
   sharp,
-  plugins: [],
+  plugins: storagePlugins,
+  onInit: async (payload) => {
+    if (process.env.VERCEL) {
+      const { patchPayloadDbFindOneOnVercel } = await import(
+        './lib/payload-vercel-db-findone-patch.js'
+      );
+      patchPayloadDbFindOneOnVercel(payload);
+    }
+    if (blobAccess === 'private' && blobToken) {
+      const { createPrivateVercelBlobMediaHandler } = await import(
+        './lib/vercel-blob-private-media-handler.js'
+      );
+      const media = payload.config.collections.find((c) => c.slug === 'media');
+      if (media?.upload && typeof media.upload === 'object') {
+        const privateHandler = createPrivateVercelBlobMediaHandler({
+          token: blobToken,
+        });
+        media.upload.handlers = [
+          privateHandler,
+          ...(media.upload.handlers || []),
+        ];
+      }
+    }
+  },
 });

@@ -1,5 +1,8 @@
 /* THIS FILE WAS GENERATED AUTOMATICALLY BY PAYLOAD. */
 /* DO NOT MODIFY IT BECAUSE IT COULD BE REWRITTEN AT ANY TIME. */
+/** Neon cold connect + Payload init on Vercel Preview/Production */
+export const maxDuration = 60;
+
 import config from '@payload-config';
 import '@payloadcms/next/css';
 import type { ServerFunctionClient } from 'payload';

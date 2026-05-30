@@ -1,3 +1,5 @@
+import { requireContentManager } from '@/access/get-admin-user';
+import AdminSignOutLink from '@/app/(payload)/admin/components/admin-sign-out-link';
 import config from '@payload-config';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -29,6 +31,8 @@ function excerptFrom(value: string): string {
 type PayloadWithPostsCreate = {
   create: (args: {
     collection: 'posts';
+    user: Awaited<ReturnType<typeof requireContentManager>>;
+    overrideAccess: boolean;
     data: {
       title: string;
       slug: string;
@@ -47,6 +51,8 @@ type PayloadWithPostsCreate = {
 
 async function createPostAction(formData: FormData) {
   'use server';
+
+  const user = await requireContentManager();
 
   const title = String(formData.get('title') || '').trim();
   const manualSlug = String(formData.get('slug') || '').trim();
@@ -79,6 +85,8 @@ async function createPostAction(formData: FormData) {
 
     await payload.create({
       collection: 'posts',
+      user,
+      overrideAccess: false,
       data: {
         title,
         slug,
@@ -116,6 +124,7 @@ const fieldStyle: CSSProperties = {
 };
 
 export default async function CreatePostPage({ searchParams }: PageProps) {
+  await requireContentManager();
   const qs = await searchParams;
 
   return (
@@ -177,6 +186,7 @@ export default async function CreatePostPage({ searchParams }: PageProps) {
           >
             View All Posts
           </Link>
+          <AdminSignOutLink />
         </div>
 
         {qs.error ? (

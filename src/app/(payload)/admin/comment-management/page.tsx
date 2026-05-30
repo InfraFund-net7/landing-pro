@@ -1,3 +1,4 @@
+import { requireContentManager } from '@/access/get-admin-user';
 import CommentManagementPanel from '@/app/(payload)/admin/comment-management/comment-management-panel';
 import {
   createEditorialReply,
@@ -31,6 +32,8 @@ function parseFilter(value: string | undefined): CommentStatus | 'all' {
 
 async function manageCommentAction(formData: FormData) {
   'use server';
+
+  await requireContentManager();
 
   const intent = String(formData.get('intent') || '').trim();
   const commentId = Number(formData.get('commentId'));
@@ -104,6 +107,7 @@ async function manageCommentAction(formData: FormData) {
 export default async function CommentManagementPage({
   searchParams,
 }: PageProps) {
+  await requireContentManager();
   const qs = await searchParams;
   const filter = parseFilter(qs.filter);
   const comments = await fetchCommentsForAdmin(filter);

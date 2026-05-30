@@ -1,0 +1,42 @@
+# Standalone landing deploy (local or when DOCKER_COMPOSE_PATH_* points here).
+# CI builds infra-landing:dev / infra-landing:prod and loads it before compose up.
+name: landing-infrafund
+
+networks:
+  internal:
+    external: true
+    name: internal
+
+services:
+  landing:
+    image: ${LANDING_IMAGE:-infra-landing:dev}
+    pull_policy: never
+    container_name: landing-app
+    restart: unless-stopped
+    networks:
+      - default
+      - internal
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: ${ENVIRONMENT:-production}
+      PORT: '3000'
+      HOSTNAME: 0.0.0.0
+      API_URL: ${API_URL:-}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      DATABASE_URL: ${DATABASE_URL}
+    env_file:
+      - path: .env.production
+        required: false
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "require('http').get('http://localhost:3000', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

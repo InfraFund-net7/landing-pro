@@ -1,0 +1,14 @@
+diff --git a/node_modules/@payloadcms/next/dist/views/Root/index.js b/node_modules/@payloadcms/next/dist/views/Root/index.js
+index 1111111..2222222 100644
+--- a/node_modules/@payloadcms/next/dist/views/Root/index.js
++++ b/node_modules/@payloadcms/next/dist/views/Root/index.js
+@@ -161,7 +161,8 @@ export const RootPage = async ({
+     segments
+   });
+   req.routeParams = routeParams;
+-  const dbHasUser = req.user || (await req.payload.db.findOne({
++  const vercelKnownHasUserFlag = globalThis.__payloadVercelKnownHasUser === true;
++  const dbHasUser = req.user || vercelKnownHasUserFlag || (await req.payload.db.findOne({
+     collection: userSlug,
+     req
+   })?.then(doc => !!doc));

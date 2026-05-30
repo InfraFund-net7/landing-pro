@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { cmsImageNeedsUnoptimized } from '@/lib/cms-next-image';
 import BlogComments from './blog-comments';
 import BlogContents from './blog-contents';
 import CmsBlogContent from './cms-blog-content';
@@ -52,6 +53,7 @@ export default function BlogPage({ blog, comments }: BlogPageProps) {
               width={511}
               height={311}
               alt={blog.title}
+              unoptimized={cmsImageNeedsUnoptimized(blog.image)}
               className="rounded-xl w-full max-w-[511px] h-auto"
             />
           )}

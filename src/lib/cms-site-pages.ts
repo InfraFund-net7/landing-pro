@@ -1,20 +1,15 @@
 import config from '@payload-config';
 import { getPayload } from 'payload';
+import { cmsMediaFromRelation } from '@/lib/cms-media-url';
+import {
+  isCmsPageReplacementEnabled,
+  shouldFetchSitePagesFromCms,
+} from '@/lib/cms-runtime';
+import { skipPayloadFetchAtBuild } from '@/lib/skip-payload-fetch-at-build';
 
-type MediaRelation = null | number | { url?: string };
-const cmsReplacementFlag = process.env.CMS_REPLACE_EXISTING_PAGES;
+type MediaRelation = null | number | { url?: string | null };
 
-function skipPayloadFetchAtImageBuild(): boolean {
-  return process.env.SKIP_PAYLOAD_FETCH_AT_BUILD === '1';
-}
-
-export const isCmsPageReplacementEnabled =
-  cmsReplacementFlag === '1' || cmsReplacementFlag === 'true';
-
-function mediaUrl(media: MediaRelation): string | undefined {
-  if (media && typeof media === 'object' && 'url' in media) return media.url;
-  return undefined;
-}
+export { isCmsPageReplacementEnabled };
 
 type SitePageRaw = {
   title?: string;
@@ -122,7 +117,8 @@ type PayloadWithSitePages = {
 export async function fetchSitePageBySlug(
   slug: string
 ): Promise<CmsSitePage | null> {
-  if (skipPayloadFetchAtImageBuild()) return null;
+  if (!shouldFetchSitePagesFromCms()) return null;
+  if (skipPayloadFetchAtBuild()) return null;
   try {
     const payload = (await getPayload({
       config,
@@ -155,13 +151,15 @@ export async function fetchSitePageBySlug(
             eyebrow: doc.hero.eyebrow ?? '',
             heading: doc.hero.heading ?? '',
             subheading: doc.hero.subheading ?? '',
-            backgroundImage: mediaUrl(doc.hero.backgroundImage ?? null),
+            backgroundImage: cmsMediaFromRelation(
+              doc.hero.backgroundImage ?? null
+            ),
           }
         : undefined,
       sections: (doc.sections ?? []).map((section) => ({
         heading: section.heading ?? '',
         body: section.body ?? '',
-        image: mediaUrl(section.image ?? null),
+        image: cmsMediaFromRelation(section.image ?? null),
         ctaLabel: section.ctaLabel ?? '',
         ctaLink: section.ctaLink ?? '',
       })),
@@ -196,13 +194,13 @@ export async function fetchSitePageBySlug(
             question: item.question ?? '',
             answer: item.answer ?? '',
             description: item.description ?? '',
-            icon: mediaUrl(item.icon ?? null),
+            icon: cmsMediaFromRelation(item.icon ?? null),
             iconPath: item.iconPath ?? '',
             period: item.period ?? '',
             name: item.name ?? '',
             role: item.role ?? '',
             linkedin: item.linkedin ?? '',
-            image: mediaUrl(item.image ?? null),
+            image: cmsMediaFromRelation(item.image ?? null),
             imagePath: item.imagePath ?? '',
           })),
         })),
