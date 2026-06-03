@@ -82,16 +82,11 @@ export const Posts = {
     },
     {
       name: 'categories',
-      type: 'select',
+      type: 'text',
       hasMany: true,
-      options: [
-        { label: 'All', value: 'all' },
-        { label: 'Blockchain', value: 'blockchain' },
-        { label: 'Infrastructure', value: 'infrastructure' },
-        { label: 'Tokenization', value: 'tokenization' },
-        { label: 'Impact', value: 'impact' },
-        { label: 'Research', value: 'research' },
-      ],
+      admin: {
+        description: 'One or more categories (any label the editor chooses).',
+      },
     },
     {
       name: 'tags',

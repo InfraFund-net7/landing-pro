@@ -1,0 +1,258 @@
+.editorWrapper {
+  border: 1px solid #1e2b47;
+  border-radius: 12px;
+  background: #0d1425;
+  overflow: hidden;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #1e2b47;
+  background: rgba(8, 15, 29, 0.6);
+}
+
+.toolbarGroup {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.toolbarDivider {
+  width: 1px;
+  height: 24px;
+  background: #1e2b47;
+  margin: 0 6px;
+}
+
+.toolbarBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #8a9bb8;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition:
+    background 0.12s,
+    color 0.12s;
+}
+
+.toolbarBtn:hover {
+  background: rgba(36, 255, 142, 0.08);
+  color: #c8d4ea;
+}
+
+.toolbarBtnActive {
+  background: rgba(36, 255, 142, 0.15);
+  color: #24ff8e;
+}
+
+.toolbarBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.toolbarSelect {
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid #1e2b47;
+  border-radius: 6px;
+  background: #0d1425;
+  color: #c8d4ea;
+  font-size: 12px;
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+}
+
+.toolbarSelect:focus {
+  border-color: #24ff8e;
+}
+
+.colorInput {
+  width: 32px;
+  height: 32px;
+  padding: 2px;
+  border: 1px solid #1e2b47;
+  border-radius: 6px;
+  background: #0d1425;
+  cursor: pointer;
+}
+
+.colorInput::-webkit-color-swatch-wrapper {
+  padding: 2px;
+}
+
+.colorInput::-webkit-color-swatch {
+  border: none;
+  border-radius: 4px;
+}
+
+.editorContent {
+  min-height: 280px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding: 16px 18px;
+}
+
+.editorContent :global(.tiptap) {
+  outline: none;
+  min-height: 240px;
+  color: #e6eeff;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.editorContent :global(.tiptap p.is-editor-empty:first-child::before) {
+  content: attr(data-placeholder);
+  float: left;
+  color: #5a6b88;
+  pointer-events: none;
+  height: 0;
+}
+
+.editorContent :global(.tiptap h1) {
+  font-size: 2em;
+  font-weight: 700;
+  margin: 0.5em 0;
+  color: #fff;
+}
+
+.editorContent :global(.tiptap h2) {
+  font-size: 1.5em;
+  font-weight: 700;
+  margin: 0.5em 0;
+  color: #fff;
+}
+
+.editorContent :global(.tiptap h3) {
+  font-size: 1.25em;
+  font-weight: 700;
+  margin: 0.5em 0;
+  color: #fff;
+}
+
+.editorContent :global(.tiptap ul),
+.editorContent :global(.tiptap ol) {
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+
+.editorContent :global(.tiptap blockquote) {
+  border-left: 3px solid #24ff8e;
+  padding-left: 1em;
+  color: #8a9bb8;
+  margin: 0.5em 0;
+}
+
+.editorContent :global(.tiptap pre) {
+  background: #080f1d;
+  border-radius: 8px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  margin: 0.5em 0;
+}
+
+.editorContent :global(.tiptap code) {
+  background: #080f1d;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  color: #24ff8e;
+}
+
+.editorContent :global(.tiptap pre code) {
+  background: none;
+  padding: 0;
+}
+
+.editorContent :global(.tiptap hr) {
+  border: none;
+  border-top: 1px solid #1e2b47;
+  margin: 1.5em 0;
+}
+
+.editorContent :global(.tiptap img) {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 0.5em 0;
+}
+
+.editorContent :global(.tiptap a) {
+  color: #24ff8e;
+  text-decoration: underline;
+}
+
+.tagsInput {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 8px 12px;
+  background: #0d1425;
+  border: 1px solid #1e2b47;
+  border-radius: 10px;
+  cursor: text;
+}
+
+.tagsInput:focus-within {
+  border-color: #24ff8e;
+}
+
+.tagPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  color: #93c5fd;
+  font-size: 13px;
+}
+
+.tagRemove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: #93c5fd;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  padding: 0;
+}
+
+.tagRemove:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.tagField {
+  flex: 1;
+  min-width: 100px;
+  border: none;
+  background: transparent;
+  color: #e6eeff;
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+}
+
+.tagField::placeholder {
+  color: #5a6b88;
+}

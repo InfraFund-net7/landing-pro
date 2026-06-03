@@ -159,6 +159,26 @@ function resolveServerURL() {
 
 const serverURL = resolveServerURL();
 
+/** Origins allowed to send Payload JWT cookies (browser fetch includes Origin). */
+function resolveCsrfOrigins() {
+  const origins = new Set();
+  if (serverURL) origins.add(serverURL);
+
+  if (!isProd) {
+    for (const port of [3000, 3001]) {
+      origins.add(`http://localhost:${port}`);
+      origins.add(`http://127.0.0.1:${port}`);
+    }
+  }
+
+  const vercelUrl = process.env.VERCEL_URL?.trim();
+  if (vercelUrl) {
+    origins.add(`https://${vercelUrl}`);
+  }
+
+  return [...origins];
+}
+
 const email = platformSmtpEmailAdapter();
 
 const blobToken = process.env.BLOB_READ_WRITE_TOKEN?.trim();
@@ -235,6 +255,7 @@ export default buildConfig({
     graphQLPlayground: '/cms/graphql-playground',
   },
   ...(serverURL ? { serverURL } : {}),
+  csrf: resolveCsrfOrigins(),
   ...(email ? { email } : {}),
   collections: [Users, Media, Posts, Comments, SitePages],
   globals: [HomePage],

@@ -1,0 +1,90 @@
+.htmlContent {
+  width: 100%;
+  max-width: 835px;
+  color: #c8d4ea;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.htmlContent h1,
+.htmlContent h2,
+.htmlContent h3 {
+  color: #fff;
+  font-weight: 700;
+  scroll-margin-top: 130px;
+}
+
+.htmlContent h1 {
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  margin: 3rem 0 1.5rem;
+}
+
+.htmlContent h2 {
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  margin: 3rem 0 1.5rem;
+  text-wrap: balance;
+}
+
+.htmlContent h2:first-child {
+  margin-top: 0;
+}
+
+.htmlContent h3 {
+  font-size: 1.25em;
+  margin: 2rem 0 1rem;
+}
+
+.htmlContent p {
+  margin: 0 0 16px;
+  text-align: justify;
+}
+
+.htmlContent ul,
+.htmlContent ol {
+  padding-left: 24px;
+  margin: 0 0 16px;
+}
+
+.htmlContent blockquote {
+  border-left: 3px solid #24ff8e;
+  padding-left: 16px;
+  color: #8a9bb8;
+  margin: 0 0 16px;
+}
+
+.htmlContent pre {
+  background: #0d1425;
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  margin: 0 0 16px;
+}
+
+.htmlContent code {
+  font-family: monospace;
+  font-size: 13px;
+  color: #24ff8e;
+}
+
+.htmlContent img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 0 0 16px;
+}
+
+.htmlContent a {
+  color: #24ff8e;
+  text-decoration: underline;
+}
+
+.htmlContent hr {
+  border: none;
+  border-top: 1px solid #1e2b47;
+  margin: 24px 0;
+}
+
+@media (min-width: 640px) {
+  .htmlContent {
+    font-size: 16px;
+  }
+}

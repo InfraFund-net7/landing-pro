@@ -1,5 +1,5 @@
 /**
- * Renders Payload admin dashboard at /admin without RootPage notFound() on Vercel
+ * Renders Payload admin dashboard at /admin without RootPage notFound()
  * (logged-in users + empty segments can miss DefaultView when Drizzle findOne fails).
  */
 import { PageConfigProvider } from '@payloadcms/ui';

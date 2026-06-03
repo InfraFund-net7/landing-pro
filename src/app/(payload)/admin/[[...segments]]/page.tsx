@@ -32,28 +32,29 @@ const Page = async ({ params, searchParams }: Args) => {
     ? resolvedParams.segments
     : [];
 
-  if (segments.length === 0 && process.env.VERCEL) {
-    const hasUser = await probeNeonHasPayloadUser();
-    if (hasUser === false) {
-      const cfg = await config;
-      console.log(
-        '[payload] /admin: hasUser=false → redirect create-first-user'
-      );
-      redirect(
-        formatAdminURL({
-          adminRoute: cfg.routes.admin,
-          path: cfg.admin.routes.createFirstUser,
-        })
-      );
+  if (segments.length === 0) {
+    if (process.env.VERCEL) {
+      const hasUser = await probeNeonHasPayloadUser();
+      if (hasUser === false) {
+        const cfg = await config;
+        console.log(
+          '[payload] /admin: hasUser=false → redirect create-first-user'
+        );
+        redirect(
+          formatAdminURL({
+            adminRoute: cfg.routes.admin,
+            path: cfg.admin.routes.createFirstUser,
+          })
+        );
+      }
     }
-    if (hasUser === true) {
-      return payloadAdminDashboardPage({
-        config,
-        importMap,
-        params: Promise.resolve({ segments: [] }),
-        searchParams,
-      });
-    }
+
+    return payloadAdminDashboardPage({
+      config,
+      importMap,
+      params: Promise.resolve({ segments: [] }),
+      searchParams,
+    });
   }
 
   return payloadAdminRootPage({
