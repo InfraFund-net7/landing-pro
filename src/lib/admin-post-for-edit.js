@@ -21,7 +21,7 @@ export async function fetchPostForEdit(id, user) {
   }
 }
 
-/** @param {Record<string, unknown>} post */
+/** @param {import('@/payload-types').Post} post */
 export function postToEditorInitialValues(post) {
   const tags = Array.isArray(post.tags)
     ? post.tags

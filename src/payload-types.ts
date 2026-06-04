@@ -163,6 +163,8 @@ export interface Media {
   url?: string | null;
   thumbnailURL?: string | null;
   filename?: string | null;
+  /** Vercel Blob storage path prefix when using private blob adapter. */
+  prefix?: string | null;
   mimeType?: string | null;
   filesize?: number | null;
   width?: number | null;
@@ -306,6 +308,7 @@ export interface MediaSelect<T extends boolean = true> {
   url?: T;
   thumbnailURL?: T;
   filename?: T;
+  prefix?: T;
   mimeType?: T;
   filesize?: T;
   width?: T;
