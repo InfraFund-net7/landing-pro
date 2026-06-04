@@ -71,7 +71,12 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json({ ok: true, url, alt: doc.alt ?? alt });
+    return NextResponse.json({
+      ok: true,
+      id: doc.id,
+      url,
+      alt: doc.alt ?? alt,
+    });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'Unable to upload image.';

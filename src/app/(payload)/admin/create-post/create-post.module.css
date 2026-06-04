@@ -403,6 +403,111 @@
   margin: 24px 0;
 }
 
+.coverField {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.coverFileInput {
+  display: none;
+}
+
+.coverUploadZone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 200px;
+  padding: 28px 20px;
+  border: 1px dashed #2a3b61;
+  border-radius: 12px;
+  background: #0d1425;
+  color: #8a9bb8;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+  font-family: inherit;
+}
+
+.coverUploadZone:hover:not(:disabled) {
+  border-color: #24ff8e;
+  background: rgba(36, 255, 142, 0.04);
+  color: #c8d4ea;
+}
+
+.coverUploadZone:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.coverUploadTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #e6eeff;
+}
+
+.coverUploadHint {
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+  max-width: 420px;
+  color: #8a9bb8;
+}
+
+.coverPreview {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 360px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #1e2b47;
+  background: #080f1d;
+}
+
+.coverPreviewImg {
+  object-fit: cover;
+}
+
+.coverPreviewActions {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.coverRemoveBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #7f1d1d;
+  background: rgba(61, 19, 32, 0.92);
+  color: #fecaca;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.coverRemoveBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.coverError {
+  margin: 0;
+  font-size: 13px;
+  color: #fecaca;
+}
+
 @media (max-width: 900px) {
   .shell {
     flex-direction: column;

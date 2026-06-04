@@ -1,5 +1,6 @@
 'use client';
 
+import PostCoverImagePicker from '@/app/(payload)/admin/components/post-cover-image-picker';
 import PostRichTextEditor, {
   type PostRichTextEditorHandle,
 } from '@/app/(payload)/admin/components/post-rich-text-editor';
@@ -24,6 +25,8 @@ type PostEditorInitialValues = {
   tags: string;
   published: boolean;
   publishedAt: string;
+  featuredImageId?: number | null;
+  featuredImageUrl?: string | null;
 };
 
 type PostEditorFormProps = {
@@ -135,6 +138,10 @@ export default function PostEditorForm({
       if (initialValues?.publishedAt) {
         submitData.set('existingPublishedAt', initialValues.publishedAt);
       }
+      submitData.set(
+        'featuredImageId',
+        String(formData.get('featuredImageId') ?? '')
+      );
 
       const endpoint = isEdit
         ? `/admin/api/posts/${postId}`
@@ -315,6 +322,18 @@ export default function PostEditorForm({
                 ))}
               </select>
             </div>
+          </div>
+
+          <div>
+            <label className={styles.label}>Cover image</label>
+            <p className={styles.fieldHint}>
+              This image appears on the blog grid at <strong>/blog</strong>,
+              like your other published posts.
+            </p>
+            <PostCoverImagePicker
+              initialImageUrl={initialValues?.featuredImageUrl}
+              initialMediaId={initialValues?.featuredImageId}
+            />
           </div>
 
           <div>

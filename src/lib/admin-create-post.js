@@ -1,6 +1,10 @@
 import config from '@payload-config';
 import { getPayload } from 'payload';
-import { buildPostSaveBody, isEmptyHtml } from './admin-post-form-utils.js';
+import {
+  buildPostSaveBody,
+  isEmptyHtml,
+  parseFeaturedImageIdFromForm,
+} from './admin-post-form-utils.js';
 
 /**
  * @param {FormData} formData
@@ -31,6 +35,7 @@ export async function createPostFromFormData(formData, user) {
     categoriesRaw,
     tagsRaw,
   });
+  data.featuredImage = parseFeaturedImageIdFromForm(formData);
 
   if (!data.slug) {
     return { ok: false, error: 'Valid slug is required' };

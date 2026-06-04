@@ -29,6 +29,14 @@ function parseCommaSeparatedList(raw) {
     .filter(Boolean);
 }
 
+/** @param {FormData} formData */
+export function parseFeaturedImageIdFromForm(formData) {
+  const raw = String(formData.get('featuredImageId') ?? '').trim();
+  if (!raw) return null;
+  const id = Number(raw);
+  return Number.isFinite(id) && id > 0 ? id : null;
+}
+
 export function buildPostSaveBody({
   title,
   slug,

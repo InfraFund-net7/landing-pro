@@ -1,4 +1,5 @@
 import config from '@payload-config';
+import { cmsMediaFromRelation } from './cms-media-url';
 import { getPayload } from 'payload';
 
 /**
@@ -14,7 +15,7 @@ export async function fetchPostForEdit(id, user) {
       id,
       user,
       overrideAccess: false,
-      depth: 0,
+      depth: 1,
     });
   } catch {
     return null;
@@ -33,6 +34,17 @@ export function postToEditorInitialValues(post) {
         .filter(Boolean)
     : [];
 
+  const featured = post.featuredImage;
+  let featuredImageId = null;
+  let featuredImageUrl = null;
+
+  if (featured && typeof featured === 'object') {
+    featuredImageId = Number(featured.id);
+    featuredImageUrl = cmsMediaFromRelation(featured) ?? null;
+  } else if (typeof featured === 'number') {
+    featuredImageId = featured;
+  }
+
   return {
     title: String(post.title ?? ''),
     slug: String(post.slug ?? ''),
@@ -44,5 +56,10 @@ export function postToEditorInitialValues(post) {
     tags: tags.join(', '),
     published: Boolean(post.published),
     publishedAt: post.publishedAt ? String(post.publishedAt) : '',
+    featuredImageId:
+      Number.isFinite(featuredImageId) && featuredImageId > 0
+        ? featuredImageId
+        : null,
+    featuredImageUrl,
   };
 }
