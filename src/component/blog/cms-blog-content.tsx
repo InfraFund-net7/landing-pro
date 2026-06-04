@@ -1,6 +1,7 @@
 'use client';
 
 import { prepareBlogContentHeadings } from '@/lib/blog-content-headings.js';
+import { absolutizeCmsMediaUrlsInHtml } from '@/lib/cms-media-url';
 import { Menu, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import styles from './cms-blog-content.module.css';
@@ -102,7 +103,7 @@ export default function CmsBlogContent({ content }: CmsBlogContentProps) {
     if (!trimmed || !isHtmlContent(trimmed)) {
       return { headings: [], processedHtml: trimmed };
     }
-    return prepareBlogContentHeadings(trimmed);
+    return prepareBlogContentHeadings(absolutizeCmsMediaUrlsInHtml(trimmed));
   }, [trimmed]);
 
   useEffect(() => {

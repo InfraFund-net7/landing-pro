@@ -1,6 +1,6 @@
 import { getAdminApiContext, isContentManager } from '@/lib/admin-api-auth.js';
 import { buildPayloadMediaFileUrl } from '@/lib/payload-media-file-url.js';
-import { cmsMediaFromRelation } from '@/lib/cms-media-url';
+import { cmsMediaFromRelation, resolveCmsMediaUrl } from '@/lib/cms-media-url';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
       overrideAccess: false,
     });
 
-    const url =
+    const rawUrl =
       cmsMediaFromRelation(doc) ||
       (doc.filename
         ? buildPayloadMediaFileUrl({
@@ -62,6 +62,7 @@ export async function POST(request: Request) {
             prefix: doc.prefix ?? undefined,
           })
         : '');
+    const url = resolveCmsMediaUrl(rawUrl) ?? rawUrl;
 
     if (!url) {
       return NextResponse.json(

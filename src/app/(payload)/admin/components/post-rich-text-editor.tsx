@@ -29,7 +29,13 @@ import {
   Underline as UnderlineIcon,
   Undo2,
 } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from 'react';
 import styles from './post-editor.module.css';
 
 const FontSize = Extension.create({
@@ -87,11 +93,14 @@ type PostRichTextEditorProps = {
   onChange?: (html: string) => void;
 };
 
-export default function PostRichTextEditor({
-  name,
-  defaultValue = '',
-  onChange,
-}: PostRichTextEditorProps) {
+export type PostRichTextEditorHandle = {
+  getHtml: () => string;
+};
+
+const PostRichTextEditor = forwardRef<
+  PostRichTextEditorHandle,
+  PostRichTextEditorProps
+>(function PostRichTextEditor({ name, defaultValue = '', onChange }, ref) {
   const [html, setHtml] = useState(defaultValue);
 
   const editor = useEditor({
@@ -134,6 +143,14 @@ export default function PostRichTextEditor({
       setHtml(defaultValue);
     }
   }, [editor, defaultValue]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      getHtml: () => editor?.getHTML() ?? html,
+    }),
+    [editor, html]
+  );
 
   const setLink = useCallback(() => {
     if (!editor) return;
@@ -422,4 +439,6 @@ export default function PostRichTextEditor({
       <EditorContent editor={editor} className={styles.editorContent} />
     </div>
   );
-}
+});
+
+export default PostRichTextEditor;

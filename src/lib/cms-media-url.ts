@@ -5,7 +5,7 @@ import { isCmsMediaFileProxy } from '@/lib/blob-storage-mode.js';
  * Payload media URLs are often relative (/cms/api/media/file/...).
  * Next.js Image and ISR need an absolute URL when there is no browser origin.
  */
-function resolveCmsMediaUrl(
+export function resolveCmsMediaUrl(
   url: string | null | undefined
 ): string | undefined {
   if (!url || typeof url !== 'string') return undefined;
@@ -66,4 +66,17 @@ export function cmsMediaFromRelation(
   }
 
   return undefined;
+}
+
+/** Ensures inline blog images use absolute URLs so they work on infrafund.net after publish. */
+export function absolutizeCmsMediaUrlsInHtml(html: string): string {
+  if (!html?.trim()) return html;
+
+  return html.replace(
+    /(<img\b[^>]*\bsrc=)(["'])([^"']+)\2/gi,
+    (_match, prefix: string, quote: string, src: string) => {
+      const resolved = resolveCmsMediaUrl(src) ?? src;
+      return `${prefix}${quote}${resolved}${quote}`;
+    }
+  );
 }

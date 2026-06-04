@@ -25,7 +25,7 @@ export function buildPayloadMediaFileUrl({ filename, prefix }) {
     path += `?prefix=${encodeURIComponent(prefix)}`;
   }
   const origin = resolvePayloadServerOrigin(
-    process.env.PAYLOAD_PUBLIC_SERVER_URL
+    process.env.PAYLOAD_PUBLIC_SERVER_URL || process.env.NEXT_PUBLIC_SITE_URL
   );
   return origin ? `${origin}${path}` : path;
 }

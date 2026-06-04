@@ -39,12 +39,13 @@ export async function createPostFromFormData(formData, user) {
   try {
     const payload = await getPayload({ config });
 
-    await payload.create({
+    const doc = await payload.create({
       collection: 'posts',
       user,
       overrideAccess: false,
       data,
     });
+    return { ok: true, id: doc.id };
   } catch (error) {
     const message =
       error instanceof Error
@@ -52,6 +53,4 @@ export async function createPostFromFormData(formData, user) {
         : 'Unable to create post. Please try again.';
     return { ok: false, error: message };
   }
-
-  return { ok: true };
 }

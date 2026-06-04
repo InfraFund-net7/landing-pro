@@ -1,3 +1,5 @@
+import { absolutizeCmsMediaUrlsInHtml } from './cms-media-url';
+
 export function slugifyPost(value) {
   return value
     .toLowerCase()
@@ -40,12 +42,13 @@ export function buildPostSaveBody({
   const resolvedSlug = slug.trim() ? slugifyPost(slug) : slugifyPost(title);
   const published = intent === 'published';
   const categories = parseCommaSeparatedList(categoriesRaw);
+  const normalizedMainContent = absolutizeCmsMediaUrlsInHtml(mainContent);
 
   return {
     title: title.trim(),
     slug: resolvedSlug,
-    description: excerptFromHtml(mainContent),
-    mainContent,
+    description: excerptFromHtml(normalizedMainContent),
+    mainContent: normalizedMainContent,
     published,
     publishedAt: published
       ? existingPublishedAt || new Date().toISOString()

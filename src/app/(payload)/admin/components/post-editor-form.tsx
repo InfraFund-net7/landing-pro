@@ -1,6 +1,8 @@
 'use client';
 
-import PostRichTextEditor from '@/app/(payload)/admin/components/post-rich-text-editor';
+import PostRichTextEditor, {
+  type PostRichTextEditorHandle,
+} from '@/app/(payload)/admin/components/post-rich-text-editor';
 import TagsInput from '@/app/(payload)/admin/components/tags-input';
 import AdminPortalLayout from '@/app/(payload)/admin/components/admin-portal-layout';
 import {
@@ -48,6 +50,7 @@ export default function PostEditorForm({
   const isEdit = mode === 'edit';
   const formRef = useRef<HTMLFormElement>(null);
   const intentRef = useRef<HTMLInputElement>(null);
+  const editorRef = useRef<PostRichTextEditorHandle>(null);
   const [title, setTitle] = useState(initialValues?.title ?? '');
   const [slug, setSlug] = useState(initialValues?.slug ?? '');
   const [slugTouched, setSlugTouched] = useState(isEdit);
@@ -96,7 +99,8 @@ export default function PostEditorForm({
       setFormError('Title is required');
       return;
     }
-    if (!mainContent.trim() || isEmptyHtml(mainContent)) {
+    const contentHtml = editorRef.current?.getHtml() ?? mainContent;
+    if (!contentHtml.trim() || isEmptyHtml(contentHtml)) {
       setFormError('Main content is required');
       return;
     }
@@ -104,7 +108,7 @@ export default function PostEditorForm({
     const body = buildPostSaveBody({
       title,
       slug,
-      mainContent,
+      mainContent: contentHtml,
       intent,
       author,
       categoriesRaw,
@@ -123,7 +127,7 @@ export default function PostEditorForm({
       const submitData = new FormData();
       submitData.set('title', title);
       submitData.set('slug', slug);
-      submitData.set('mainContent', mainContent);
+      submitData.set('mainContent', contentHtml);
       submitData.set('intent', intent);
       submitData.set('author', author);
       submitData.set('tags', tagsRaw);
@@ -171,7 +175,18 @@ export default function PostEditorForm({
           ? 'Post published successfully.'
           : 'Draft saved successfully.';
 
-      window.location.href = `/admin/collections/posts?success=${encodeURIComponent(successMessage)}`;
+      const savedPostId =
+        isEdit && postId
+          ? postId
+          : data && typeof data === 'object' && 'id' in data
+            ? String((data as { id: string | number }).id)
+            : null;
+
+      const redirectPath = savedPostId
+        ? `/admin/edit-post/${savedPostId}?success=${encodeURIComponent(successMessage)}`
+        : `/admin/create-post?success=${encodeURIComponent(successMessage)}`;
+
+      window.location.href = redirectPath;
     } catch {
       setFormError('Network error. Check your connection and try again.');
     } finally {
@@ -310,6 +325,7 @@ export default function PostEditorForm({
               computer with the image button in the toolbar.
             </p>
             <PostRichTextEditor
+              ref={editorRef}
               defaultValue={initialValues?.mainContent}
               onChange={setMainContent}
             />
