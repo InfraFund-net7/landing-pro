@@ -69,6 +69,10 @@ export const Posts = {
       name: 'readTime',
       type: 'text',
       defaultValue: '5 min read',
+      admin: {
+        description:
+          'Estimated reading time shown on the blog, e.g. 8 min read.',
+      },
     },
     {
       name: 'author',

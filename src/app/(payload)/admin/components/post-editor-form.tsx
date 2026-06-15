@@ -24,6 +24,7 @@ type PostEditorInitialValues = {
   author: string;
   categories: string[];
   tags: string;
+  readTime: string;
   published: boolean;
   publishedAt: string;
   featuredImageId?: number | null;
@@ -61,6 +62,7 @@ export default function PostEditorForm({
   const [mainContent, setMainContent] = useState(
     initialValues?.mainContent ?? ''
   );
+  const [readTime, setReadTime] = useState(initialValues?.readTime ?? '');
   const [previewOpen, setPreviewOpen] = useState(false);
   const [formError, setFormError] = useState(initialError ?? '');
   const [formSuccess, setFormSuccess] = useState(initialSuccess ?? '');
@@ -96,6 +98,7 @@ export default function PostEditorForm({
     const author = String(formData.get('author') || 'self');
     const tagsRaw = String(formData.get('tags') || '');
     const categoriesRaw = String(formData.get('categories') || '');
+    const readTimeRaw = String(formData.get('readTime') || readTime);
 
     if (!title.trim()) {
       setFormError('Title is required');
@@ -117,6 +120,7 @@ export default function PostEditorForm({
       userDisplayName: authorLabel,
       categoriesRaw,
       tagsRaw,
+      readTimeRaw,
       existingPublishedAt: initialValues?.publishedAt,
     });
 
@@ -136,6 +140,7 @@ export default function PostEditorForm({
       submitData.set('author', author);
       submitData.set('tags', tagsRaw);
       submitData.set('categories', categoriesRaw);
+      submitData.set('readTime', readTimeRaw);
       if (initialValues?.publishedAt) {
         submitData.set('existingPublishedAt', initialValues.publishedAt);
       }
@@ -315,6 +320,20 @@ export default function PostEditorForm({
                   setSlug(e.target.value);
                 }}
               />
+            </div>
+            <div>
+              <label htmlFor="readTime" className={styles.label}>
+                Estimated read time
+              </label>
+              <input
+                id="readTime"
+                name="readTime"
+                className={styles.field}
+                placeholder="5 min read"
+                value={readTime}
+                onChange={(e) => setReadTime(e.target.value)}
+              />
+              <p className={styles.fieldHint}>e.g. 8 min read or just 8</p>
             </div>
             <div>
               <label htmlFor="author" className={styles.label}>

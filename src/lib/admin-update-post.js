@@ -20,6 +20,7 @@ export async function updatePostFromFormData(id, formData, user) {
   const authorKind = String(formData.get('author') || 'self').trim();
   const tagsRaw = String(formData.get('tags') || '').trim();
   const categoriesRaw = String(formData.get('categories') || '').trim();
+  const readTimeRaw = String(formData.get('readTime') || '').trim();
   const existingPublishedAt = String(
     formData.get('existingPublishedAt') || ''
   ).trim();
@@ -41,6 +42,7 @@ export async function updatePostFromFormData(id, formData, user) {
     userDisplayName: getUserDisplayName(user),
     categoriesRaw,
     tagsRaw,
+    readTimeRaw,
     existingPublishedAt: existingPublishedAt || undefined,
   });
   data.featuredImage = parseFeaturedImageIdFromForm(formData);

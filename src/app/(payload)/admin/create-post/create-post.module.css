@@ -250,7 +250,7 @@
 
 .row2 {
   display: grid;
-  grid-template-columns: 1fr 220px;
+  grid-template-columns: 1fr 180px 200px;
   gap: 16px;
 }
 

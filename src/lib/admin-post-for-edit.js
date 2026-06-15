@@ -65,6 +65,7 @@ export function postToEditorInitialValues(post) {
       ? post.categories.map((value) => String(value))
       : [],
     tags: tags.join(', '),
+    readTime: String(post.readTime ?? ''),
     published: Boolean(post.published),
     publishedAt: post.publishedAt ? String(post.publishedAt) : '',
     featuredImageId:

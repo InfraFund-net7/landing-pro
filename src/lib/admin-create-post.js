@@ -19,6 +19,7 @@ export async function createPostFromFormData(formData, user) {
   const authorKind = String(formData.get('author') || 'self').trim();
   const tagsRaw = String(formData.get('tags') || '').trim();
   const categoriesRaw = String(formData.get('categories') || '').trim();
+  const readTimeRaw = String(formData.get('readTime') || '').trim();
 
   if (!title) {
     return { ok: false, error: 'Title is required' };
@@ -37,6 +38,7 @@ export async function createPostFromFormData(formData, user) {
     userDisplayName: getUserDisplayName(user),
     categoriesRaw,
     tagsRaw,
+    readTimeRaw,
   });
   data.featuredImage = parseFeaturedImageIdFromForm(formData);
 
