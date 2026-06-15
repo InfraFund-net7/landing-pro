@@ -63,7 +63,7 @@ Also set manually (not from Neon): `PAYLOAD_PUBLIC_SERVER_URL`, `INFRA_CONTACT_F
 |----------|--------|
 | `DATABASE_URL` or `POSTGRES_URL` | Neon **pooled** URL (`-pooler` host), `?sslmode=verify-full` |
 | `PAYLOAD_SECRET` | ≥32 chars |
-| `PAYLOAD_PUBLIC_SERVER_URL` | `https://infrafund.net` |
+| `PAYLOAD_PUBLIC_SERVER_URL` | `https://infrafund.net` (www and non-www are both allowed for CSRF after deploy) |
 | `INFRA_CONTACT_FORM_SMTP_HOST` | Same as backpro (e.g. Office365 / SendGrid SMTP host) |
 | `INFRA_CONTACT_FORM_SMTP_PORT` | Usually `587` or `465` |
 | `INFRA_CONTACT_FORM_SMTP_SENDER` | From address (must be allowed by your SMTP provider) |

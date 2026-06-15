@@ -159,10 +159,28 @@ function resolveServerURL() {
 
 const serverURL = resolveServerURL();
 
+/** Add origin plus www / apex variant (production is often opened on both). */
+function addCsrfOrigin(origins, raw) {
+  if (!raw?.trim()) return;
+  try {
+    const u = new URL(raw.trim());
+    if (!u.hostname) return;
+    origins.add(u.origin);
+    if (u.hostname.startsWith('www.')) {
+      origins.add(`${u.protocol}//${u.hostname.slice(4)}`);
+    } else {
+      origins.add(`${u.protocol}//www.${u.hostname}`);
+    }
+  } catch {
+    // ignore invalid URLs
+  }
+}
+
 /** Origins allowed to send Payload JWT cookies (browser fetch includes Origin). */
 function resolveCsrfOrigins() {
   const origins = new Set();
-  if (serverURL) origins.add(serverURL);
+  addCsrfOrigin(origins, serverURL);
+  addCsrfOrigin(origins, process.env.NEXT_PUBLIC_SITE_URL);
 
   if (!isProd) {
     for (const port of [3000, 3001]) {
@@ -173,7 +191,7 @@ function resolveCsrfOrigins() {
 
   const vercelUrl = process.env.VERCEL_URL?.trim();
   if (vercelUrl) {
-    origins.add(`https://${vercelUrl}`);
+    addCsrfOrigin(origins, `https://${vercelUrl}`);
   }
 
   return [...origins];
