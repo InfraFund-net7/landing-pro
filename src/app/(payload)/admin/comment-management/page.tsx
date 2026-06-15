@@ -1,10 +1,8 @@
 import { requireContentManager } from '@/access/get-admin-user';
 import CommentManagementPanel from '@/app/(payload)/admin/comment-management/comment-management-panel';
 import { fetchUserProfileForEdit } from '@/lib/admin-update-profile.js';
-import {
-  fetchAllCommentsForAdmin,
-  type CommentStatus,
-} from '@/lib/cms-comments';
+import { fetchAllCommentsForAdmin } from '@/lib/cms-comments';
+import { type CommentStatus } from '@/lib/cms-comment-types';
 import { getUserDisplayName } from '@/lib/user-profile.js';
 
 type PageProps = {

@@ -7,7 +7,7 @@ import {
   type AdminCommentNode,
   type CommentStatus,
   type EditorReplyProfile,
-} from '@/lib/cms-comments';
+} from '@/lib/cms-comment-types';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';

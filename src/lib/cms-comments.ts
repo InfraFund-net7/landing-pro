@@ -1,18 +1,14 @@
 import config from '@payload-config';
 import { getPayload } from 'payload';
+import {
+  type AdminComment,
+  type BlogComment,
+  type CommentStatus,
+} from '@/lib/cms-comment-types';
 import { shouldFetchBlogFromCms } from '@/lib/cms-runtime';
 import { skipPayloadFetchAtBuild } from '@/lib/skip-payload-fetch-at-build';
 
-export type CommentStatus = 'approved' | 'pending' | 'spam' | 'unapproved';
-
-export type BlogComment = {
-  id: number;
-  authorName: string;
-  content: string;
-  createdAt: string;
-  isEditorialReply: boolean;
-  replies: BlogComment[];
-};
+export type { BlogComment } from '@/lib/cms-comment-types';
 
 type CommentRecord = {
   id: number;
@@ -128,29 +124,6 @@ export async function fetchApprovedCommentsForPost(
   }
 }
 
-export type AdminComment = {
-  id: number;
-  authorName: string;
-  content: string;
-  status: CommentStatus;
-  createdAt: string;
-  postId: number;
-  postTitle: string;
-  postSlug: string;
-  parentId: number | null;
-  isEditorialReply: boolean;
-};
-
-export type AdminCommentNode = AdminComment & {
-  replies: AdminCommentNode[];
-};
-
-export type EditorReplyProfile = {
-  name: string;
-  title: string;
-  avatar: string;
-};
-
 type AdminCommentRecord = CommentRecord & {
   status: CommentStatus;
   post: number | { id: number; title?: string; slug?: string };
@@ -198,55 +171,6 @@ async function fetchAllAdminCommentRecords(): Promise<AdminCommentRecord[]> {
 export async function fetchAllCommentsForAdmin(): Promise<AdminComment[]> {
   const docs = await fetchAllAdminCommentRecords();
   return docs.map(mapAdminComment);
-}
-
-function nodeMatchesFilter(
-  node: AdminCommentNode,
-  filter: CommentStatus | 'all'
-): boolean {
-  if (filter === 'all') return true;
-  if (node.status === filter) return true;
-  return node.replies.some((reply) => nodeMatchesFilter(reply, filter));
-}
-
-export function buildAdminCommentTree(
-  comments: AdminComment[],
-  filter: CommentStatus | 'all' = 'all'
-): AdminCommentNode[] {
-  const byId = new Map<number, AdminCommentNode>();
-
-  for (const comment of comments) {
-    byId.set(comment.id, { ...comment, replies: [] });
-  }
-
-  const roots: AdminCommentNode[] = [];
-
-  for (const comment of comments) {
-    const node = byId.get(comment.id);
-    if (!node) continue;
-
-    const parent = comment.parentId;
-    if (parent && byId.has(parent)) {
-      byId.get(parent)?.replies.push(node);
-      continue;
-    }
-
-    roots.push(node);
-  }
-
-  const sortNodes = (nodes: AdminCommentNode[]) => {
-    nodes.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-    for (const node of nodes) {
-      sortNodes(node.replies);
-    }
-  };
-
-  sortNodes(roots);
-
-  return roots.filter((node) => nodeMatchesFilter(node, filter));
 }
 
 export async function createBlogComment(input: {
