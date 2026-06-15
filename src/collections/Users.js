@@ -3,9 +3,12 @@ import {
   masterAdminOrSelf,
 } from '../access/collection-access.js';
 import { isMasterAdmin, ROLES } from '../access/roles.js';
+import { resolveUsersAuthConfig } from '../lib/payload-auth-cookies.js';
 
-/** @param {{ req: import('payload').PayloadRequest }} args */
-const profileFieldAccess = ({ req }) => Boolean(req.user);
+/** @param {{ req: import('payload').PayloadRequest; id?: string | number }} args */
+const profileFieldUpdateAccess = ({ req, id }) =>
+  isMasterAdmin(req.user) ||
+  (req.user?.id != null && id != null && String(req.user.id) === String(id));
 
 /** @type {import('payload').CollectionConfig} */
 export const Users = {
@@ -18,7 +21,7 @@ export const Users = {
     hidden: ({ user }) => !isMasterAdmin(user),
   },
   // Vercel: skip session rows in DB (updateOne + transactions use WebSocket and timeout).
-  auth: process.env.VERCEL ? { useSessions: false } : true,
+  auth: resolveUsersAuthConfig(),
   access: {
     admin: adminPanelUsers,
     read: masterAdminOrSelf,
@@ -38,13 +41,20 @@ export const Users = {
       async ({ user, req }) => {
         if (!user?.id || user.role) return;
 
-        await req.payload.update({
-          collection: 'users',
-          id: user.id,
-          data: { role: ROLES.MASTER_ADMIN },
-          req,
-          overrideAccess: true,
-        });
+        try {
+          await req.payload.update({
+            collection: 'users',
+            id: user.id,
+            data: { role: ROLES.MASTER_ADMIN },
+            req,
+            overrideAccess: true,
+          });
+        } catch (err) {
+          console.warn(
+            '[payload] afterLogin role bootstrap failed:',
+            err instanceof Error ? err.message : err
+          );
+        }
       },
     ],
     beforeChange: [
@@ -77,8 +87,8 @@ export const Users = {
         description: 'Shown on blog posts when you are the author.',
       },
       access: {
-        read: profileFieldAccess,
-        update: profileFieldAccess,
+        read: () => true,
+        update: profileFieldUpdateAccess,
       },
     },
     {
@@ -89,8 +99,8 @@ export const Users = {
           'Role or title shown under your name on blog posts, e.g. Head of Research and Development.',
       },
       access: {
-        read: profileFieldAccess,
-        update: profileFieldAccess,
+        read: () => true,
+        update: profileFieldUpdateAccess,
       },
     },
     {
@@ -101,8 +111,8 @@ export const Users = {
         description: 'Profile picture shown on blog posts you author.',
       },
       access: {
-        read: profileFieldAccess,
-        update: profileFieldAccess,
+        read: () => true,
+        update: profileFieldUpdateAccess,
       },
     },
     {
