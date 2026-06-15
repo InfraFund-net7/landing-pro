@@ -8,10 +8,17 @@ import { getUserDisplayName } from '@/lib/user-profile.js';
 type PageProps = {
   searchParams: Promise<{
     filter?: CommentStatus | 'all';
+    commentId?: string;
+    post?: string;
     error?: string;
     success?: string;
   }>;
 };
+
+function parseCommentId(value: string | undefined): number | null {
+  const id = Number(value);
+  return Number.isFinite(id) && id > 0 ? id : null;
+}
 
 function parseFilter(value: string | undefined): CommentStatus | 'all' {
   if (
@@ -55,6 +62,8 @@ export default async function CommentManagementPage({
       }}
       flashSuccess={qs.success}
       flashError={qs.error}
+      focusCommentId={parseCommentId(qs.commentId)}
+      postSlug={qs.post?.trim() || undefined}
     />
   );
 }

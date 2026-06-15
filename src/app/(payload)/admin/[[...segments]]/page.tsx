@@ -32,6 +32,14 @@ const Page = async ({ params, searchParams }: Args) => {
     ? resolvedParams.segments
     : [];
 
+  if (segments[0] === 'collections' && segments[1] === 'comments') {
+    const commentId = segments[2];
+    if (commentId && /^\d+$/.test(commentId)) {
+      redirect(`/admin/comment-management?commentId=${commentId}`);
+    }
+    redirect('/admin/comment-management');
+  }
+
   if (segments.length === 0) {
     if (process.env.VERCEL) {
       const hasUser = await probeNeonHasPayloadUser();

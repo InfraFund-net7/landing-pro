@@ -6,6 +6,7 @@ import PostRichTextEditor, {
 } from '@/app/(payload)/admin/components/post-rich-text-editor';
 import TagsInput from '@/app/(payload)/admin/components/tags-input';
 import AdminPortalLayout from '@/app/(payload)/admin/components/admin-portal-layout';
+import Link from 'next/link';
 import {
   buildPostSaveBody,
   isEmptyHtml,
@@ -256,6 +257,16 @@ export default function PostEditorForm({
       {formSuccess ? (
         <p className={`${styles.alert} ${styles.alertSuccess}`}>
           {formSuccess}
+        </p>
+      ) : null}
+
+      {isEdit && slug ? (
+        <p className={styles.fieldHint} style={{ marginBottom: 16 }}>
+          <Link
+            href={`/admin/comment-management?post=${encodeURIComponent(slug)}`}
+          >
+            View and reply to comments on this post
+          </Link>
         </p>
       ) : null}
 

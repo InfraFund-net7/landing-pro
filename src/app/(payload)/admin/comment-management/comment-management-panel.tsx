@@ -22,6 +22,8 @@ type CommentManagementPanelProps = {
   userInitial: string;
   flashSuccess?: string;
   flashError?: string;
+  focusCommentId?: number | null;
+  postSlug?: string;
 };
 
 const filters: Array<{ value: CommentStatus | 'all'; label: string }> = [
@@ -43,11 +45,16 @@ export default function CommentManagementPanel({
   userInitial,
   flashSuccess,
   flashError,
+  focusCommentId = null,
+  postSlug,
 }: CommentManagementPanelProps) {
   const router = useRouter();
   const [comments, setComments] = useState(initialComments);
   const [search, setSearch] = useState('');
   const [replyTarget, setReplyTarget] = useState<number | null>(null);
+  const [focusedCommentId, setFocusedCommentId] = useState<number | null>(
+    focusCommentId
+  );
   const [deleteTarget, setDeleteTarget] = useState<AdminComment | null>(null);
   const [busyId, setBusyId] = useState<number | null>(null);
   const [message, setMessage] = useState(flashSuccess ?? '');
@@ -62,11 +69,30 @@ export default function CommentManagementPanel({
     if (flashError) setError(flashError);
   }, [flashSuccess, flashError]);
 
+  useEffect(() => {
+    if (!focusCommentId) return;
+
+    setFocusedCommentId(focusCommentId);
+    setReplyTarget(focusCommentId);
+
+    const scrollTarget = document.getElementById(`comment-${focusCommentId}`);
+    scrollTarget?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [focusCommentId]);
+
+  const scopedComments = useMemo(() => {
+    if (!postSlug) return comments;
+
+    const normalizedPost = postSlug.toLowerCase();
+    return comments.filter(
+      (comment) => comment.postSlug.toLowerCase() === normalizedPost
+    );
+  }, [comments, postSlug]);
+
   const filteredComments = useMemo(() => {
     const query = search.trim().toLowerCase();
-    if (!query) return comments;
+    if (!query) return scopedComments;
 
-    return comments.filter((comment) => {
+    return scopedComments.filter((comment) => {
       const haystack = [
         comment.authorName,
         comment.content,
@@ -77,7 +103,7 @@ export default function CommentManagementPanel({
         .toLowerCase();
       return haystack.includes(query);
     });
-  }, [comments, search]);
+  }, [scopedComments, search]);
 
   const threads = useMemo(
     () => buildAdminCommentTree(filteredComments, filter),
@@ -182,6 +208,20 @@ export default function CommentManagementPanel({
         <p className={`${styles.alert} ${styles.alertSuccess}`}>{message}</p>
       ) : null}
 
+      {postSlug ? (
+        <div className={styles.postScopeBanner}>
+          <span>
+            Showing comments for post <strong>{postSlug}</strong>
+          </span>
+          <Link
+            href="/admin/comment-management"
+            className={styles.postScopeLink}
+          >
+            View all posts
+          </Link>
+        </div>
+      ) : null}
+
       <div className={styles.toolbar}>
         {filters.map((item) => (
           <Link
@@ -225,6 +265,7 @@ export default function CommentManagementPanel({
               setDeleteTarget={setDeleteTarget}
               busyId={busyId}
               onAction={runAction}
+              focusedCommentId={focusedCommentId}
             />
           ))}
         </div>
@@ -250,6 +291,7 @@ function ThreadCard({
   setDeleteTarget,
   busyId,
   onAction,
+  focusedCommentId,
 }: {
   thread: AdminCommentNode;
   editorProfile: EditorReplyProfile;
@@ -262,6 +304,7 @@ function ThreadCard({
     comment: AdminComment,
     extra?: { content?: string }
   ) => Promise<void>;
+  focusedCommentId: number | null;
 }) {
   return (
     <article className={styles.threadCard}>
@@ -293,6 +336,7 @@ function ThreadCard({
           setDeleteTarget={setDeleteTarget}
           busyId={busyId}
           onAction={onAction}
+          focusedCommentId={focusedCommentId}
         />
       </div>
     </article>
@@ -308,6 +352,7 @@ function CommentNodeView({
   setDeleteTarget,
   busyId,
   onAction,
+  focusedCommentId,
 }: {
   node: AdminCommentNode;
   depth: number;
@@ -321,19 +366,22 @@ function CommentNodeView({
     comment: AdminComment,
     extra?: { content?: string }
   ) => Promise<void>;
+  focusedCommentId: number | null;
 }) {
   const isReplyOpen = replyTarget === node.id;
   const isBusy = busyId === node.id;
   const canReply = !node.isEditorialReply;
+  const isFocused = focusedCommentId === node.id;
 
   return (
     <div
+      id={`comment-${node.id}`}
       className={`${styles.commentNode} ${depth > 0 ? styles.commentNodeNested : ''}`}
     >
       <div
         className={`${styles.commentRow} ${
           node.status === 'pending' ? styles.pendingHighlight : ''
-        }`}
+        } ${isFocused ? styles.commentFocus : ''}`}
       >
         <CommentAvatar
           name={node.authorName}
@@ -368,7 +416,7 @@ function CommentNodeView({
             {canReply ? (
               <button
                 type="button"
-                className={styles.actionBtn}
+                className={styles.actionBtnPrimary}
                 disabled={isBusy}
                 onClick={() => setReplyTarget(isReplyOpen ? null : node.id)}
               >
@@ -429,6 +477,7 @@ function CommentNodeView({
           setDeleteTarget={setDeleteTarget}
           busyId={busyId}
           onAction={onAction}
+          focusedCommentId={focusedCommentId}
         />
       ))}
     </div>

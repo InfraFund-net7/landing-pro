@@ -61,6 +61,36 @@
   border: 1px solid #7f1d1d;
 }
 
+.postScopeBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #2a3b61;
+  background: rgba(59, 130, 246, 0.08);
+  color: #bfdbfe;
+  font-size: 13px;
+}
+
+.postScopeLink {
+  color: #93c5fd;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.postScopeLink:hover {
+  text-decoration: underline;
+}
+
+.commentFocus {
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px rgba(36, 255, 142, 0.35);
+  background: rgba(36, 255, 142, 0.04);
+}
+
 .toolbar {
   display: flex;
   flex-wrap: wrap;
