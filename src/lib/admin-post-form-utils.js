@@ -42,7 +42,9 @@ export function buildPostSaveBody({
   slug,
   mainContent,
   intent,
-  author,
+  authorKind,
+  userId,
+  userDisplayName,
   categoriesRaw,
   tagsRaw,
   existingPublishedAt,
@@ -51,6 +53,7 @@ export function buildPostSaveBody({
   const published = intent === 'published';
   const categories = parseCommaSeparatedList(categoriesRaw);
   const normalizedMainContent = absolutizeCmsMediaUrlsInHtml(mainContent);
+  const isSelf = authorKind === 'self';
 
   return {
     title: title.trim(),
@@ -62,7 +65,8 @@ export function buildPostSaveBody({
       ? existingPublishedAt || new Date().toISOString()
       : existingPublishedAt || null,
     readTime: '5 min read',
-    author: author.trim() || 'Editorial',
+    author: isSelf ? userDisplayName : 'Editorial',
+    authorUser: isSelf && userId ? userId : null,
     category: categories[0] || 'Insights',
     categories,
     tags: parseCommaSeparatedList(tagsRaw).map((tag) => ({ tag })),

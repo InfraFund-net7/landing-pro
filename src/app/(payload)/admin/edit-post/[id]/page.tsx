@@ -4,6 +4,8 @@ import {
   fetchPostForEdit,
   postToEditorInitialValues,
 } from '@/lib/admin-post-for-edit.js';
+import { fetchUserProfileForEdit } from '@/lib/admin-update-profile.js';
+import { getUserDisplayName } from '@/lib/user-profile.js';
 import { notFound } from 'next/navigation';
 
 type PageProps = {
@@ -13,11 +15,6 @@ type PageProps = {
     success?: string;
   }>;
 };
-
-function displayNameFromEmail(email: string): string {
-  const local = email.split('@')[0] ?? 'Admin';
-  return local.charAt(0).toUpperCase() + local.slice(1);
-}
 
 export default async function EditPostPage({
   params,
@@ -33,22 +30,18 @@ export default async function EditPostPage({
     notFound();
   }
 
-  const email = user.email ?? 'admin@infrafund.com';
-  const userName = displayNameFromEmail(email);
-  const userInitial = userName.charAt(0).toUpperCase();
+  const profile = await fetchUserProfileForEdit(user);
+  const displayName = getUserDisplayName({ ...user, ...profile });
+  const userInitial = displayName.charAt(0).toUpperCase();
 
   return (
     <PostEditorForm
       mode="edit"
       postId={String(post.id)}
       initialValues={postToEditorInitialValues(post)}
-      userName={userName}
+      userName={displayName}
       userInitial={userInitial}
-      authorOptions={[
-        ...new Set(
-          [userName, 'Editorial', String(post.author ?? '')].filter(Boolean)
-        ),
-      ]}
+      authorLabel={displayName}
       error={qs.error}
       success={qs.success}
     />

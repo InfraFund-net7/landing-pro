@@ -4,6 +4,9 @@ import {
 } from '../access/collection-access.js';
 import { isMasterAdmin, ROLES } from '../access/roles.js';
 
+/** @param {{ req: import('payload').PayloadRequest }} args */
+const profileFieldAccess = ({ req }) => Boolean(req.user);
+
 /** @type {import('payload').CollectionConfig} */
 export const Users = {
   slug: 'users',
@@ -67,6 +70,41 @@ export const Users = {
     ],
   },
   fields: [
+    {
+      name: 'fullName',
+      type: 'text',
+      admin: {
+        description: 'Shown on blog posts when you are the author.',
+      },
+      access: {
+        read: profileFieldAccess,
+        update: profileFieldAccess,
+      },
+    },
+    {
+      name: 'jobTitle',
+      type: 'text',
+      admin: {
+        description:
+          'Role or title shown under your name on blog posts, e.g. Head of Research and Development.',
+      },
+      access: {
+        read: profileFieldAccess,
+        update: profileFieldAccess,
+      },
+    },
+    {
+      name: 'profilePhoto',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description: 'Profile picture shown on blog posts you author.',
+      },
+      access: {
+        read: profileFieldAccess,
+        update: profileFieldAccess,
+      },
+    },
     {
       name: 'role',
       type: 'select',

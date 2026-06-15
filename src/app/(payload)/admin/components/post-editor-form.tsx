@@ -35,7 +35,7 @@ type PostEditorFormProps = {
   initialValues?: PostEditorInitialValues;
   userName: string;
   userInitial: string;
-  authorOptions: string[];
+  authorLabel: string;
   error?: string;
   success?: string;
 };
@@ -46,7 +46,7 @@ export default function PostEditorForm({
   initialValues,
   userName,
   userInitial,
-  authorOptions,
+  authorLabel,
   error: initialError,
   success: initialSuccess,
 }: PostEditorFormProps) {
@@ -92,9 +92,7 @@ export default function PostEditorForm({
 
     const formData = new FormData(form);
     const intent = String(formData.get('intent') || 'draft');
-    const author = String(
-      formData.get('author') || authorOptions[0] || 'Editorial'
-    );
+    const author = String(formData.get('author') || 'self');
     const tagsRaw = String(formData.get('tags') || '');
     const categoriesRaw = String(formData.get('categories') || '');
 
@@ -113,7 +111,9 @@ export default function PostEditorForm({
       slug,
       mainContent: contentHtml,
       intent,
-      author,
+      authorKind: author,
+      userId: undefined,
+      userDisplayName: authorLabel,
       categoriesRaw,
       tagsRaw,
       existingPublishedAt: initialValues?.publishedAt,
@@ -313,13 +313,10 @@ export default function PostEditorForm({
                 id="author"
                 name="author"
                 className={styles.field}
-                defaultValue={initialValues?.author ?? authorOptions[0]}
+                defaultValue={initialValues?.author ?? 'self'}
               >
-                {authorOptions.map((author) => (
-                  <option key={author} value={author}>
-                    {author}
-                  </option>
-                ))}
+                <option value="self">{authorLabel}</option>
+                <option value="editorial">Editorial</option>
               </select>
             </div>
           </div>

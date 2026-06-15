@@ -45,11 +45,22 @@ export function postToEditorInitialValues(post) {
     featuredImageId = featured;
   }
 
+  const authorUser = post.authorUser;
+  const hasLinkedAuthor =
+    authorUser != null &&
+    (typeof authorUser === 'number' ||
+      (typeof authorUser === 'object' && authorUser.id != null));
+  const authorKind = hasLinkedAuthor
+    ? 'self'
+    : String(post.author ?? 'Editorial') === 'Editorial'
+      ? 'editorial'
+      : 'self';
+
   return {
     title: String(post.title ?? ''),
     slug: String(post.slug ?? ''),
     mainContent: String(post.mainContent ?? ''),
-    author: String(post.author ?? 'Editorial'),
+    author: authorKind,
     categories: Array.isArray(post.categories)
       ? post.categories.map((value) => String(value))
       : [],

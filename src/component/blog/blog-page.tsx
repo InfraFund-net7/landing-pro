@@ -26,10 +26,25 @@ export default function BlogPage({ blog, comments }: BlogPageProps) {
             <div className="w-full flex flex-col sm:flex-row justify-between items-center lg:items-start gap-6">
               <div className="flex flex-col gap-6">
                 <div className="flex justify-center sm:justify-start items-center gap-3 w-fit">
-                  <div className="w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] bg-blue-500 rounded-full" />
+                  {blog.authorAvatar ? (
+                    <Image
+                      src={blog.authorAvatar}
+                      width={60}
+                      height={60}
+                      alt={blog.author}
+                      unoptimized={cmsImageNeedsUnoptimized(blog.authorAvatar)}
+                      className="w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] rounded-full object-cover shrink-0"
+                    />
+                  ) : (
+                    <div className="w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] bg-blue-500 rounded-full shrink-0" />
+                  )}
                   <div className="space-y-1.5 text-xs sm:text-sm">
                     <p className="font-medium">{blog.author}</p>
-                    <p className="font-medium">Managing Partner</p>
+                    {blog.authorTitle ? (
+                      <p className="font-medium text-[#8a9bb8]">
+                        {blog.authorTitle}
+                      </p>
+                    ) : null}
                     <div className="flex items-center justify-center sm:justify-start gap-2 text-[#4D4D4D]">
                       <span>{blog.date}</span>
                       <div className="w-[1px] h-4 bg-[#4D4D4D]" />

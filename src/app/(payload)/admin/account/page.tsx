@@ -1,5 +1,5 @@
 import { requireContentManager } from '@/access/get-admin-user';
-import PostEditorForm from '@/app/(payload)/admin/components/post-editor-form';
+import AccountSettingsForm from '@/app/(payload)/admin/components/account-settings-form';
 import { fetchUserProfileForEdit } from '@/lib/admin-update-profile.js';
 import { getUserDisplayName } from '@/lib/user-profile.js';
 
@@ -10,19 +10,18 @@ type PageProps = {
   }>;
 };
 
-export default async function CreatePostPage({ searchParams }: PageProps) {
-  const user = await requireContentManager();
+export default async function AccountSettingsPage({ searchParams }: PageProps) {
+  const user = await requireContentManager('/admin/account');
   const qs = await searchParams;
   const profile = await fetchUserProfileForEdit(user);
-  const displayName = getUserDisplayName({ ...user, ...profile });
+  const displayName = getUserDisplayName(user);
   const userInitial = displayName.charAt(0).toUpperCase();
 
   return (
-    <PostEditorForm
-      mode="create"
+    <AccountSettingsForm
       userName={displayName}
       userInitial={userInitial}
-      authorLabel={displayName}
+      initialValues={profile}
       error={qs.error}
       success={qs.success}
     />

@@ -12,6 +12,8 @@ export interface Blog {
   date: string;
   readTime: string;
   author: string;
+  authorTitle?: string;
+  authorAvatar?: string;
   category: string;
 }
 

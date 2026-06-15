@@ -74,6 +74,18 @@ export const Posts = {
       name: 'author',
       type: 'text',
       defaultValue: 'Editorial',
+      admin: {
+        description: 'Display name when no linked author profile is set.',
+      },
+    },
+    {
+      name: 'authorUser',
+      type: 'relationship',
+      relationTo: 'users',
+      admin: {
+        description: 'Links to a CMS user profile for name, title, and photo.',
+        position: 'sidebar',
+      },
     },
     {
       name: 'category',

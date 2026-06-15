@@ -5,6 +5,7 @@ import {
   isEmptyHtml,
   parseFeaturedImageIdFromForm,
 } from './admin-post-form-utils.js';
+import { getUserDisplayName } from './user-profile.js';
 
 /**
  * @param {string | number} id
@@ -16,7 +17,7 @@ export async function updatePostFromFormData(id, formData, user) {
   const manualSlug = String(formData.get('slug') || '').trim();
   const intent = String(formData.get('intent') || '').trim();
   const mainContent = String(formData.get('mainContent') || '').trim();
-  const author = String(formData.get('author') || 'Editorial').trim();
+  const authorKind = String(formData.get('author') || 'self').trim();
   const tagsRaw = String(formData.get('tags') || '').trim();
   const categoriesRaw = String(formData.get('categories') || '').trim();
   const existingPublishedAt = String(
@@ -35,7 +36,9 @@ export async function updatePostFromFormData(id, formData, user) {
     slug: manualSlug,
     mainContent,
     intent,
-    author,
+    authorKind,
+    userId: user.id,
+    userDisplayName: getUserDisplayName(user),
     categoriesRaw,
     tagsRaw,
     existingPublishedAt: existingPublishedAt || undefined,

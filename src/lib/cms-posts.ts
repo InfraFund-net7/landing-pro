@@ -5,6 +5,7 @@ import { getPayload } from 'payload';
 import { cmsMediaFromRelation } from '@/lib/cms-media-url';
 import { shouldFetchBlogFromCms } from '@/lib/cms-runtime';
 import { skipPayloadFetchAtBuild } from '@/lib/skip-payload-fetch-at-build';
+import { authorProfileFromRelation } from '@/lib/user-profile.js';
 
 function formatPostDate(value: null | string | Date | undefined): string {
   if (!value) return '';
@@ -75,10 +76,15 @@ export async function fetchCmsPostBySlug(slug: string): Promise<Blog | null> {
         and: [{ slug: { equals: slug } }, { published: { equals: true } }],
       },
       limit: 1,
-      depth: 1,
+      depth: 2,
     });
     const doc = docs[0];
     if (!doc) return null;
+
+    const linkedAuthor = authorProfileFromRelation(doc.authorUser);
+    const authorName = linkedAuthor.name || String(doc.author ?? '');
+    const authorTitle = linkedAuthor.title;
+    const authorAvatar = linkedAuthor.avatar;
 
     return {
       id: Number(doc.id),
@@ -88,7 +94,9 @@ export async function fetchCmsPostBySlug(slug: string): Promise<Blog | null> {
       mainContent: String(doc.mainContent ?? ''),
       date: formatPostDate(doc.publishedAt ?? undefined) || '—',
       readTime: String(doc.readTime ?? ''),
-      author: String(doc.author ?? ''),
+      author: authorName,
+      authorTitle,
+      authorAvatar,
       category: String(doc.category ?? ''),
       image: cmsMediaFromRelation(doc.featuredImage),
     };
