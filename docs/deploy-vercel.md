@@ -20,15 +20,15 @@ Every push to the linked branch triggers a Vercel deployment.
 
 ## Performance (marketing pages)
 
-Marketing routes use **ISR** (`revalidate: 60`) and **do not** query Neon unless you opt in:
+Marketing routes use **ISR** (`revalidate: 60`). Home and blog load from Payload when `DATABASE_URL` is set; site pages stay handcrafted unless opted in:
 
 | Variable | When set to `1` |
 |----------|------------------|
 | `CMS_REPLACE_EXISTING_PAGES` | Fetch **site-pages** from CMS and allow replacement UI |
-| `CMS_FETCH_HOME_PAGE` | Fetch **home-page** global from CMS (otherwise handcrafted fallbacks) |
+| `CMS_FETCH_HOME_PAGE=0` | Disable **home-page** global from Payload (use handcrafted fallbacks) |
 | (blog) | Posts load from Payload when `DATABASE_URL` is set; `CMS_USE_MOCK_BLOG=1` forces mock data |
 
-Leave all unset on Preview/Production for fastest loads. Enable after you seed content in Payload.
+Saving the **Home Page** global revalidates `/` immediately. Other marketing pages may take up to 60s unless you add similar hooks.
 
 `/admin` always uses the database.
 
@@ -92,7 +92,7 @@ Also set manually (not from Neon): `PAYLOAD_PUBLIC_SERVER_URL`, `INFRA_CONTACT_F
 | `SKIP_PAYLOAD_FETCH_AT_BUILD` | `1` (optional) |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob (CMS media uploads) |
 
-Optional CMS: `CMS_REPLACE_EXISTING_PAGES`, `CMS_FETCH_HOME_PAGE`. Blog uses Payload automatically when `DATABASE_URL` is set.
+Optional CMS: `CMS_REPLACE_EXISTING_PAGES`. Home page uses Payload when `DATABASE_URL` is set.
 
 ### Seed CMS content (once per Neon branch)
 

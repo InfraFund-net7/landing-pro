@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache';
 import { siteContentReadAccess } from '../access/collection-access.js';
 import { isMasterAdmin } from '../access/roles.js';
 
@@ -8,6 +9,13 @@ export const HomePage = {
   admin: {
     group: 'Website',
     hidden: ({ user }) => !isMasterAdmin(user),
+  },
+  hooks: {
+    afterChange: [
+      () => {
+        revalidatePath('/');
+      },
+    ],
   },
   fields: [
     {
