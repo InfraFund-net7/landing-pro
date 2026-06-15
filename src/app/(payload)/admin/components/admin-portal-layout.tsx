@@ -1,5 +1,6 @@
 'use client';
 
+import AdminSignOutLink from '@/app/(payload)/admin/components/admin-sign-out-link';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -8,6 +9,7 @@ import {
   LayoutDashboard,
   Trophy,
   Settings,
+  MessageSquare,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import styles from '../create-post/create-post.module.css';
@@ -29,6 +31,11 @@ const navItems = [
     href: '/admin/collections/posts',
     label: 'All Posts',
     icon: LayoutDashboard,
+  },
+  {
+    href: '/admin/comment-management',
+    label: 'Comments',
+    icon: MessageSquare,
   },
   { href: '/admin/account', label: 'Account Setting', icon: Settings },
 ];
@@ -54,8 +61,10 @@ export default function AdminPortalLayout({
                 href === '/admin/create-post'
                   ? pathname === href ||
                     pathname.startsWith('/admin/edit-post/')
-                  : pathname === href ||
-                    (href !== '/admin' && pathname.startsWith(href));
+                  : href === '/admin/comment-management'
+                    ? pathname.startsWith('/admin/comment-management')
+                    : pathname === href ||
+                      (href !== '/admin' && pathname.startsWith(href));
 
               return (
                 <Link
@@ -89,6 +98,7 @@ export default function AdminPortalLayout({
               >
                 <Bell size={16} />
               </button>
+              <AdminSignOutLink />
               <div className={styles.avatar} aria-hidden>
                 {userInitial}
               </div>

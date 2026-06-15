@@ -8,6 +8,8 @@ export const Comments = {
     useAsTitle: 'authorName',
     defaultColumns: ['authorName', 'status', 'post', 'createdAt'],
     group: 'Content',
+    description:
+      'Use Comments in the admin sidebar (/admin/comment-management) to approve, reply, and moderate in a threaded view.',
   },
   access: {
     read: ({ req }) => {
