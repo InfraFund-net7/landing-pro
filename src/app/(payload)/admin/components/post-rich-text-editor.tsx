@@ -80,9 +80,9 @@ const FontSize = Extension.create({
 
 const TEXT_TYPES = [
   { label: 'Normal text', value: 'paragraph' },
-  { label: 'Heading 1', value: 'h1' },
-  { label: 'Heading 2', value: 'h2' },
-  { label: 'Heading 3', value: 'h3' },
+  { label: 'Heading 1 — section (sidebar TOC)', value: 'h1' },
+  { label: 'Heading 2 — subheading', value: 'h2' },
+  { label: 'Heading 3 — subheading', value: 'h3' },
 ];
 
 const FONT_SIZES = ['12px', '14px', '16px', '18px', '20px', '24px', '32px'];
@@ -256,10 +256,11 @@ const PostRichTextEditor = forwardRef<
         <div className={styles.toolbarDivider} />
 
         <select
-          className={styles.toolbarSelect}
+          className={`${styles.toolbarSelect} ${styles.textTypeSelect}`}
           value={getCurrentTextType()}
           onChange={(e) => setTextType(e.target.value)}
           aria-label="Text type"
+          title="Heading 1 sections appear in the blog sidebar table of contents"
         >
           {TEXT_TYPES.map(({ label, value }) => (
             <option key={value} value={value}>

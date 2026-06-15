@@ -78,6 +78,11 @@
   border-color: #24ff8e;
 }
 
+.textTypeSelect {
+  min-width: 220px;
+  max-width: 280px;
+}
+
 .colorInput {
   width: 32px;
   height: 32px;

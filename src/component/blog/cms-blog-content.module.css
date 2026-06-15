@@ -25,6 +25,7 @@
   text-wrap: balance;
 }
 
+.htmlContent h1:first-child,
 .htmlContent h2:first-child {
   margin-top: 0;
 }
