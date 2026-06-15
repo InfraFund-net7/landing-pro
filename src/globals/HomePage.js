@@ -1,6 +1,6 @@
-import { revalidatePath } from 'next/cache';
 import { siteContentReadAccess } from '../access/collection-access.js';
 import { isMasterAdmin } from '../access/roles.js';
+import { revalidateMarketingPath } from '../lib/revalidate-marketing-path.js';
 
 /** @type {import('payload').GlobalConfig} */
 export const HomePage = {
@@ -13,7 +13,7 @@ export const HomePage = {
   hooks: {
     afterChange: [
       () => {
-        revalidatePath('/');
+        void revalidateMarketingPath('/');
       },
     ],
   },
