@@ -3,9 +3,12 @@ export type CommentStatus = 'approved' | 'pending' | 'spam' | 'unapproved';
 export type BlogComment = {
   id: number;
   authorName: string;
+  authorTitle?: string;
+  authorAvatar?: string;
   content: string;
   createdAt: string;
   isEditorialReply: boolean;
+  isTeamMember: boolean;
   replies: BlogComment[];
 };
 

@@ -28,6 +28,7 @@
     "promote:master-admin": "node --env-file=.env.local src/scripts/promote-master-admin.mjs",
     "db:migrate:users-role": "node --env-file=.env.local src/scripts/migrate-users-role.mjs",
     "db:migrate:user-profile": "node --env-file=.env.local src/scripts/migrate-user-profile.mjs",
+    "db:migrate:comment-author": "node --env-file=.env.local src/scripts/migrate-comment-author.mjs",
     "db:migrate:posts-categories": "node --env-file=.env.local src/scripts/migrate-posts-categories-to-text.mjs",
     "db:bootstrap:payload": "node --env-file=.env.local --env-file-if-exists=.env src/scripts/bootstrap-payload-schema.mjs",
     "db:create-payload-admin": "node src/scripts/create-payload-first-user.mjs",

@@ -23,6 +23,15 @@ export default function BlogPage({ blog, comments }: BlogPageProps) {
               {blog.title}
             </h1>
 
+            {blog.categories?.length || blog.tags?.length ? (
+              <PostTaxonomy
+                categories={
+                  blog.categories ?? (blog.category ? [blog.category] : [])
+                }
+                tags={blog.tags ?? []}
+              />
+            ) : null}
+
             <div className="w-full flex flex-col sm:flex-row justify-between items-center lg:items-start gap-6">
               <div className="flex flex-col gap-6">
                 <div className="flex justify-center sm:justify-start items-center gap-3 w-fit">
@@ -51,9 +60,6 @@ export default function BlogPage({ blog, comments }: BlogPageProps) {
                       <span>{blog.readTime}</span>
                     </div>
                   </div>
-                </div>
-                <div className="w-full p-2 h-fit rounded-[51px] border border-[#2E4778] flex justify-center items-center text-[#2E4778] text-sm">
-                  {blog.category}
                 </div>
               </div>
               <div className="hidden lg:flex w-[108px] h-full justify-center items-end">
@@ -92,6 +98,57 @@ export default function BlogPage({ blog, comments }: BlogPageProps) {
       <hr className="w-full h-[1px] bg-[#DCDCE0]" />
       <RelatedBlog />
       <ProjectSection />
+    </div>
+  );
+}
+
+function PostTaxonomy({
+  categories,
+  tags,
+}: {
+  categories: string[];
+  tags: string[];
+}) {
+  const uniqueCategories = [...new Set(categories.filter(Boolean))];
+  const uniqueTags = [...new Set(tags.filter(Boolean))];
+
+  if (uniqueCategories.length === 0 && uniqueTags.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="flex w-full flex-col gap-3">
+      {uniqueCategories.length > 0 ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#5a6b88]">
+            Categories
+          </span>
+          {uniqueCategories.map((category) => (
+            <span
+              key={category}
+              className="rounded-full border border-[#2E4778] bg-[#102247]/50 px-3 py-1 text-xs font-medium text-[#93C5FD]"
+            >
+              {category}
+            </span>
+          ))}
+        </div>
+      ) : null}
+
+      {uniqueTags.length > 0 ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#5a6b88]">
+            Tags
+          </span>
+          {uniqueTags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full border border-[#1E2B47] bg-[#0D1425] px-2.5 py-1 text-[11px] font-medium text-[#A7B7D9]"
+            >
+              #{tag.replace(/^#/, '')}
+            </span>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }

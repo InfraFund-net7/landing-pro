@@ -86,6 +86,28 @@ export async function fetchCmsPostBySlug(slug: string): Promise<Blog | null> {
     const authorTitle = linkedAuthor.title;
     const authorAvatar = linkedAuthor.avatar;
 
+    const categories = Array.isArray(doc.categories)
+      ? doc.categories.map(String).filter(Boolean)
+      : [];
+    const legacyCategory = String(doc.category ?? '').trim();
+    const allCategories = [
+      ...new Set(
+        [legacyCategory, ...categories].filter(
+          (value) => value && value.length > 0
+        )
+      ),
+    ];
+
+    const tags = Array.isArray(doc.tags)
+      ? doc.tags
+          .map((entry) =>
+            entry && typeof entry === 'object' && 'tag' in entry
+              ? String(entry.tag ?? '').trim()
+              : ''
+          )
+          .filter(Boolean)
+      : [];
+
     return {
       id: Number(doc.id),
       slug: String(doc.slug),
@@ -97,7 +119,9 @@ export async function fetchCmsPostBySlug(slug: string): Promise<Blog | null> {
       author: authorName,
       authorTitle,
       authorAvatar,
-      category: String(doc.category ?? ''),
+      category: legacyCategory || allCategories[0] || 'Insights',
+      categories: allCategories,
+      tags,
       image: cmsMediaFromRelation(doc.featuredImage),
     };
   } catch (error) {

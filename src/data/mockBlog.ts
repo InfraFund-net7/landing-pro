@@ -15,6 +15,8 @@ export interface Blog {
   authorTitle?: string;
   authorAvatar?: string;
   category: string;
+  categories?: string[];
+  tags?: string[];
 }
 
 export const mockBlogs: Blog[] = [

@@ -144,6 +144,7 @@ export async function POST(request: Request) {
         parentId: commentId!,
         content,
         authorName: getUserDisplayName(user),
+        authorUserId: Number(user.id),
         postTitle: body.postTitle,
         postSlug: body.postSlug,
       });
