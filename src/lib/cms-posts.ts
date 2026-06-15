@@ -5,7 +5,11 @@ import { getPayload } from 'payload';
 import { cmsMediaFromRelation } from '@/lib/cms-media-url';
 import { shouldFetchBlogFromCms } from '@/lib/cms-runtime';
 import { skipPayloadFetchAtBuild } from '@/lib/skip-payload-fetch-at-build';
-import { authorProfileFromRelation } from '@/lib/user-profile.js';
+import {
+  authorProfileFromRelation,
+  fetchPublicAuthorProfilesByIds,
+  resolveAuthorUserId,
+} from '@/lib/user-profile.js';
 
 function formatPostDate(value: null | string | Date | undefined): string {
   if (!value) return '';
@@ -81,7 +85,13 @@ export async function fetchCmsPostBySlug(slug: string): Promise<Blog | null> {
     const doc = docs[0];
     if (!doc) return null;
 
-    const linkedAuthor = authorProfileFromRelation(doc.authorUser);
+    const authorUserId = resolveAuthorUserId(doc.authorUser);
+    const authorProfiles = authorUserId
+      ? await fetchPublicAuthorProfilesByIds([authorUserId])
+      : new Map();
+    const linkedAuthor =
+      (authorUserId && authorProfiles.get(authorUserId)) ||
+      authorProfileFromRelation(doc.authorUser);
     const authorName = linkedAuthor.name || String(doc.author ?? '');
     const authorTitle = linkedAuthor.title;
     const authorAvatar = linkedAuthor.avatar;

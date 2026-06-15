@@ -1,4 +1,6 @@
 import { cmsMediaFromRelation } from './cms-media-url.js';
+import config from '@payload-config';
+import { getPayload } from 'payload';
 
 /** @param {import('payload').TypedUser | null | undefined} user */
 export function getUserDisplayName(user) {
@@ -32,6 +34,53 @@ function userToAuthorProfile(user) {
     title: getUserJobTitle(user),
     avatar: getUserAvatarUrl(user),
   };
+}
+
+/** @param {unknown} authorUser */
+export function resolveAuthorUserId(authorUser) {
+  if (typeof authorUser === 'number') return authorUser;
+  if (
+    authorUser &&
+    typeof authorUser === 'object' &&
+    'id' in authorUser &&
+    authorUser.id != null
+  ) {
+    return Number(authorUser.id);
+  }
+  return null;
+}
+
+/** @param {number[]} userIds */
+export async function fetchPublicAuthorProfilesByIds(userIds) {
+  const unique = [
+    ...new Set(
+      userIds.filter((id) => Number.isFinite(id) && id > 0).map(Number)
+    ),
+  ];
+
+  if (unique.length === 0) return new Map();
+
+  const payload = await getPayload({ config });
+  const { docs } = await payload.find({
+    collection: 'users',
+    where: {
+      id: {
+        in: unique,
+      },
+    },
+    depth: 1,
+    limit: unique.length,
+    overrideAccess: true,
+  });
+
+  /** @type {Map<number, ReturnType<typeof userToAuthorProfile>>} */
+  const profiles = new Map();
+
+  for (const doc of docs) {
+    profiles.set(Number(doc.id), userToAuthorProfile(doc));
+  }
+
+  return profiles;
 }
 
 /** @param {unknown} authorUser */

@@ -9,7 +9,9 @@ import { shouldFetchBlogFromCms } from '@/lib/cms-runtime';
 import { skipPayloadFetchAtBuild } from '@/lib/skip-payload-fetch-at-build';
 import {
   authorProfileFromRelation,
+  fetchPublicAuthorProfilesByIds,
   getUserDisplayName,
+  resolveAuthorUserId,
 } from '@/lib/user-profile.js';
 
 export type { BlogComment } from '@/lib/cms-comment-types';
@@ -71,8 +73,14 @@ function formatCommentDate(value: string): string {
   return date.toISOString().slice(0, 10);
 }
 
-function toBlogComment(doc: CommentRecord): BlogComment {
-  const profile = authorProfileFromRelation(doc.authorUser);
+function toBlogComment(
+  doc: CommentRecord,
+  authorProfiles?: Map<number, { name: string; title: string; avatar: string }>
+): BlogComment {
+  const authorUserId = resolveAuthorUserId(doc.authorUser);
+  const profile =
+    (authorUserId && authorProfiles?.get(authorUserId)) ||
+    authorProfileFromRelation(doc.authorUser);
   const isTeamMember = Boolean(doc.isEditorialReply || doc.authorUser);
 
   return {
@@ -88,12 +96,15 @@ function toBlogComment(doc: CommentRecord): BlogComment {
   };
 }
 
-function buildCommentTree(docs: CommentRecord[]): BlogComment[] {
+function buildCommentTree(
+  docs: CommentRecord[],
+  authorProfiles?: Map<number, { name: string; title: string; avatar: string }>
+): BlogComment[] {
   const byId = new Map<number, BlogComment>();
   const roots: BlogComment[] = [];
 
   for (const doc of docs) {
-    byId.set(doc.id, toBlogComment(doc));
+    byId.set(doc.id, toBlogComment(doc, authorProfiles));
   }
 
   for (const doc of docs) {
@@ -134,7 +145,12 @@ export async function fetchApprovedCommentsForPost(
       depth: 2,
     });
 
-    return buildCommentTree(docs);
+    const authorUserIds = docs
+      .map((doc) => resolveAuthorUserId(doc.authorUser))
+      .filter((id): id is number => id != null);
+    const authorProfiles = await fetchPublicAuthorProfilesByIds(authorUserIds);
+
+    return buildCommentTree(docs, authorProfiles);
   } catch {
     return [];
   }
