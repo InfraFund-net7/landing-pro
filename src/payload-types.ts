@@ -131,6 +131,18 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
+  /**
+   * Shown on blog posts when you are the author.
+   */
+  fullName?: string | null;
+  /**
+   * Role or title shown under your name on blog posts, e.g. Head of Research and Development.
+   */
+  jobTitle?: string | null;
+  /**
+   * Profile picture shown on blog posts you author.
+   */
+  profilePhoto?: (number | null) | Media;
   role: 'master-admin' | 'content-editor';
   updatedAt: string;
   createdAt: string;
@@ -191,7 +203,14 @@ export interface Post {
   published?: boolean | null;
   publishedAt?: string | null;
   readTime?: string | null;
+  /**
+   * Display name when no linked author profile is set.
+   */
   author?: string | null;
+  /**
+   * Links to a CMS user profile for name, title, and photo.
+   */
+  authorUser?: (number | null) | User;
   category?: string | null;
   featuredImage?: (number | null) | Media;
   updatedAt: string;
@@ -280,6 +299,10 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  fullName?: T;
+  jobTitle?: T;
+  profilePhoto?: T;
+  role?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -329,6 +352,7 @@ export interface PostsSelect<T extends boolean = true> {
   publishedAt?: T;
   readTime?: T;
   author?: T;
+  authorUser?: T;
   category?: T;
   featuredImage?: T;
   updatedAt?: T;
