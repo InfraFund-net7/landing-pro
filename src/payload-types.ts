@@ -212,6 +212,13 @@ export interface Post {
    */
   authorUser?: (number | null) | User;
   category?: string | null;
+  categories?: string[] | null;
+  tags?:
+    | {
+        tag: string;
+        id?: string | null;
+      }[]
+    | null;
   featuredImage?: (number | null) | Media;
   updatedAt: string;
   createdAt: string;
@@ -354,6 +361,8 @@ export interface PostsSelect<T extends boolean = true> {
   author?: T;
   authorUser?: T;
   category?: T;
+  categories?: T;
+  tags?: T;
   featuredImage?: T;
   updatedAt?: T;
   createdAt?: T;

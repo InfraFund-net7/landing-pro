@@ -1,5 +1,5 @@
 import config from '@payload-config';
-import { getPayload } from 'payload';
+import { getPayload, type TypedUser } from 'payload';
 import {
   type AdminComment,
   type BlogComment,
@@ -46,7 +46,7 @@ type PayloadWithComments = {
       isEditorialReply?: boolean;
       authorUser?: number;
     };
-    user?: Record<string, unknown>;
+    user?: TypedUser;
     overrideAccess?: boolean;
   }) => Promise<unknown>;
   update: (args: {
@@ -194,7 +194,7 @@ export async function createBlogComment(input: {
   authorName: string;
   authorEmail?: string;
   content: string;
-  adminUser?: Record<string, unknown> | null;
+  adminUser?: TypedUser | null;
 }): Promise<{ publishedImmediately: boolean; comment: BlogComment | null }> {
   const payload = await getPayloadWithComments();
   const adminUser = input.adminUser ?? null;
