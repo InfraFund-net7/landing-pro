@@ -106,7 +106,7 @@ export function formatScheduleSummary(
   return `Monthly on day ${schedule.dayOfMonth} at ${timeLabel}`;
 }
 
-export function formatScheduleSummary(
+export function isScheduleRunning(
   schedule: Pick<ComposeScheduleRecord, 'lastRunStatus' | 'lastRunAt'>,
   now = new Date(),
   staleAfterMs = 10 * 60 * 1000
