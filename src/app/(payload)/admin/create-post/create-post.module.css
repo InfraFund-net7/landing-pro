@@ -99,6 +99,7 @@
 }
 
 .iconButton {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -109,6 +110,95 @@
   background: transparent;
   color: #8a9bb8;
   cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.iconButton:hover,
+.iconButtonActive {
+  background: rgba(36, 255, 142, 0.08);
+  border-color: #24ff8e;
+  color: #24ff8e;
+}
+
+.headerMenuWrap {
+  position: relative;
+}
+
+.headerMenu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 30;
+  min-width: 260px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid #2a3b61;
+  background: #0f1628;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+}
+
+.headerMenuTitle {
+  margin: 0 0 8px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #8a9bb8;
+}
+
+.headerMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px;
+  border-radius: 8px;
+  color: #dbe6ff;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.headerMenuItem:hover {
+  background: rgba(36, 255, 142, 0.08);
+  color: #24ff8e;
+}
+
+.headerMenuEmpty {
+  margin: 0;
+  padding: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #8a9bb8;
+}
+
+.notificationBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #24ff8e;
+  color: #07110a;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+}
+
+.avatarLink {
+  display: inline-flex;
+  text-decoration: none;
+}
+
+.avatarLink:hover .avatar {
+  border-color: #24ff8e;
+  box-shadow: 0 0 0 2px rgba(36, 255, 142, 0.12);
 }
 
 .avatar {

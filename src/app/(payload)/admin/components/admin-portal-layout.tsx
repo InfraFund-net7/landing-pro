@@ -1,11 +1,9 @@
 'use client';
 
-import AdminSignOutLink from '@/app/(payload)/admin/components/admin-sign-out-link';
+import AdminHeaderActions from '@/app/(payload)/admin/components/admin-header-actions';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  Headphones,
-  Bell,
   LayoutDashboard,
   Trophy,
   Settings,
@@ -86,26 +84,7 @@ export default function AdminPortalLayout({
         <div className={styles.main}>
           <header className={styles.topBar}>
             <span className={styles.greeting}>Hi {userName} - Admin</span>
-            <div className={styles.topBarActions}>
-              <button
-                type="button"
-                className={styles.iconButton}
-                aria-label="Support"
-              >
-                <Headphones size={16} />
-              </button>
-              <button
-                type="button"
-                className={styles.iconButton}
-                aria-label="Notifications"
-              >
-                <Bell size={16} />
-              </button>
-              <AdminSignOutLink />
-              <div className={styles.avatar} aria-hidden>
-                {userInitial}
-              </div>
-            </div>
+            <AdminHeaderActions userInitial={userInitial} />
           </header>
           <div className={styles.content}>{children}</div>
         </div>
