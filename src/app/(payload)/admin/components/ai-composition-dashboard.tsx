@@ -11,7 +11,6 @@ import {
 import {
   Conversation,
   ConversationContent,
-  ConversationEmptyState,
   ConversationScrollButton,
 } from '@/components/ai-elements/conversation';
 import {
@@ -47,12 +46,15 @@ import {
   type UIMessage,
 } from 'ai';
 import {
+  Brain,
   FileText,
   Loader2,
   PenLine,
+  Search,
   Send,
   Sparkles,
   Square,
+  Wrench,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -229,11 +231,7 @@ export default function AiCompositionDashboard({
               <Conversation className={styles.conversation}>
                 <ConversationContent>
                   {messages.length === 0 ? (
-                    <ConversationEmptyState
-                      title="Start with a topic"
-                      description="Describe the post you want — audience, angle, tone, or key points. The agent will research, draft, and refine the artifact on the right."
-                      icon={<Sparkles className="size-8 text-primary" />}
-                    />
+                    <ComposeWelcomePanel />
                   ) : (
                     messages.map((message) => (
                       <ChatMessage
@@ -293,7 +291,12 @@ export default function AiCompositionDashboard({
                       Stop
                     </Button>
                   ) : (
-                    <Button type="submit" size="sm" disabled={!input.trim()}>
+                    <Button
+                      type="submit"
+                      size="sm"
+                      className={styles.sendButton}
+                      disabled={!input.trim()}
+                    >
                       <Send className="size-4" />
                       Send
                     </Button>
@@ -337,6 +340,67 @@ export default function AiCompositionDashboard({
         </div>
       </TooltipProvider>
     </AdminPortalLayout>
+  );
+}
+
+function ComposeWelcomePanel() {
+  return (
+    <div className={styles.welcomePanel}>
+      <div className={styles.welcomeGlow} aria-hidden />
+      <div className={styles.welcomeHeader}>
+        <div className={styles.welcomeIconWrap}>
+          <Sparkles size={22} />
+        </div>
+        <div>
+          <p className={styles.welcomeEyebrow}>Editorial agent</p>
+          <h2 className={styles.welcomeTitle}>Start with a topic</h2>
+          <p className={styles.welcomeDescription}>
+            Describe the post you want — audience, angle, tone, or key points.
+            The agent will research, draft, and refine the live artifact on the
+            right.
+          </p>
+        </div>
+      </div>
+
+      <div className={styles.welcomeSteps}>
+        <article className={styles.welcomeStep}>
+          <Search size={16} />
+          <div>
+            <p className={styles.stepTitle}>1. Research</p>
+            <p className={styles.stepText}>
+              The agent gathers angles and talking points for your topic.
+            </p>
+          </div>
+        </article>
+        <article className={styles.welcomeStep}>
+          <Wrench size={16} />
+          <div>
+            <p className={styles.stepTitle}>2. Tool calls</p>
+            <p className={styles.stepText}>
+              You will see reasoning and tool activity as the draft is built.
+            </p>
+          </div>
+        </article>
+        <article className={styles.welcomeStep}>
+          <FileText size={16} />
+          <div>
+            <p className={styles.stepTitle}>3. Draft artifact</p>
+            <p className={styles.stepText}>
+              A markdown draft appears on the right, ready to save and edit.
+            </p>
+          </div>
+        </article>
+        <article className={styles.welcomeStep}>
+          <Brain size={16} />
+          <div>
+            <p className={styles.stepTitle}>4. Refine</p>
+            <p className={styles.stepText}>
+              Ask for rewrites, shorter intros, new sections, or tone changes.
+            </p>
+          </div>
+        </article>
+      </div>
+    </div>
   );
 }
 

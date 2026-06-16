@@ -140,6 +140,110 @@
   min-height: 420px;
 }
 
+.welcomePanel {
+  position: relative;
+  margin: 16px;
+  padding: 24px;
+  border-radius: 18px;
+  border: 1px solid rgba(36, 255, 142, 0.18);
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(36, 255, 142, 0.12),
+      transparent 42%
+    ),
+    linear-gradient(180deg, rgba(17, 27, 48, 0.95), rgba(10, 16, 30, 0.98));
+  overflow: hidden;
+}
+
+.welcomeGlow {
+  position: absolute;
+  inset: auto -20% -40% auto;
+  width: 220px;
+  height: 220px;
+  border-radius: 999px;
+  background: rgba(36, 255, 142, 0.08);
+  filter: blur(12px);
+  pointer-events: none;
+}
+
+.welcomeHeader {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 22px;
+}
+
+.welcomeIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid rgba(36, 255, 142, 0.28);
+  background: rgba(36, 255, 142, 0.1);
+  color: #24ff8e;
+  flex-shrink: 0;
+}
+
+.welcomeEyebrow {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #24ff8e;
+}
+
+.welcomeTitle {
+  margin: 0 0 8px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.welcomeDescription {
+  margin: 0;
+  max-width: 620px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #a7b7d9;
+}
+
+.welcomeSteps {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.welcomeStep {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(42, 59, 97, 0.9);
+  background: rgba(8, 14, 28, 0.72);
+  color: #24ff8e;
+}
+
+.stepTitle {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #e6eeff;
+}
+
+.stepText {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: #8a9bb8;
+}
+
 .suggestions {
   display: flex;
   flex-wrap: wrap;
@@ -191,6 +295,24 @@
   color: #8a9bb8;
 }
 
+.sendButton {
+  background: #24ff8e !important;
+  color: #04140c !important;
+  border-color: #24ff8e !important;
+}
+
+.sendButton:hover:not(:disabled) {
+  background: #1ad87a !important;
+  border-color: #1ad87a !important;
+}
+
+.sendButton:disabled {
+  background: #243352 !important;
+  color: #6b7c9d !important;
+  border-color: #2a3b61 !important;
+  opacity: 1 !important;
+}
+
 .artifactPane {
   min-width: 0;
 }
@@ -225,5 +347,9 @@
   .headerActions {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .welcomeSteps {
+    grid-template-columns: 1fr;
   }
 }

@@ -225,8 +225,9 @@ html {
   --color-muted: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
+  /* InfraFund brand primary — keep separate from shadcn :root --primary */
+  --color-primary: #24ff8e;
+  --color-primary-foreground: #04140c;
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
