@@ -2,11 +2,9 @@
 
 import '@/app/globals.css';
 import BlogPage from '@/component/blog/blog-page';
-import Footer from '@/component/footer';
-import Header from '@/component/header';
 import type { Blog } from '@/data/mockBlog';
 import { ArrowLeft, Eye, FilePenLine } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './post-preview-experience.module.css';
 
 type PostPreviewExperienceProps = {
@@ -22,8 +20,27 @@ export default function PostPreviewExperience({
   isPublished,
   onClose,
 }: PostPreviewExperienceProps) {
+  const scrollRootRef = useRef<HTMLDivElement>(null);
+  const chromeRef = useRef<HTMLDivElement>(null);
+  const [chromeHeight, setChromeHeight] = useState(112);
+
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'auto' });
+    const node = chromeRef.current;
+    if (!node) return;
+
+    const updateHeight = () => {
+      setChromeHeight(node.offsetHeight);
+    };
+
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const scrollRoot = scrollRootRef.current;
+    scrollRoot?.scrollTo({ top: 0, behavior: 'auto' });
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -38,8 +55,8 @@ export default function PostPreviewExperience({
   const previewLabel = isPublished ? 'Live preview' : 'Draft preview';
 
   return (
-    <div className={styles.root}>
-      <div className={styles.previewChrome}>
+    <div ref={scrollRootRef} className={styles.root}>
+      <div ref={chromeRef} className={styles.previewChrome}>
         <header className={styles.toolbar}>
           <div className={styles.toolbarLeft}>
             <button
@@ -107,9 +124,13 @@ export default function PostPreviewExperience({
       </div>
 
       <div className={styles.siteFrame}>
-        <Header />
-        <BlogPage blog={blog} comments={[]} previewMode />
-        <Footer />
+        <BlogPage
+          blog={blog}
+          comments={[]}
+          previewMode
+          scrollRootRef={scrollRootRef}
+          layoutOffset={chromeHeight + 24}
+        />
       </div>
     </div>
   );

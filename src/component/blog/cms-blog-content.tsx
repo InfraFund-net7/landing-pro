@@ -3,15 +3,26 @@
 import { prepareBlogContentHeadings } from '@/lib/blog-content-headings.js';
 import { absolutizeCmsMediaUrlsInHtml } from '@/lib/cms-media-url';
 import { Menu, X } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type RefObject } from 'react';
 import styles from './cms-blog-content.module.css';
 
 type CmsBlogContentProps = {
   content: string;
+  scrollRootRef?: RefObject<HTMLElement | null>;
+  layoutOffset?: number;
 };
 
-const SCROLL_OFFSET = 130;
-const SCROLL_SPY_THRESHOLD = 150;
+const DEFAULT_SCROLL_OFFSET = 130;
+
+function getScrollTop(scrollRoot: HTMLElement | Window): number {
+  return scrollRoot instanceof Window
+    ? scrollRoot.scrollY
+    : scrollRoot.scrollTop;
+}
+
+function scrollToY(scrollRoot: HTMLElement | Window, top: number) {
+  scrollRoot.scrollTo({ top, behavior: 'smooth' });
+}
 
 function isHtmlContent(content: string): boolean {
   return /<[a-z][\s\S]*>/i.test(content.trim());
@@ -94,10 +105,16 @@ function BlogTocSidebar({
   );
 }
 
-export default function CmsBlogContent({ content }: CmsBlogContentProps) {
+export default function CmsBlogContent({
+  content,
+  scrollRootRef,
+  layoutOffset = DEFAULT_SCROLL_OFFSET,
+}: CmsBlogContentProps) {
   const trimmed = content.trim();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('');
+  const scrollOffset = layoutOffset;
+  const scrollSpyThreshold = layoutOffset + 20;
 
   const { headings, processedHtml } = useMemo(() => {
     if (!trimmed || !isHtmlContent(trimmed)) {
@@ -115,12 +132,18 @@ export default function CmsBlogContent({ content }: CmsBlogContentProps) {
     if (headings.length === 0) return;
 
     const handleScroll = () => {
+      const scrollRoot = scrollRootRef?.current ?? window;
+      const rootTop =
+        scrollRoot instanceof Window
+          ? 0
+          : scrollRoot.getBoundingClientRect().top;
+
       let current = headings[0].id;
       for (const { id } of headings) {
         const element = document.getElementById(id);
         if (
           element &&
-          element.getBoundingClientRect().top <= SCROLL_SPY_THRESHOLD
+          element.getBoundingClientRect().top - rootTop <= scrollSpyThreshold
         ) {
           current = id;
         }
@@ -128,21 +151,27 @@ export default function CmsBlogContent({ content }: CmsBlogContentProps) {
       setActiveSection(current);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    const scrollRoot = scrollRootRef?.current ?? window;
+    scrollRoot.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [headings]);
+    return () => scrollRoot.removeEventListener('scroll', handleScroll);
+  }, [headings, scrollRootRef, scrollSpyThreshold]);
 
   const scrollToSection = (id: string) => {
     const section = document.getElementById(id);
-    if (section) {
-      const y =
-        section.getBoundingClientRect().top +
-        window.pageYOffset -
-        SCROLL_OFFSET;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-      setSidebarOpen(false);
-    }
+    if (!section) return;
+
+    const scrollRoot = scrollRootRef?.current ?? window;
+    const rootTop =
+      scrollRoot instanceof Window ? 0 : scrollRoot.getBoundingClientRect().top;
+    const top =
+      getScrollTop(scrollRoot) +
+      section.getBoundingClientRect().top -
+      rootTop -
+      scrollOffset;
+
+    scrollToY(scrollRoot, top);
+    setSidebarOpen(false);
   };
 
   if (!trimmed) return null;
@@ -182,7 +211,10 @@ export default function CmsBlogContent({ content }: CmsBlogContentProps) {
 
   return (
     <div className="w-full relative">
-      <div className="lg:hidden fixed top-[20%] left-4 z-50">
+      <div
+        className="lg:hidden fixed left-4 z-[30]"
+        style={{ top: layoutOffset + 16 }}
+      >
         <button
           type="button"
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -225,7 +257,10 @@ export default function CmsBlogContent({ content }: CmsBlogContentProps) {
       </div>
 
       <main className="w-full flex flex-col lg:flex-row gap-6 relative">
-        <div className="hidden lg:block w-[404px] h-fit sticky top-[130px] self-start">
+        <div
+          className="hidden lg:block w-[404px] h-fit sticky self-start"
+          style={{ top: scrollOffset }}
+        >
           <BlogTocSidebar
             headings={headings}
             activeSection={activeSection}

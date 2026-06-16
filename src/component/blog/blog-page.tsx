@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { cmsImageNeedsUnoptimized } from '@/lib/cms-next-image';
+import type { RefObject } from 'react';
 import BlogComments from './blog-comments';
 import BlogContents from './blog-contents';
 import CmsBlogContent from './cms-blog-content';
@@ -12,15 +13,23 @@ interface BlogPageProps {
   blog: Blog;
   comments: BlogComment[];
   previewMode?: boolean;
+  scrollRootRef?: RefObject<HTMLElement | null>;
+  layoutOffset?: number;
 }
 
 export default function BlogPage({
   blog,
   comments,
   previewMode = false,
+  scrollRootRef,
+  layoutOffset,
 }: BlogPageProps) {
+  const pagePadding = previewMode ? 'pt-10 pb-24' : 'py-[175px]';
+
   return (
-    <div className="w-full min-h-screen flex flex-col gap-16 md:gap-24 justify-center items-center px-4 sm:px-8 md:px-[90px] py-[175px]">
+    <div
+      className={`w-full min-h-screen flex flex-col gap-16 md:gap-24 justify-center items-center px-4 sm:px-8 md:px-[90px] ${pagePadding}`}
+    >
       <div className="w-full flex flex-col gap-8 md:gap-12">
         <div className="w-full flex flex-col lg:flex-row justify-center items-center lg:items-start gap-8 lg:gap-6">
           <div className="w-full lg:w-fit h-auto lg:h-[311px] flex flex-col justify-between items-center lg:items-start text-center lg:text-left gap-6">
@@ -92,7 +101,11 @@ export default function BlogPage({
 
       <hr className="w-full h-[1px] bg-[#DCDCE0]" />
       {blog.mainContent?.trim() ? (
-        <CmsBlogContent content={blog.mainContent} />
+        <CmsBlogContent
+          content={blog.mainContent}
+          scrollRootRef={scrollRootRef}
+          layoutOffset={layoutOffset}
+        />
       ) : (
         <BlogContents />
       )}
