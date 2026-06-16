@@ -94,6 +94,51 @@ export function buildPostSaveBody({
   };
 }
 
+export function buildPreviewBlogFromEditor({
+  title,
+  slug,
+  mainContent,
+  readTimeRaw,
+  authorKind,
+  userDisplayName,
+  authorTitle,
+  authorAvatarUrl,
+  coverImageUrl,
+  categoriesRaw,
+  tagsRaw,
+  postId,
+}) {
+  const resolvedSlug = slug.trim() ? slugifyPost(slug) : slugifyPost(title);
+  const categories = parseCommaSeparatedList(categoriesRaw);
+  const tags = parseCommaSeparatedList(tagsRaw);
+  const normalizedMainContent = absolutizeCmsMediaUrlsInHtml(mainContent);
+  const isSelf = authorKind === 'self';
+  const date = new Date().toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
+
+  return {
+    id: postId,
+    slug: resolvedSlug || 'preview',
+    title: title.trim() || 'Untitled post',
+    description:
+      excerptFromHtml(normalizedMainContent) ||
+      'Add content to generate a summary.',
+    mainContent: normalizedMainContent,
+    image: coverImageUrl || undefined,
+    date,
+    readTime: normalizeReadTime(readTimeRaw),
+    author: isSelf ? userDisplayName : 'Editorial',
+    authorTitle: isSelf ? authorTitle || undefined : undefined,
+    authorAvatar: isSelf ? authorAvatarUrl || undefined : undefined,
+    category: categories[0] || 'Insights',
+    categories,
+    tags,
+  };
+}
+
 export function parsePayloadApiError(data, fallback) {
   if (!data || typeof data !== 'object') return fallback;
   if (Array.isArray(data.errors) && data.errors[0]?.message) {

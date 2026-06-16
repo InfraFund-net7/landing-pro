@@ -42,6 +42,8 @@ export default async function EditPostPage({
       userName={displayName}
       userInitial={userInitial}
       authorLabel={displayName}
+      authorTitle={profile.jobTitle}
+      authorAvatarUrl={profile.profilePhotoUrl ?? ''}
       error={qs.error}
       success={qs.success}
     />

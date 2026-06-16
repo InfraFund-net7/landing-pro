@@ -9,11 +9,13 @@ import styles from '../create-post/create-post.module.css';
 type PostCoverImagePickerProps = {
   initialImageUrl?: string | null;
   initialMediaId?: number | null;
+  onChange?: (value: { mediaId: number | null; url: string | null }) => void;
 };
 
 export default function PostCoverImagePicker({
   initialImageUrl = null,
   initialMediaId = null,
+  onChange,
 }: PostCoverImagePickerProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState(initialImageUrl ?? null);
@@ -21,14 +23,19 @@ export default function PostCoverImagePicker({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
 
+  const updateCover = (nextMediaId: number | null, nextUrl: string | null) => {
+    setPreviewUrl(nextUrl);
+    setMediaId(nextMediaId);
+    onChange?.({ mediaId: nextMediaId, url: nextUrl });
+  };
+
   const pickFile = () => {
     setError('');
     inputRef.current?.click();
   };
 
   const clearCover = () => {
-    setPreviewUrl(null);
-    setMediaId(null);
+    updateCover(null, null);
     setError('');
   };
 
@@ -65,8 +72,7 @@ export default function PostCoverImagePicker({
         return;
       }
 
-      setPreviewUrl(String(data.url));
-      setMediaId(Number(data.id));
+      updateCover(Number(data.id), String(data.url));
     } catch {
       setError('Network error while uploading cover image.');
     } finally {

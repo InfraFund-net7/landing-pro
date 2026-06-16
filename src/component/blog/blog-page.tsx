@@ -11,9 +11,14 @@ import type { BlogComment } from '@/lib/cms-comments';
 interface BlogPageProps {
   blog: Blog;
   comments: BlogComment[];
+  previewMode?: boolean;
 }
 
-export default function BlogPage({ blog, comments }: BlogPageProps) {
+export default function BlogPage({
+  blog,
+  comments,
+  previewMode = false,
+}: BlogPageProps) {
   return (
     <div className="w-full min-h-screen flex flex-col gap-16 md:gap-24 justify-center items-center px-4 sm:px-8 md:px-[90px] py-[175px]">
       <div className="w-full flex flex-col gap-8 md:gap-12">
@@ -92,13 +97,26 @@ export default function BlogPage({ blog, comments }: BlogPageProps) {
         <BlogContents />
       )}
       <hr className="w-full h-[1px] bg-[#DCDCE0]" />
-      {blog.id ? (
+      {previewMode ? (
+        <PreviewCommentsPlaceholder />
+      ) : blog.id ? (
         <BlogComments postId={blog.id} initialComments={comments} />
       ) : null}
       <hr className="w-full h-[1px] bg-[#DCDCE0]" />
       <RelatedBlog />
       <ProjectSection />
     </div>
+  );
+}
+
+function PreviewCommentsPlaceholder() {
+  return (
+    <section className="w-full rounded-2xl border border-dashed border-[#2A3B61] bg-[#0B1220]/70 px-6 py-8 text-center">
+      <p className="text-sm font-medium text-[#A7B7D9]">Comments</p>
+      <p className="mt-2 text-sm text-[#7D8FB3]">
+        Comments are hidden in preview and appear after the post is published.
+      </p>
+    </section>
   );
 }
 

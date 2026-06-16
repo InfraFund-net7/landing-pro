@@ -23,6 +23,8 @@ export default async function CreatePostPage({ searchParams }: PageProps) {
       userName={displayName}
       userInitial={userInitial}
       authorLabel={displayName}
+      authorTitle={profile.jobTitle}
+      authorAvatarUrl={profile.profilePhotoUrl ?? ''}
       error={qs.error}
       success={qs.success}
     />

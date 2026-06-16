@@ -1,6 +1,7 @@
 'use client';
 
 import PostCoverImagePicker from '@/app/(payload)/admin/components/post-cover-image-picker';
+import PostPreviewExperience from '@/app/(payload)/admin/components/post-preview-experience';
 import PostRichTextEditor, {
   type PostRichTextEditorHandle,
 } from '@/app/(payload)/admin/components/post-rich-text-editor';
@@ -9,11 +10,12 @@ import AdminPortalLayout from '@/app/(payload)/admin/components/admin-portal-lay
 import Link from 'next/link';
 import {
   buildPostSaveBody,
+  buildPreviewBlogFromEditor,
   isEmptyHtml,
   parsePayloadApiError,
   slugifyPost,
 } from '@/lib/admin-post-form-utils.js';
-import { Eye, Save, Send, X } from 'lucide-react';
+import { Eye, Save, Send } from 'lucide-react';
 import { useCallback, useRef, useState, type FormEvent } from 'react';
 import styles from '../create-post/create-post.module.css';
 
@@ -38,6 +40,8 @@ type PostEditorFormProps = {
   userName: string;
   userInitial: string;
   authorLabel: string;
+  authorTitle?: string;
+  authorAvatarUrl?: string;
   error?: string;
   success?: string;
 };
@@ -49,6 +53,8 @@ export default function PostEditorForm({
   userName,
   userInitial,
   authorLabel,
+  authorTitle = '',
+  authorAvatarUrl = '',
   error: initialError,
   success: initialSuccess,
 }: PostEditorFormProps) {
@@ -63,7 +69,11 @@ export default function PostEditorForm({
     initialValues?.mainContent ?? ''
   );
   const [readTime, setReadTime] = useState(initialValues?.readTime ?? '');
-  const [previewOpen, setPreviewOpen] = useState(false);
+  const [coverImageUrl, setCoverImageUrl] = useState(
+    initialValues?.featuredImageUrl ?? null
+  );
+  const [viewMode, setViewMode] = useState<'edit' | 'preview'>('edit');
+  const [previewError, setPreviewError] = useState('');
   const [formError, setFormError] = useState(initialError ?? '');
   const [formSuccess, setFormSuccess] = useState(initialSuccess ?? '');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -81,9 +91,55 @@ export default function PostEditorForm({
     }
   };
 
+  const buildPreviewBlog = useCallback(() => {
+    const form = formRef.current;
+    if (!form) return null;
+
+    const formData = new FormData(form);
+    const contentHtml = editorRef.current?.getHtml() ?? mainContent;
+
+    return buildPreviewBlogFromEditor({
+      title,
+      slug,
+      mainContent: contentHtml,
+      readTimeRaw: readTime,
+      authorKind: String(formData.get('author') || 'self'),
+      userDisplayName: authorLabel,
+      authorTitle,
+      authorAvatarUrl,
+      coverImageUrl,
+      categoriesRaw: String(formData.get('categories') || ''),
+      tagsRaw: String(formData.get('tags') || ''),
+      postId: postId ? Number(postId) : undefined,
+    });
+  }, [
+    authorAvatarUrl,
+    authorLabel,
+    authorTitle,
+    coverImageUrl,
+    mainContent,
+    postId,
+    readTime,
+    slug,
+    title,
+  ]);
+
   const handlePreview = useCallback(() => {
-    setPreviewOpen(true);
-  }, []);
+    setPreviewError('');
+
+    if (!title.trim()) {
+      setPreviewError('Add a title before previewing.');
+      return;
+    }
+
+    const contentHtml = editorRef.current?.getHtml() ?? mainContent;
+    if (!contentHtml.trim() || isEmptyHtml(contentHtml)) {
+      setPreviewError('Add main content before previewing.');
+      return;
+    }
+
+    setViewMode('preview');
+  }, [mainContent, title]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -210,6 +266,19 @@ export default function PostEditorForm({
   const defaultIntent =
     isEdit && initialValues?.published ? 'published' : 'draft';
 
+  const previewBlog = viewMode === 'preview' ? buildPreviewBlog() : null;
+
+  if (viewMode === 'preview' && previewBlog) {
+    return (
+      <PostPreviewExperience
+        blog={previewBlog}
+        slug={previewBlog.slug}
+        isPublished={Boolean(initialValues?.published)}
+        onClose={() => setViewMode('edit')}
+      />
+    );
+  }
+
   return (
     <AdminPortalLayout userName={userName} userInitial={userInitial}>
       <div className={styles.pageHeader}>
@@ -254,6 +323,10 @@ export default function PostEditorForm({
           </button>
         </div>
       </div>
+
+      {previewError ? (
+        <p className={`${styles.alert} ${styles.alertError}`}>{previewError}</p>
+      ) : null}
 
       {formError ? (
         <p className={`${styles.alert} ${styles.alertError}`}>{formError}</p>
@@ -360,6 +433,7 @@ export default function PostEditorForm({
             <PostCoverImagePicker
               initialImageUrl={initialValues?.featuredImageUrl}
               initialMediaId={initialValues?.featuredImageId}
+              onChange={({ url }) => setCoverImageUrl(url)}
             />
           </div>
 
@@ -405,42 +479,6 @@ export default function PostEditorForm({
           </div>
         </div>
       </form>
-
-      {previewOpen ? (
-        <div
-          className={styles.previewOverlay}
-          onClick={() => setPreviewOpen(false)}
-          role="presentation"
-        >
-          <div
-            className={styles.previewModal}
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-labelledby="preview-title"
-          >
-            <div className={styles.previewHeader}>
-              <h2 id="preview-title" className={styles.previewTitle}>
-                {title || 'Untitled Post'}
-              </h2>
-              <button
-                type="button"
-                className={styles.iconButton}
-                onClick={() => setPreviewOpen(false)}
-                aria-label="Close preview"
-              >
-                <X size={16} />
-              </button>
-            </div>
-            <div
-              className={styles.previewBody}
-              dangerouslySetInnerHTML={{
-                __html:
-                  mainContent || '<p style="color:#5a6b88">No content yet.</p>',
-              }}
-            />
-          </div>
-        </div>
-      ) : null}
     </AdminPortalLayout>
   );
 }
