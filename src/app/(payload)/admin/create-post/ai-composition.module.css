@@ -397,9 +397,313 @@
   .headerActions {
     width: 100%;
     justify-content: space-between;
+    flex-wrap: wrap;
   }
 
   .welcomeSteps {
     grid-template-columns: 1fr;
   }
+
+  .schedulesGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .scheduleFieldRow {
+    grid-template-columns: 1fr;
+  }
+
+  .scheduleItemActions {
+    flex-wrap: wrap;
+  }
+}
+
+.tabSwitcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid #2a3b61;
+  background: rgba(17, 24, 39, 0.72);
+}
+
+.tabButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #8a9bb8;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tabButtonActive {
+  background: rgba(36, 255, 142, 0.12);
+  color: #24ff8e;
+}
+
+.schedulesPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.schedulesIntro {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.schedulesTitle {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.schedulesDescription {
+  margin: 0;
+  max-width: 720px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #8a9bb8;
+}
+
+.schedulesNote {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 280px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #2a3b61;
+  background: rgba(36, 255, 142, 0.06);
+  color: #c8d4ea;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.schedulesGrid {
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.scheduleFormCard,
+.scheduleListCard {
+  border: 1px solid #243352;
+  border-radius: 16px;
+  background: rgba(17, 24, 39, 0.72);
+  padding: 18px;
+}
+
+.scheduleFormHeader,
+.scheduleListHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.scheduleFormHeader h3,
+.scheduleListHeader h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.scheduleCount {
+  font-size: 12px;
+  color: #8a9bb8;
+}
+
+.scheduleTextButton {
+  border: 0;
+  background: transparent;
+  color: #24ff8e;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.scheduleForm {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.scheduleField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.scheduleField span {
+  font-size: 12px;
+  font-weight: 600;
+  color: #c8d4ea;
+}
+
+.scheduleField input,
+.scheduleField select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #2a3b61;
+  background: #0c0e13;
+  color: #e6eeff;
+  font-size: 14px;
+}
+
+.scheduleTextarea {
+  width: 100%;
+  min-height: 120px;
+  field-sizing: fixed;
+  border-color: #2a3b61 !important;
+  background: #0c0e13 !important;
+  color: #e6eeff !important;
+}
+
+.scheduleFieldRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.scheduleCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #c8d4ea;
+}
+
+.scheduleFormActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.scheduleEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 180px;
+  color: #8a9bb8;
+  font-size: 14px;
+}
+
+.scheduleList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scheduleItem {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid #2a3b61;
+  background: rgba(12, 14, 19, 0.72);
+}
+
+.scheduleItemPaused {
+  opacity: 0.72;
+}
+
+.scheduleItemTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.scheduleItemTop h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #fff;
+}
+
+.scheduleStatus {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.scheduleStatus_idle {
+  background: rgba(138, 155, 184, 0.16);
+  color: #8a9bb8;
+}
+
+.scheduleStatus_running {
+  background: rgba(96, 165, 250, 0.16);
+  color: #93c5fd;
+}
+
+.scheduleStatus_success {
+  background: rgba(36, 255, 142, 0.12);
+  color: #24ff8e;
+}
+
+.scheduleStatus_failed {
+  background: rgba(248, 113, 113, 0.16);
+  color: #f87171;
+}
+
+.scheduleSummary {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #24ff8e;
+}
+
+.schedulePrompt {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #c8d4ea;
+}
+
+.scheduleMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12px;
+  color: #8a9bb8;
+}
+
+.scheduleMessage {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #8a9bb8;
+}
+
+.scheduleDraftLink {
+  font-size: 13px;
+  font-weight: 600;
+  color: #24ff8e;
+  text-decoration: none;
+}
+
+.scheduleDraftLink:hover {
+  text-decoration: underline;
+}
+
+.scheduleItemActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }

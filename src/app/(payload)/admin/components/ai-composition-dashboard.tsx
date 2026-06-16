@@ -1,6 +1,7 @@
 'use client';
 
 import AdminPortalLayout from '@/app/(payload)/admin/components/admin-portal-layout';
+import ComposeSchedulesPanel from '@/app/(payload)/admin/components/compose-schedules-panel';
 import {
   Artifact,
   ArtifactContent,
@@ -47,6 +48,8 @@ import {
 } from 'ai';
 import {
   Brain,
+  CalendarClock,
+  MessageSquare,
   FileText,
   Loader2,
   PenLine,
@@ -94,6 +97,9 @@ export default function AiCompositionDashboard({
   modelLabel = 'gpt-4.1-mini',
 }: AiCompositionDashboardProps) {
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<'compose' | 'schedules'>(
+    'compose'
+  );
   const [draft, setDraft] = useState<ComposePostDraft | null>(null);
   const [input, setInput] = useState('');
   const [saveError, setSaveError] = useState('');
@@ -202,6 +208,24 @@ export default function AiCompositionDashboard({
               </p>
             </div>
             <div className={styles.headerActions}>
+              <div className={styles.tabSwitcher}>
+                <button
+                  type="button"
+                  className={`${styles.tabButton} ${activeTab === 'compose' ? styles.tabButtonActive : ''}`}
+                  onClick={() => setActiveTab('compose')}
+                >
+                  <MessageSquare size={14} />
+                  Compose
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.tabButton} ${activeTab === 'schedules' ? styles.tabButtonActive : ''}`}
+                  onClick={() => setActiveTab('schedules')}
+                >
+                  <CalendarClock size={14} />
+                  Schedules
+                </button>
+              </div>
               <span className={styles.modelBadge}>⚡ {modelLabel}</span>
               <Link
                 href="/admin/create-post/manual"
@@ -213,7 +237,7 @@ export default function AiCompositionDashboard({
             </div>
           </header>
 
-          {(error || saveError) && (
+          {(error || saveError) && activeTab === 'compose' ? (
             <div className={styles.flashRow}>
               {error ? (
                 <p className={styles.flashError}>{error.message}</p>
@@ -222,123 +246,127 @@ export default function AiCompositionDashboard({
                 <p className={styles.flashError}>{saveError}</p>
               ) : null}
             </div>
-          )}
+          ) : null}
 
-          <div
-            className={`${styles.split} ${showArtifact ? styles.splitWithArtifact : ''}`}
-          >
-            <section className={styles.chatPane}>
-              <Conversation className={styles.conversation}>
-                <ConversationContent>
-                  {messages.length === 0 ? (
-                    <ComposeWelcomePanel />
-                  ) : (
-                    messages.map((message) => (
-                      <ChatMessage
-                        key={message.id}
-                        message={message}
-                        isStreaming={isStreaming}
-                      />
-                    ))
-                  )}
-                </ConversationContent>
-                <ConversationScrollButton />
-              </Conversation>
+          {activeTab === 'schedules' ? (
+            <ComposeSchedulesPanel />
+          ) : (
+            <div
+              className={`${styles.split} ${showArtifact ? styles.splitWithArtifact : ''}`}
+            >
+              <section className={styles.chatPane}>
+                <Conversation className={styles.conversation}>
+                  <ConversationContent>
+                    {messages.length === 0 ? (
+                      <ComposeWelcomePanel />
+                    ) : (
+                      messages.map((message) => (
+                        <ChatMessage
+                          key={message.id}
+                          message={message}
+                          isStreaming={isStreaming}
+                        />
+                      ))
+                    )}
+                  </ConversationContent>
+                  <ConversationScrollButton />
+                </Conversation>
 
-              {messages.length === 0 ? (
-                <div className={styles.suggestions}>
-                  {suggestions.map((suggestion) => (
-                    <button
-                      key={suggestion}
-                      type="button"
-                      className={styles.suggestionChip}
-                      onClick={() => handleSuggestion(suggestion)}
-                    >
-                      {suggestion}
-                    </button>
-                  ))}
-                </div>
-              ) : null}
+                {messages.length === 0 ? (
+                  <div className={styles.suggestions}>
+                    {suggestions.map((suggestion) => (
+                      <button
+                        key={suggestion}
+                        type="button"
+                        className={styles.suggestionChip}
+                        onClick={() => handleSuggestion(suggestion)}
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
 
-              <form className={styles.promptWrap} onSubmit={handleSubmit}>
-                <div className={styles.promptComposer}>
-                  <Textarea
-                    value={input}
-                    onChange={(event) => setInput(event.target.value)}
-                    placeholder="Describe the post you want to create..."
-                    disabled={isStreaming}
-                    rows={3}
-                    className={styles.promptTextarea}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' && !event.shiftKey) {
-                        event.preventDefault();
-                        handleSubmit();
-                      }
-                    }}
-                  />
-                  <div className={styles.promptFooter}>
-                    <span className={styles.promptHint}>
-                      Enter to send · Shift+Enter for a new line
-                    </span>
-                    {isStreaming ? (
+                <form className={styles.promptWrap} onSubmit={handleSubmit}>
+                  <div className={styles.promptComposer}>
+                    <Textarea
+                      value={input}
+                      onChange={(event) => setInput(event.target.value)}
+                      placeholder="Describe the post you want to create..."
+                      disabled={isStreaming}
+                      rows={3}
+                      className={styles.promptTextarea}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' && !event.shiftKey) {
+                          event.preventDefault();
+                          handleSubmit();
+                        }
+                      }}
+                    />
+                    <div className={styles.promptFooter}>
+                      <span className={styles.promptHint}>
+                        Enter to send · Shift+Enter for a new line
+                      </span>
+                      {isStreaming ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className={styles.stopButton}
+                          onClick={stop}
+                        >
+                          <Square className="size-4" />
+                          Stop
+                        </Button>
+                      ) : (
+                        <Button
+                          type="submit"
+                          size="sm"
+                          className={styles.sendButton}
+                          disabled={!input.trim()}
+                        >
+                          <Send className="size-4" />
+                          Send
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </form>
+              </section>
+
+              {showArtifact && draft ? (
+                <section className={styles.artifactPane}>
+                  <Artifact className={styles.artifact}>
+                    <ArtifactHeader>
+                      <div>
+                        <ArtifactTitle>{draft.title}</ArtifactTitle>
+                        <ArtifactDescription>
+                          Live draft artifact — updated when the agent calls{' '}
+                          <code>updatePostDraft</code>
+                        </ArtifactDescription>
+                      </div>
                       <Button
                         type="button"
                         size="sm"
-                        variant="outline"
-                        className={styles.stopButton}
-                        onClick={stop}
+                        onClick={() => void handleSaveDraft()}
+                        disabled={isSaving || isStreaming}
                       >
-                        <Square className="size-4" />
-                        Stop
+                        {isSaving ? (
+                          <Loader2 className="size-4 animate-spin" />
+                        ) : (
+                          <FileText className="size-4" />
+                        )}
+                        Save as draft
                       </Button>
-                    ) : (
-                      <Button
-                        type="submit"
-                        size="sm"
-                        className={styles.sendButton}
-                        disabled={!input.trim()}
-                      >
-                        <Send className="size-4" />
-                        Send
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </form>
-            </section>
-
-            {showArtifact && draft ? (
-              <section className={styles.artifactPane}>
-                <Artifact className={styles.artifact}>
-                  <ArtifactHeader>
-                    <div>
-                      <ArtifactTitle>{draft.title}</ArtifactTitle>
-                      <ArtifactDescription>
-                        Live draft artifact — updated when the agent calls{' '}
-                        <code>updatePostDraft</code>
-                      </ArtifactDescription>
-                    </div>
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={() => void handleSaveDraft()}
-                      disabled={isSaving || isStreaming}
-                    >
-                      {isSaving ? (
-                        <Loader2 className="size-4 animate-spin" />
-                      ) : (
-                        <FileText className="size-4" />
-                      )}
-                      Save as draft
-                    </Button>
-                  </ArtifactHeader>
-                  <ArtifactContent className={styles.artifactContent}>
-                    <MessageResponse>{artifactMarkdown}</MessageResponse>
-                  </ArtifactContent>
-                </Artifact>
-              </section>
-            ) : null}
-          </div>
+                    </ArtifactHeader>
+                    <ArtifactContent className={styles.artifactContent}>
+                      <MessageResponse>{artifactMarkdown}</MessageResponse>
+                    </ArtifactContent>
+                  </Artifact>
+                </section>
+              ) : null}
+            </div>
+          )}
         </div>
       </TooltipProvider>
     </AdminPortalLayout>

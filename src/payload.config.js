@@ -6,6 +6,7 @@ import { buildConfig } from 'payload';
 import { fileURLToPath } from 'url';
 import sharp from 'sharp';
 import { Comments } from './collections/Comments.js';
+import { ComposeSchedules } from './collections/ComposeSchedules.js';
 import { Media } from './collections/Media.js';
 import { Posts } from './collections/Posts.js';
 import { SitePages } from './collections/SitePages.js';
@@ -275,7 +276,7 @@ export default buildConfig({
   ...(serverURL ? { serverURL } : {}),
   csrf: resolveCsrfOrigins(),
   ...(email ? { email } : {}),
-  collections: [Users, Media, Posts, Comments, SitePages],
+  collections: [Users, Media, Posts, Comments, ComposeSchedules, SitePages],
   globals: [HomePage],
   editor: lexicalEditor(),
   secret,

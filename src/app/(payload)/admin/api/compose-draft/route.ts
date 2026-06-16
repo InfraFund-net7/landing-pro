@@ -1,15 +1,11 @@
 import { canManageContent } from '@/access/roles.js';
-import { importMap } from '@/app/(payload)/admin/importMap.js';
 import { getAdminApiContext } from '@/lib/admin-api-auth.js';
-import { composePostDraftSchema, markdownToPostHtml } from '@/lib/compose-post';
-import { buildPostSaveBody } from '@/lib/admin-post-form-utils.js';
-import { getUserDisplayName } from '@/lib/user-profile.js';
-import config from '@payload-config';
+import { composePostDraftSchema } from '@/lib/compose-post';
+import { saveComposeDraftAsPost } from '@/lib/save-compose-draft';
 import { NextResponse } from 'next/server';
-import { getPayload } from 'payload';
 
 export async function POST(request: Request) {
-  const { user } = await getAdminApiContext(request);
+  const { user, payload } = await getAdminApiContext(request);
 
   if (!user) {
     return NextResponse.json(
@@ -43,42 +39,9 @@ export async function POST(request: Request) {
     );
   }
 
-  const draft = parsed.data;
-  const mainContent = markdownToPostHtml(draft.markdown);
-
-  if (!mainContent.trim()) {
-    return NextResponse.json(
-      { message: 'Draft content could not be converted to post HTML.' },
-      { status: 400 }
-    );
-  }
-
-  const data = buildPostSaveBody({
-    title: draft.title,
-    slug: '',
-    mainContent,
-    intent: 'draft',
-    authorKind: 'self',
-    userId: user.id,
-    userDisplayName: getUserDisplayName(user),
-    categoriesRaw: draft.categories.join(', '),
-    tagsRaw: draft.tags.join(', '),
-    readTimeRaw: draft.readTime,
-    existingPublishedAt: '',
-  });
-
-  data.description = draft.description;
-
   try {
-    const payload = await getPayload({ config, importMap });
-    const doc = await payload.create({
-      collection: 'posts',
-      user,
-      overrideAccess: false,
-      data,
-    });
-
-    return NextResponse.json({ ok: true, id: doc.id, slug: doc.slug });
+    const saved = await saveComposeDraftAsPost(payload, user, parsed.data);
+    return NextResponse.json({ ok: true, id: saved.id, slug: saved.slug });
   } catch (error) {
     const message =
       error instanceof Error

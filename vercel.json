@@ -4,9 +4,18 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "installCommand": "npm ci",
+  "crons": [
+    {
+      "path": "/api/cron/compose-schedules",
+      "schedule": "0 * * * *"
+    }
+  ],
   "functions": {
     "src/app/(payload)/**/*": {
       "maxDuration": 60
+    },
+    "src/app/api/cron/**/*": {
+      "maxDuration": 300
     }
   }
 }
