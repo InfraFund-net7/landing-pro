@@ -263,222 +263,238 @@ export default function PostEditorForm({
     }
   };
 
+  const closePreview = useCallback(() => {
+    setViewMode('edit');
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, []);
+
   const defaultIntent =
     isEdit && initialValues?.published ? 'published' : 'draft';
 
   const previewBlog = viewMode === 'preview' ? buildPreviewBlog() : null;
 
-  if (viewMode === 'preview' && previewBlog) {
-    return (
-      <PostPreviewExperience
-        blog={previewBlog}
-        slug={previewBlog.slug}
-        isPublished={Boolean(initialValues?.published)}
-        onClose={() => setViewMode('edit')}
-      />
-    );
-  }
-
   return (
-    <AdminPortalLayout userName={userName} userInitial={userInitial}>
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>
-          {isEdit ? 'Edit Post' : 'Create New Post'}
-        </h1>
-        <div className={styles.headerActions}>
-          <button
-            type="submit"
-            form="post-editor-form"
-            className={styles.btnOutline}
-            disabled={isSubmitting}
-            onClick={() => setIntent('draft')}
-          >
-            <Save size={16} />
-            {isSubmitting ? 'Saving…' : 'Save Draft'}
-          </button>
-          <button
-            type="button"
-            className={styles.btnOutline}
-            onClick={handlePreview}
-            disabled={isSubmitting}
-          >
-            <Eye size={16} />
-            Preview
-          </button>
-          <button
-            type="submit"
-            form="post-editor-form"
-            className={styles.btnPrimary}
-            disabled={isSubmitting}
-            onClick={() => setIntent('published')}
-          >
-            <Send size={16} />
-            {isSubmitting
-              ? isEdit
-                ? 'Updating…'
-                : 'Publishing…'
-              : isEdit
-                ? 'Update'
-                : 'Publish'}
-          </button>
-        </div>
-      </div>
-
-      {previewError ? (
-        <p className={`${styles.alert} ${styles.alertError}`}>{previewError}</p>
-      ) : null}
-
-      {formError ? (
-        <p className={`${styles.alert} ${styles.alertError}`}>{formError}</p>
-      ) : null}
-
-      {formSuccess ? (
-        <p className={`${styles.alert} ${styles.alertSuccess}`}>
-          {formSuccess}
-        </p>
-      ) : null}
-
-      {isEdit && slug ? (
-        <p className={styles.fieldHint} style={{ marginBottom: 16 }}>
-          <Link
-            href={`/admin/comment-management?post=${encodeURIComponent(slug)}`}
-          >
-            View and reply to comments on this post
-          </Link>
-        </p>
-      ) : null}
-
-      <form
-        ref={formRef}
-        id="post-editor-form"
-        onSubmit={handleSubmit}
-        className={styles.formCard}
-      >
-        <input
-          ref={intentRef}
-          type="hidden"
-          name="intent"
-          defaultValue={defaultIntent}
+    <>
+      {viewMode === 'preview' && previewBlog ? (
+        <PostPreviewExperience
+          blog={previewBlog}
+          slug={previewBlog.slug}
+          isPublished={Boolean(initialValues?.published)}
+          onClose={closePreview}
         />
-        <input type="hidden" name="mainContent" value={mainContent} readOnly />
-        <div className={styles.formGrid}>
-          <div>
-            <label htmlFor="title" className={styles.label}>
-              Title
-            </label>
-            <input
-              id="title"
-              name="title"
-              className={styles.field}
-              placeholder="Enter your post title"
-              value={title}
-              onChange={(e) => handleTitleChange(e.target.value)}
-              required
-            />
-          </div>
+      ) : null}
 
-          <div className={styles.row2}>
-            <div>
-              <label htmlFor="slug" className={styles.label}>
-                Slug (URL)
-              </label>
-              <input
-                id="slug"
-                name="slug"
-                className={styles.field}
-                placeholder="Post-url-slug"
-                value={slug}
-                onChange={(e) => {
-                  setSlugTouched(true);
-                  setSlug(e.target.value);
-                }}
-              />
-            </div>
-            <div>
-              <label htmlFor="readTime" className={styles.label}>
-                Estimated read time
-              </label>
-              <input
-                id="readTime"
-                name="readTime"
-                className={styles.field}
-                placeholder="5 min read"
-                value={readTime}
-                onChange={(e) => setReadTime(e.target.value)}
-              />
-              <p className={styles.fieldHint}>e.g. 8 min read or just 8</p>
-            </div>
-            <div>
-              <label htmlFor="author" className={styles.label}>
-                Author
-              </label>
-              <select
-                id="author"
-                name="author"
-                className={styles.field}
-                defaultValue={initialValues?.author ?? 'self'}
+      <div className={viewMode === 'preview' ? styles.editorHidden : undefined}>
+        <AdminPortalLayout userName={userName} userInitial={userInitial}>
+          <div className={styles.pageHeader}>
+            <h1 className={styles.pageTitle}>
+              {isEdit ? 'Edit Post' : 'Create New Post'}
+            </h1>
+            <div className={styles.headerActions}>
+              <button
+                type="submit"
+                form="post-editor-form"
+                className={styles.btnOutline}
+                disabled={isSubmitting}
+                onClick={() => setIntent('draft')}
               >
-                <option value="self">{authorLabel}</option>
-                <option value="editorial">Editorial</option>
-              </select>
+                <Save size={16} />
+                {isSubmitting ? 'Saving…' : 'Save Draft'}
+              </button>
+              <button
+                type="button"
+                className={styles.btnOutline}
+                onClick={handlePreview}
+                disabled={isSubmitting}
+              >
+                <Eye size={16} />
+                Preview
+              </button>
+              <button
+                type="submit"
+                form="post-editor-form"
+                className={styles.btnPrimary}
+                disabled={isSubmitting}
+                onClick={() => setIntent('published')}
+              >
+                <Send size={16} />
+                {isSubmitting
+                  ? isEdit
+                    ? 'Updating…'
+                    : 'Publishing…'
+                  : isEdit
+                    ? 'Update'
+                    : 'Publish'}
+              </button>
             </div>
           </div>
 
-          <div>
-            <label className={styles.label}>Cover image</label>
-            <p className={styles.fieldHint}>
-              This image appears on the blog grid at <strong>/blog</strong>,
-              like your other published posts.
+          {previewError ? (
+            <p className={`${styles.alert} ${styles.alertError}`}>
+              {previewError}
             </p>
-            <PostCoverImagePicker
-              initialImageUrl={initialValues?.featuredImageUrl}
-              initialMediaId={initialValues?.featuredImageId}
-              onChange={({ url }) => setCoverImageUrl(url)}
-            />
-          </div>
+          ) : null}
 
-          <div>
-            <label className={styles.label}>Main Content</label>
-            <p className={styles.fieldHint}>
-              Only text set to <strong>Heading 1</strong> in the toolbar becomes
-              a section in the sticky sidebar on the live post. Use Heading 2 or
-              3 for subheadings inside a section. Insert images from your
-              computer with the image button in the toolbar.
+          {formError ? (
+            <p className={`${styles.alert} ${styles.alertError}`}>
+              {formError}
             </p>
-            <PostRichTextEditor
-              ref={editorRef}
-              defaultValue={initialValues?.mainContent}
-              onChange={setMainContent}
+          ) : null}
+
+          {formSuccess ? (
+            <p className={`${styles.alert} ${styles.alertSuccess}`}>
+              {formSuccess}
+            </p>
+          ) : null}
+
+          {isEdit && slug ? (
+            <p className={styles.fieldHint} style={{ marginBottom: 16 }}>
+              <Link
+                href={`/admin/comment-management?post=${encodeURIComponent(slug)}`}
+              >
+                View and reply to comments on this post
+              </Link>
+            </p>
+          ) : null}
+
+          <form
+            ref={formRef}
+            id="post-editor-form"
+            onSubmit={handleSubmit}
+            className={styles.formCard}
+          >
+            <input
+              ref={intentRef}
+              type="hidden"
+              name="intent"
+              defaultValue={defaultIntent}
             />
-          </div>
+            <input
+              type="hidden"
+              name="mainContent"
+              value={mainContent}
+              readOnly
+            />
+            <div className={styles.formGrid}>
+              <div>
+                <label htmlFor="title" className={styles.label}>
+                  Title
+                </label>
+                <input
+                  id="title"
+                  name="title"
+                  className={styles.field}
+                  placeholder="Enter your post title"
+                  value={title}
+                  onChange={(e) => handleTitleChange(e.target.value)}
+                  required
+                />
+              </div>
 
-          <div className={styles.row2Bottom}>
-            <div>
-              <label className={styles.label}>Categories</label>
-              <TagsInput
-                name="categories"
-                placeholder="Add categories..."
-                defaultTags={initialValues?.categories ?? []}
-              />
-            </div>
+              <div className={styles.row2}>
+                <div>
+                  <label htmlFor="slug" className={styles.label}>
+                    Slug (URL)
+                  </label>
+                  <input
+                    id="slug"
+                    name="slug"
+                    className={styles.field}
+                    placeholder="Post-url-slug"
+                    value={slug}
+                    onChange={(e) => {
+                      setSlugTouched(true);
+                      setSlug(e.target.value);
+                    }}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="readTime" className={styles.label}>
+                    Estimated read time
+                  </label>
+                  <input
+                    id="readTime"
+                    name="readTime"
+                    className={styles.field}
+                    placeholder="5 min read"
+                    value={readTime}
+                    onChange={(e) => setReadTime(e.target.value)}
+                  />
+                  <p className={styles.fieldHint}>e.g. 8 min read or just 8</p>
+                </div>
+                <div>
+                  <label htmlFor="author" className={styles.label}>
+                    Author
+                  </label>
+                  <select
+                    id="author"
+                    name="author"
+                    className={styles.field}
+                    defaultValue={initialValues?.author ?? 'self'}
+                  >
+                    <option value="self">{authorLabel}</option>
+                    <option value="editorial">Editorial</option>
+                  </select>
+                </div>
+              </div>
 
-            <div>
-              <label className={styles.label}>Tags</label>
-              <TagsInput
-                name="tags"
-                defaultTags={
-                  initialValues?.tags
-                    ? initialValues.tags
-                        .split(',')
-                        .map((tag) => tag.trim())
-                        .filter(Boolean)
-                    : []
-                }
-              />
+              <div>
+                <label className={styles.label}>Cover image</label>
+                <p className={styles.fieldHint}>
+                  This image appears on the blog grid at <strong>/blog</strong>,
+                  like your other published posts.
+                </p>
+                <PostCoverImagePicker
+                  initialImageUrl={initialValues?.featuredImageUrl}
+                  initialMediaId={initialValues?.featuredImageId}
+                  onChange={({ url }) => setCoverImageUrl(url)}
+                />
+              </div>
+
+              <div>
+                <label className={styles.label}>Main Content</label>
+                <p className={styles.fieldHint}>
+                  Only text set to <strong>Heading 1</strong> in the toolbar
+                  becomes a section in the sticky sidebar on the live post. Use
+                  Heading 2 or 3 for subheadings inside a section. Insert images
+                  from your computer with the image button in the toolbar.
+                </p>
+                <PostRichTextEditor
+                  ref={editorRef}
+                  defaultValue={initialValues?.mainContent}
+                  onChange={setMainContent}
+                />
+              </div>
+
+              <div className={styles.row2Bottom}>
+                <div>
+                  <label className={styles.label}>Categories</label>
+                  <TagsInput
+                    name="categories"
+                    placeholder="Add categories..."
+                    defaultTags={initialValues?.categories ?? []}
+                  />
+                </div>
+
+                <div>
+                  <label className={styles.label}>Tags</label>
+                  <TagsInput
+                    name="tags"
+                    defaultTags={
+                      initialValues?.tags
+                        ? initialValues.tags
+                            .split(',')
+                            .map((tag) => tag.trim())
+                            .filter(Boolean)
+                        : []
+                    }
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </form>
-    </AdminPortalLayout>
+          </form>
+        </AdminPortalLayout>
+      </div>
+    </>
   );
 }

@@ -1,20 +1,29 @@
 .root {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  overflow-y: auto;
   min-height: 100vh;
   background: #06080d;
   color: #e6eeff;
 }
 
-.toolbar {
+.previewChrome {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 2;
+}
+
+.toolbar {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   padding: 14px 20px;
   border-bottom: 1px solid rgba(36, 255, 142, 0.12);
-  background: rgba(8, 12, 20, 0.92);
+  background: rgba(8, 12, 20, 0.96);
   backdrop-filter: blur(16px);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
 }
@@ -154,8 +163,10 @@
 }
 
 .previewNotice {
-  margin: 0 auto;
-  max-width: 960px;
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  max-width: none;
   padding: 14px 20px;
   border-bottom: 1px solid rgba(245, 158, 11, 0.15);
   background: linear-gradient(

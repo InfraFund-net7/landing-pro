@@ -39,58 +39,72 @@ export default function PostPreviewExperience({
 
   return (
     <div className={styles.root}>
-      <header className={styles.toolbar}>
-        <div className={styles.toolbarLeft}>
-          <button type="button" className={styles.backButton} onClick={onClose}>
-            <ArrowLeft size={16} />
-            Back to editor
-          </button>
-        </div>
-
-        <div className={styles.toolbarCenter}>
-          <span className={styles.previewBadge}>
-            <span className={styles.previewDot} aria-hidden />
-            {previewLabel}
-          </span>
-          <span className={styles.slugHint}>
-            Will appear at <code>/blog/{slug || 'your-slug'}</code>
-          </span>
-        </div>
-
-        <div className={styles.toolbarRight}>
-          <div
-            className={styles.viewToggle}
-            role="tablist"
-            aria-label="Editor view"
-          >
+      <div className={styles.previewChrome}>
+        <header className={styles.toolbar}>
+          <div className={styles.toolbarLeft}>
             <button
               type="button"
-              className={styles.viewToggleButton}
-              onClick={onClose}
-              role="tab"
-              aria-selected={false}
+              className={styles.backButton}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                onClose();
+              }}
             >
-              <FilePenLine size={14} />
-              Editor
-            </button>
-            <button
-              type="button"
-              className={`${styles.viewToggleButton} ${styles.viewToggleButtonActive}`}
-              role="tab"
-              aria-selected
-            >
-              <Eye size={14} />
-              Preview
+              <ArrowLeft size={16} />
+              Back to editor
             </button>
           </div>
-        </div>
-      </header>
 
-      <p className={styles.previewNotice}>
-        {isPublished
-          ? 'You are previewing unsaved changes. Nothing is published until you click Update.'
-          : 'You are previewing a draft. Comments and the live URL stay hidden until you publish.'}
-      </p>
+          <div className={styles.toolbarCenter}>
+            <span className={styles.previewBadge}>
+              <span className={styles.previewDot} aria-hidden />
+              {previewLabel}
+            </span>
+            <span className={styles.slugHint}>
+              Will appear at <code>/blog/{slug || 'your-slug'}</code>
+            </span>
+          </div>
+
+          <div className={styles.toolbarRight}>
+            <div
+              className={styles.viewToggle}
+              role="tablist"
+              aria-label="Editor view"
+            >
+              <button
+                type="button"
+                className={styles.viewToggleButton}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  onClose();
+                }}
+                role="tab"
+                aria-selected={false}
+              >
+                <FilePenLine size={14} />
+                Editor
+              </button>
+              <button
+                type="button"
+                className={`${styles.viewToggleButton} ${styles.viewToggleButtonActive}`}
+                role="tab"
+                aria-selected
+              >
+                <Eye size={14} />
+                Preview
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <p className={styles.previewNotice}>
+          {isPublished
+            ? 'You are previewing unsaved changes. Nothing is published until you click Update.'
+            : 'You are previewing a draft. Comments and the live URL stay hidden until you publish.'}
+        </p>
+      </div>
 
       <div className={styles.siteFrame}>
         <Header />

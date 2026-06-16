@@ -306,6 +306,10 @@
   border: 1px solid #166534;
 }
 
+.editorHidden {
+  display: none;
+}
+
 .previewOverlay {
   position: fixed;
   inset: 0;
