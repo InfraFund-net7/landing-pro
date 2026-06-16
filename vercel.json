@@ -7,7 +7,7 @@
   "crons": [
     {
       "path": "/api/cron/compose-schedules",
-      "schedule": "0 * * * *"
+      "schedule": "0 9 * * *"
     }
   ],
   "functions": {

@@ -298,8 +298,8 @@ export default function ComposeSchedulesPanel() {
         </div>
         <div className={styles.schedulesNote}>
           <CalendarClock size={16} />
-          Times are stored in UTC. On Vercel, set <code>CRON_SECRET</code> so
-          hourly jobs can run securely.
+          Times are stored in UTC. On Vercel Hobby, cron runs once daily (09:00
+          UTC). Set <code>CRON_SECRET</code> so scheduled jobs run securely.
         </div>
       </div>
 
