@@ -7,6 +7,9 @@ export const Posts = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'publishedAt', 'published'],
     group: 'Content',
+    hidden: true,
+    description:
+      'Manage posts in the admin sidebar under All Posts (/admin/post-management).',
   },
   access: contentCollectionAccess,
   hooks: {

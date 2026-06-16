@@ -10,6 +10,7 @@ import {
   Trophy,
   Settings,
   MessageSquare,
+  Newspaper,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import styles from '../create-post/create-post.module.css';
@@ -28,9 +29,9 @@ const navItems = [
     icon: Trophy,
   },
   {
-    href: '/admin/collections/posts',
+    href: '/admin/post-management',
     label: 'All Posts',
-    icon: LayoutDashboard,
+    icon: Newspaper,
   },
   {
     href: '/admin/comment-management',
@@ -63,8 +64,10 @@ export default function AdminPortalLayout({
                     pathname.startsWith('/admin/edit-post/')
                   : href === '/admin/comment-management'
                     ? pathname.startsWith('/admin/comment-management')
-                    : pathname === href ||
-                      (href !== '/admin' && pathname.startsWith(href));
+                    : href === '/admin/post-management'
+                      ? pathname.startsWith('/admin/post-management')
+                      : pathname === href ||
+                        (href !== '/admin' && pathname.startsWith(href));
 
               return (
                 <Link

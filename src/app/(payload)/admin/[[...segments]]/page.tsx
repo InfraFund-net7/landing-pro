@@ -40,6 +40,14 @@ const Page = async ({ params, searchParams }: Args) => {
     redirect('/admin/comment-management');
   }
 
+  if (segments[0] === 'collections' && segments[1] === 'posts') {
+    const postId = segments[2];
+    if (postId && /^\d+$/.test(postId)) {
+      redirect(`/admin/edit-post/${postId}`);
+    }
+    redirect('/admin/post-management');
+  }
+
   if (segments.length === 0) {
     if (process.env.VERCEL) {
       const hasUser = await probeNeonHasPayloadUser();
