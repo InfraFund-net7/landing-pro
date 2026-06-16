@@ -269,17 +269,58 @@
 }
 
 .promptWrap {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px;
   border-top: 1px solid #1e2b47;
-  padding: 12px;
-  background: rgba(8, 12, 22, 0.85);
+  background: linear-gradient(
+    180deg,
+    rgba(8, 12, 22, 0.4),
+    rgba(8, 12, 22, 0.92)
+  );
+}
+
+.promptComposer {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 16px;
+  border: 1px solid rgba(36, 255, 142, 0.16);
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(36, 255, 142, 0.06),
+      transparent 38%
+    ),
+    rgba(12, 18, 32, 0.96);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
 }
 
 .promptTextarea {
-  min-height: 88px;
-  resize: vertical;
-  border-color: #243352;
-  background: rgba(15, 22, 40, 0.95);
-  color: #e6eeff;
+  display: block;
+  width: 100% !important;
+  min-width: 100%;
+  max-width: 100%;
+  min-height: 96px;
+  resize: none;
+  field-sizing: fixed;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 16px 18px 8px !important;
+  color: #e6eeff !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+}
+
+.promptTextarea:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.promptTextarea::placeholder {
+  color: #6f819f;
 }
 
 .promptFooter {
@@ -287,7 +328,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 10px;
+  padding: 10px 14px 14px;
+  border-top: 1px solid rgba(42, 59, 97, 0.65);
 }
 
 .promptHint {
@@ -296,9 +338,11 @@
 }
 
 .sendButton {
+  min-width: 96px;
   background: #24ff8e !important;
   color: #04140c !important;
   border-color: #24ff8e !important;
+  font-weight: 600;
 }
 
 .sendButton:hover:not(:disabled) {
@@ -311,6 +355,12 @@
   color: #6b7c9d !important;
   border-color: #2a3b61 !important;
   opacity: 1 !important;
+}
+
+.stopButton {
+  min-width: 96px;
+  border-color: #2a3b61 !important;
+  color: #dbe6ff !important;
 }
 
 .artifactPane {

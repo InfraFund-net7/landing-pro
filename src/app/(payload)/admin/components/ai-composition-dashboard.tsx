@@ -261,46 +261,48 @@ export default function AiCompositionDashboard({
               ) : null}
 
               <form className={styles.promptWrap} onSubmit={handleSubmit}>
-                <Textarea
-                  value={input}
-                  onChange={(event) => setInput(event.target.value)}
-                  placeholder="Describe the post you want to create..."
-                  disabled={isStreaming}
-                  rows={3}
-                  className={styles.promptTextarea}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' && !event.shiftKey) {
-                      event.preventDefault();
-                      handleSubmit();
-                    }
-                  }}
-                />
-                <div className={styles.promptFooter}>
-                  <span className={styles.promptHint}>
-                    Enter to send, Shift+Enter for a new line. The agent can
-                    research topics and update the draft artifact.
-                  </span>
-                  {isStreaming ? (
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={stop}
-                    >
-                      <Square className="size-4" />
-                      Stop
-                    </Button>
-                  ) : (
-                    <Button
-                      type="submit"
-                      size="sm"
-                      className={styles.sendButton}
-                      disabled={!input.trim()}
-                    >
-                      <Send className="size-4" />
-                      Send
-                    </Button>
-                  )}
+                <div className={styles.promptComposer}>
+                  <Textarea
+                    value={input}
+                    onChange={(event) => setInput(event.target.value)}
+                    placeholder="Describe the post you want to create..."
+                    disabled={isStreaming}
+                    rows={3}
+                    className={styles.promptTextarea}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' && !event.shiftKey) {
+                        event.preventDefault();
+                        handleSubmit();
+                      }
+                    }}
+                  />
+                  <div className={styles.promptFooter}>
+                    <span className={styles.promptHint}>
+                      Enter to send · Shift+Enter for a new line
+                    </span>
+                    {isStreaming ? (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className={styles.stopButton}
+                        onClick={stop}
+                      >
+                        <Square className="size-4" />
+                        Stop
+                      </Button>
+                    ) : (
+                      <Button
+                        type="submit"
+                        size="sm"
+                        className={styles.sendButton}
+                        disabled={!input.trim()}
+                      >
+                        <Send className="size-4" />
+                        Send
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </form>
             </section>
