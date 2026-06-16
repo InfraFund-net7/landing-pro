@@ -1,6 +1,11 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "ignore": ["src/payload-types.ts", "src/app/(website)/robots.ts"],
+  "ignore": [
+    "src/payload-types.ts",
+    "src/app/(website)/robots.ts",
+    "src/components/ai-elements/**",
+    "src/components/ui/**"
+  ],
   "ignoreDependencies": [
     "@payloadcms/email-nodemailer",
     "nodemailer",
@@ -13,6 +18,8 @@
     "@ant-design/icons",
     "@typescript-eslint/eslint-plugin",
     "@typescript-eslint/parser",
-    "eslint-config-next"
+    "eslint-config-next",
+    "cmdk",
+    "nanoid"
   ]
 }

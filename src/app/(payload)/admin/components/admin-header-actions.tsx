@@ -2,7 +2,7 @@
 
 import AdminSignOutLink from '@/app/(payload)/admin/components/admin-sign-out-link';
 import Link from 'next/link';
-import { Bell, Headphones, Mail, MessageSquare, Newspaper } from 'lucide-react';
+import { Bell, MessageSquare, Newspaper } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import styles from '../create-post/create-post.module.css';
 
@@ -19,8 +19,6 @@ type NotificationSummary = {
   items: NotificationItem[];
 };
 
-const SUPPORT_EMAIL = 'hello@infrafund.net';
-
 type AdminHeaderActionsProps = {
   userInitial: string;
 };
@@ -29,26 +27,24 @@ export default function AdminHeaderActions({
   userInitial,
 }: AdminHeaderActionsProps) {
   const rootRef = useRef<HTMLDivElement>(null);
-  const [openMenu, setOpenMenu] = useState<'support' | 'notifications' | null>(
-    null
-  );
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [notifications, setNotifications] =
     useState<NotificationSummary | null>(null);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
   const [notificationsError, setNotificationsError] = useState('');
 
   useEffect(() => {
-    if (openMenu !== 'support' && openMenu !== 'notifications') return;
+    if (!notificationsOpen) return;
 
     function handlePointerDown(event: MouseEvent) {
       if (!rootRef.current?.contains(event.target as Node)) {
-        setOpenMenu(null);
+        setNotificationsOpen(false);
       }
     }
 
     function handleEscape(event: KeyboardEvent) {
       if (event.key === 'Escape') {
-        setOpenMenu(null);
+        setNotificationsOpen(false);
       }
     }
 
@@ -58,7 +54,7 @@ export default function AdminHeaderActions({
       document.removeEventListener('mousedown', handlePointerDown);
       document.removeEventListener('keydown', handleEscape);
     };
-  }, [openMenu]);
+  }, [notificationsOpen]);
 
   useEffect(() => {
     let cancelled = false;
@@ -85,12 +81,12 @@ export default function AdminHeaderActions({
   }, []);
 
   async function openNotifications() {
-    if (openMenu === 'notifications') {
-      setOpenMenu(null);
+    if (notificationsOpen) {
+      setNotificationsOpen(false);
       return;
     }
 
-    setOpenMenu('notifications');
+    setNotificationsOpen(true);
     setNotificationsLoading(true);
     setNotificationsError('');
 
@@ -117,10 +113,6 @@ export default function AdminHeaderActions({
     }
   }
 
-  function toggleSupport() {
-    setOpenMenu((current) => (current === 'support' ? null : 'support'));
-  }
-
   const notificationCount = notifications?.total ?? 0;
 
   return (
@@ -129,50 +121,10 @@ export default function AdminHeaderActions({
         <button
           type="button"
           className={`${styles.iconButton} ${
-            openMenu === 'support' ? styles.iconButtonActive : ''
-          }`}
-          aria-label="Support"
-          aria-expanded={openMenu === 'support'}
-          aria-haspopup="menu"
-          onClick={toggleSupport}
-        >
-          <Headphones size={16} />
-        </button>
-        {openMenu === 'support' ? (
-          <div className={styles.headerMenu} role="menu" aria-label="Support">
-            <p className={styles.headerMenuTitle}>Need help?</p>
-            <a
-              href={`mailto:${SUPPORT_EMAIL}?subject=InfraFund%20Admin%20Support`}
-              className={styles.headerMenuItem}
-              role="menuitem"
-              onClick={() => setOpenMenu(null)}
-            >
-              <Mail size={15} />
-              Email {SUPPORT_EMAIL}
-            </a>
-            <Link
-              href="/faq"
-              className={styles.headerMenuItem}
-              role="menuitem"
-              target="_blank"
-              rel="noreferrer"
-              onClick={() => setOpenMenu(null)}
-            >
-              <MessageSquare size={15} />
-              Browse FAQ
-            </Link>
-          </div>
-        ) : null}
-      </div>
-
-      <div className={styles.headerMenuWrap}>
-        <button
-          type="button"
-          className={`${styles.iconButton} ${
-            openMenu === 'notifications' ? styles.iconButtonActive : ''
+            notificationsOpen ? styles.iconButtonActive : ''
           }`}
           aria-label="Notifications"
-          aria-expanded={openMenu === 'notifications'}
+          aria-expanded={notificationsOpen}
           aria-haspopup="menu"
           onClick={() => void openNotifications()}
         >
@@ -183,7 +135,7 @@ export default function AdminHeaderActions({
             </span>
           ) : null}
         </button>
-        {openMenu === 'notifications' ? (
+        {notificationsOpen ? (
           <div
             className={styles.headerMenu}
             role="menu"
@@ -201,7 +153,7 @@ export default function AdminHeaderActions({
                   href={item.href}
                   className={styles.headerMenuItem}
                   role="menuitem"
-                  onClick={() => setOpenMenu(null)}
+                  onClick={() => setNotificationsOpen(false)}
                 >
                   {item.id === 'pending-comments' ? (
                     <MessageSquare size={15} />
