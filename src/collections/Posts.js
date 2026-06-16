@@ -3,13 +3,16 @@ import { contentCollectionAccess } from '../access/collection-access.js';
 /** @type {import('payload').CollectionConfig} */
 export const Posts = {
   slug: 'posts',
+  labels: {
+    singular: 'Post',
+    plural: 'All Posts',
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'publishedAt', 'published'],
     group: 'Content',
-    hidden: true,
     description:
-      'Manage posts in the admin sidebar under All Posts (/admin/post-management).',
+      'Opens the post management hub with search, filters, and stats.',
   },
   access: contentCollectionAccess,
   hooks: {
