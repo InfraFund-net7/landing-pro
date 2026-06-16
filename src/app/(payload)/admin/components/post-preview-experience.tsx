@@ -1,10 +1,12 @@
 'use client';
 
-import '@/app/globals.css';
-import BlogPage from '@/component/blog/blog-page';
+import {
+  clearPostPreviewDraft,
+  writePostPreviewDraft,
+} from '@/lib/post-preview-storage';
 import type { Blog } from '@/data/mockBlog';
 import { ArrowLeft, Eye, FilePenLine } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import styles from './post-preview-experience.module.css';
 
 type PostPreviewExperienceProps = {
@@ -20,28 +22,14 @@ export default function PostPreviewExperience({
   isPublished,
   onClose,
 }: PostPreviewExperienceProps) {
-  const scrollRootRef = useRef<HTMLDivElement>(null);
-  const chromeRef = useRef<HTMLDivElement>(null);
-  const [chromeHeight, setChromeHeight] = useState(112);
+  const [iframeSrc, setIframeSrc] = useState<string | null>(null);
+
+  useLayoutEffect(() => {
+    writePostPreviewDraft({ blog, slug, isPublished });
+    setIframeSrc('/post-preview');
+  }, [blog, isPublished, slug]);
 
   useEffect(() => {
-    const node = chromeRef.current;
-    if (!node) return;
-
-    const updateHeight = () => {
-      setChromeHeight(node.offsetHeight);
-    };
-
-    updateHeight();
-    const observer = new ResizeObserver(updateHeight);
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const scrollRoot = scrollRootRef.current;
-    scrollRoot?.scrollTo({ top: 0, behavior: 'auto' });
-
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose();
@@ -49,14 +37,18 @@ export default function PostPreviewExperience({
     };
 
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      clearPostPreviewDraft();
+      setIframeSrc(null);
+    };
   }, [onClose]);
 
   const previewLabel = isPublished ? 'Live preview' : 'Draft preview';
 
   return (
-    <div ref={scrollRootRef} className={styles.root}>
-      <div ref={chromeRef} className={styles.previewChrome}>
+    <div className={styles.root}>
+      <div className={styles.previewChrome}>
         <header className={styles.toolbar}>
           <div className={styles.toolbarLeft}>
             <button
@@ -123,15 +115,13 @@ export default function PostPreviewExperience({
         </p>
       </div>
 
-      <div className={styles.siteFrame}>
-        <BlogPage
-          blog={blog}
-          comments={[]}
-          previewMode
-          scrollRootRef={scrollRootRef}
-          layoutOffset={chromeHeight + 24}
+      {iframeSrc ? (
+        <iframe
+          className={styles.previewFrame}
+          src={iframeSrc}
+          title="Post preview"
         />
-      </div>
+      ) : null}
     </div>
   );
 }

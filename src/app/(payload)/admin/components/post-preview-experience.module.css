@@ -2,7 +2,9 @@
   position: fixed;
   inset: 0;
   z-index: 1100;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   min-height: 100vh;
   background: #06080d;
   color: #e6eeff;
@@ -177,6 +179,15 @@
   color: #fcd34d;
   font-size: 13px;
   text-align: center;
+}
+
+.previewFrame {
+  display: block;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  border: 0;
+  background: #06080d;
 }
 
 .siteFrame {
