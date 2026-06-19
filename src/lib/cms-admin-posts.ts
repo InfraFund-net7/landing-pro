@@ -116,3 +116,23 @@ export async function fetchAllPostsForAdmin(): Promise<AdminPost[]> {
     return [];
   }
 }
+
+export function collectUniqueCategories(posts: AdminPost[]): string[] {
+  const categories = new Set<string>();
+  for (const post of posts) {
+    for (const category of post.categories) {
+      categories.add(category);
+    }
+  }
+  return [...categories].sort((a, b) => a.localeCompare(b));
+}
+
+export function collectUniqueTags(posts: AdminPost[]): string[] {
+  const tags = new Set<string>();
+  for (const post of posts) {
+    for (const tag of post.tags) {
+      tags.add(tag.replace(/^#/, ''));
+    }
+  }
+  return [...tags].sort((a, b) => a.localeCompare(b));
+}

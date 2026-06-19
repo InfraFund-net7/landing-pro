@@ -11,64 +11,118 @@
 }
 
 .sidebar {
-  width: 240px;
+  width: 272px;
   flex-shrink: 0;
-  background: rgba(13, 20, 37, 0.95);
-  border-right: 1px solid #1e2b47;
-  padding: 28px 20px;
+  background: #090b10;
+  border-right: 1px solid #151b28;
+  padding: 32px 20px;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 40px;
 }
 
-.logo {
+.sidebarBrand {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 8px;
+  gap: 12px;
+  padding: 0 6px;
 }
 
-.logoMark {
-  width: 28px;
-  height: 28px;
-  background: linear-gradient(135deg, #24ff8e 0%, #1ad87a 100%);
-  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+.brandMark {
+  flex-shrink: 0;
+  color: #b48cff;
 }
 
-.logoText {
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: #fff;
+.sidebarBrandText {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #b48cff;
+  line-height: 1.2;
 }
 
 .nav {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 
 .navLink {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 14px;
-  border-radius: 10px;
-  color: #8a9bb8;
+  padding: 14px 16px;
+  border-radius: 12px;
+  color: #c5cfdf;
   text-decoration: none;
-  font-size: 16px;
+  font-size: 17px;
+  font-weight: 400;
   transition:
     background 0.15s,
     color 0.15s;
 }
 
 .navLink:hover {
-  background: rgba(36, 255, 142, 0.06);
-  color: #c8d4ea;
+  background: rgba(255, 255, 255, 0.03);
+  color: #eef2f8;
 }
 
 .navLinkActive {
-  background: rgba(36, 255, 142, 0.1);
+  color: #eef2f8;
+}
+
+.navLinkSpaced {
+  margin-top: 8px;
+}
+
+.blogNavGroup {
+  padding: 14px;
+  border-radius: 16px;
+  background: #111827;
+  border: 1px solid #1a2236;
+}
+
+.blogNavHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px 12px;
+  color: #c5cfdf;
+  font-size: 17px;
+  font-weight: 400;
+}
+
+.blogNavItems {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.blogNavLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  color: #aab4c8;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 400;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.blogNavLink:hover {
+  color: #dbe4f3;
+}
+
+.blogNavLinkActive {
+  background: #0a0f1a;
+  color: #24ff8e;
+}
+
+.blogNavLinkActive:hover {
   color: #24ff8e;
 }
 
@@ -259,6 +313,33 @@
 }
 
 .aiCompositionLink:hover {
+  border-color: #24ff8e;
+  color: #24ff8e;
+}
+
+.taxonomyList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.taxonomyItem,
+.taxonomyItemStatic {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #2a3b61;
+  background: rgba(255, 255, 255, 0.02);
+  color: #dbe6ff;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.taxonomyItem:hover {
   border-color: #24ff8e;
   color: #24ff8e;
 }
