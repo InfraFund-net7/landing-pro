@@ -15,7 +15,7 @@ import {
   parsePayloadApiError,
   slugifyPost,
 } from '@/lib/admin-post-form-utils.js';
-import { Eye, Save, Send } from 'lucide-react';
+import { Eye, Save, Send, Sparkles } from 'lucide-react';
 import { useCallback, useRef, useState, type FormEvent } from 'react';
 import styles from '../create-post/create-post.module.css';
 
@@ -44,6 +44,7 @@ type PostEditorFormProps = {
   authorAvatarUrl?: string;
   error?: string;
   success?: string;
+  backToAiHref?: string;
 };
 
 export default function PostEditorForm({
@@ -57,6 +58,7 @@ export default function PostEditorForm({
   authorAvatarUrl = '',
   error: initialError,
   success: initialSuccess,
+  backToAiHref,
 }: PostEditorFormProps) {
   const isEdit = mode === 'edit';
   const formRef = useRef<HTMLFormElement>(null);
@@ -291,6 +293,12 @@ export default function PostEditorForm({
               {isEdit ? 'Edit Post' : 'Create New Post'}
             </h1>
             <div className={styles.headerActions}>
+              {backToAiHref ? (
+                <Link href={backToAiHref} className={styles.aiCompositionLink}>
+                  <Sparkles size={16} />
+                  AI Composition
+                </Link>
+              ) : null}
               <button
                 type="submit"
                 form="post-editor-form"

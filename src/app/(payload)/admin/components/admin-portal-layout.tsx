@@ -59,6 +59,7 @@ export default function AdminPortalLayout({
               const isActive =
                 href === '/admin/create-post'
                   ? pathname === href ||
+                    pathname.startsWith('/admin/create-post/') ||
                     pathname.startsWith('/admin/edit-post/')
                   : href === '/admin/comment-management'
                     ? pathname.startsWith('/admin/comment-management')

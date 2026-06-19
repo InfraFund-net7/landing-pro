@@ -29,6 +29,7 @@ export default async function ManualCreatePostPage({
       authorAvatarUrl={profile.profilePhotoUrl ?? ''}
       error={qs.error}
       success={qs.success}
+      backToAiHref="/admin/create-post"
     />
   );
 }

@@ -242,6 +242,27 @@
   gap: 10px;
 }
 
+.aiCompositionLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #2a3b61;
+  color: #c8d4ea;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.aiCompositionLink:hover {
+  border-color: #24ff8e;
+  color: #24ff8e;
+}
+
 .btnOutline {
   display: inline-flex;
   align-items: center;
