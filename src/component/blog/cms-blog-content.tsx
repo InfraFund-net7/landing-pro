@@ -28,50 +28,64 @@ function isHtmlContent(content: string): boolean {
   return /<[a-z][\s\S]*>/i.test(content.trim());
 }
 
+function resolveActiveSection(
+  headings: { id: string; text: string }[],
+  scrollRoot: HTMLElement | Window,
+  spyLine: number
+): string {
+  const rootTop =
+    scrollRoot instanceof Window ? 0 : scrollRoot.getBoundingClientRect().top;
+
+  for (const { id } of headings) {
+    const element = document.getElementById(id);
+    if (!element) continue;
+
+    const rect = element.getBoundingClientRect();
+    const top = rect.top - rootTop;
+    const bottom = rect.bottom - rootTop;
+
+    if (top <= spyLine && bottom >= spyLine) {
+      return id;
+    }
+  }
+
+  let current = headings[0].id;
+  for (const { id } of headings) {
+    const element = document.getElementById(id);
+    if (element && element.getBoundingClientRect().top - rootTop <= spyLine) {
+      current = id;
+    }
+  }
+
+  return current;
+}
+
 function BlogTocSidebar({
   headings,
   activeSection,
   onNavigate,
   variant,
-  mode = 'list',
 }: {
   headings: { id: string; text: string }[];
   activeSection: string;
   onNavigate: (id: string) => void;
   variant: 'desktop' | 'mobile';
-  mode?: 'list' | 'active-only';
 }) {
   if (headings.length === 0) return null;
 
   const isMobile = variant === 'mobile';
-  const visibleHeadings =
-    mode === 'active-only'
-      ? headings.filter((item) => item.id === activeSection).slice(0, 1)
-      : headings;
-
-  if (visibleHeadings.length === 0) return null;
 
   return (
-    <nav
-      className={mode === 'active-only' ? styles.tocActiveOnly : styles.tocNav}
-      aria-label={
-        mode === 'active-only' ? 'Current section' : 'Table of contents'
-      }
-    >
-      {mode === 'active-only' ? (
-        <p className={styles.tocEyebrow}>In this section</p>
-      ) : null}
-      {visibleHeadings.map((item) => {
+    <nav className={styles.tocNav} aria-label="Table of contents">
+      {headings.map((item) => {
         const isActive = activeSection === item.id;
         const itemClass = isMobile
           ? isActive
             ? styles.tocItemMobileActive
             : styles.tocItemMobile
-          : mode === 'active-only'
-            ? styles.tocActiveHeading
-            : isActive
-              ? `${styles.tocItem} ${styles.tocItemActive}`
-              : styles.tocItem;
+          : isActive
+            ? `${styles.tocItem} ${styles.tocItemActive}`
+            : styles.tocItem;
 
         return (
           <button
@@ -80,15 +94,8 @@ function BlogTocSidebar({
             onClick={() => onNavigate(item.id)}
             className={itemClass}
           >
-            {isMobile || mode === 'active-only' ? (
-              <>
-                {mode === 'active-only' ? (
-                  <span className={styles.tocMarker} aria-hidden>
-                    »
-                  </span>
-                ) : null}
-                <span className={styles.tocLabel}>{item.text}</span>
-              </>
+            {isMobile ? (
+              item.text
             ) : (
               <>
                 <span
@@ -118,7 +125,7 @@ export default function CmsBlogContent({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('');
   const scrollOffset = layoutOffset;
-  const scrollSpyThreshold = layoutOffset + 20;
+  const scrollSpyLine = layoutOffset + 20;
 
   const { headings, processedHtml } = useMemo(() => {
     if (!trimmed || !isHtmlContent(trimmed)) {
@@ -137,29 +144,16 @@ export default function CmsBlogContent({
 
     const handleScroll = () => {
       const scrollRoot = scrollRootRef?.current ?? window;
-      const rootTop =
-        scrollRoot instanceof Window
-          ? 0
-          : scrollRoot.getBoundingClientRect().top;
-
-      let current = headings[0].id;
-      for (const { id } of headings) {
-        const element = document.getElementById(id);
-        if (
-          element &&
-          element.getBoundingClientRect().top - rootTop <= scrollSpyThreshold
-        ) {
-          current = id;
-        }
-      }
-      setActiveSection(current);
+      setActiveSection(
+        resolveActiveSection(headings, scrollRoot, scrollSpyLine)
+      );
     };
 
     const scrollRoot = scrollRootRef?.current ?? window;
     scrollRoot.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     return () => scrollRoot.removeEventListener('scroll', handleScroll);
-  }, [headings, scrollRootRef, scrollSpyThreshold]);
+  }, [headings, scrollRootRef, scrollSpyLine]);
 
   const scrollToSection = (id: string) => {
     const section = document.getElementById(id);
@@ -270,7 +264,6 @@ export default function CmsBlogContent({
             activeSection={activeSection}
             onNavigate={scrollToSection}
             variant="desktop"
-            mode="active-only"
           />
         </div>
         {article}
