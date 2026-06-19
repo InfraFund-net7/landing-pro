@@ -102,6 +102,7 @@ const PostRichTextEditor = forwardRef<
   PostRichTextEditorProps
 >(function PostRichTextEditor({ name, defaultValue = '', onChange }, ref) {
   const [html, setHtml] = useState(defaultValue);
+  const [toolbarTick, setToolbarTick] = useState(0);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -143,6 +144,20 @@ const PostRichTextEditor = forwardRef<
       setHtml(defaultValue);
     }
   }, [editor, defaultValue]);
+
+  useEffect(() => {
+    if (!editor) return;
+
+    const refreshToolbar = () => setToolbarTick((value) => value + 1);
+
+    editor.on('selectionUpdate', refreshToolbar);
+    editor.on('transaction', refreshToolbar);
+
+    return () => {
+      editor.off('selectionUpdate', refreshToolbar);
+      editor.off('transaction', refreshToolbar);
+    };
+  }, [editor]);
 
   useImperativeHandle(
     ref,
@@ -217,7 +232,7 @@ const PostRichTextEditor = forwardRef<
 
   const setTextType = (value: string) => {
     if (!editor) return;
-    const chain = editor.chain().focus();
+    const chain = editor.chain().focus().unsetFontSize().unsetColor();
     if (value === 'paragraph') {
       chain.setParagraph().run();
       return;
@@ -225,6 +240,8 @@ const PostRichTextEditor = forwardRef<
     const level = Number(value.replace('h', '')) as 1 | 2 | 3;
     chain.setHeading({ level }).run();
   };
+
+  void toolbarTick;
 
   if (!editor) return null;
 
@@ -271,11 +288,17 @@ const PostRichTextEditor = forwardRef<
 
         <select
           className={styles.toolbarSelect}
-          defaultValue="16px"
+          value="16px"
+          disabled={getCurrentTextType() !== 'paragraph'}
           onChange={(e) =>
             editor.chain().focus().setFontSize(e.target.value).run()
           }
           aria-label="Font size"
+          title={
+            getCurrentTextType() !== 'paragraph'
+              ? 'Font size applies to normal text only'
+              : 'Font size'
+          }
         >
           {FONT_SIZES.map((size) => (
             <option key={size} value={size}>

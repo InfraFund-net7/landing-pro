@@ -33,74 +33,78 @@ function BlogTocSidebar({
   activeSection,
   onNavigate,
   variant,
+  mode = 'list',
 }: {
   headings: { id: string; text: string }[];
   activeSection: string;
   onNavigate: (id: string) => void;
   variant: 'desktop' | 'mobile';
+  mode?: 'list' | 'active-only';
 }) {
-  const [primary, ...rest] = headings;
-  if (!primary) return null;
+  if (headings.length === 0) return null;
 
-  if (variant === 'mobile') {
-    return (
-      <nav className="space-y-4">
-        {[primary, ...rest].map((item) => (
+  const isMobile = variant === 'mobile';
+  const visibleHeadings =
+    mode === 'active-only'
+      ? headings.filter((item) => item.id === activeSection).slice(0, 1)
+      : headings;
+
+  if (visibleHeadings.length === 0) return null;
+
+  return (
+    <nav
+      className={mode === 'active-only' ? styles.tocActiveOnly : styles.tocNav}
+      aria-label={
+        mode === 'active-only' ? 'Current section' : 'Table of contents'
+      }
+    >
+      {mode === 'active-only' ? (
+        <p className={styles.tocEyebrow}>In this section</p>
+      ) : null}
+      {visibleHeadings.map((item) => {
+        const isActive = activeSection === item.id;
+        const itemClass = isMobile
+          ? isActive
+            ? styles.tocItemMobileActive
+            : styles.tocItemMobile
+          : mode === 'active-only'
+            ? styles.tocActiveHeading
+            : isActive
+              ? `${styles.tocItem} ${styles.tocItemActive}`
+              : styles.tocItem;
+
+        return (
           <button
             key={item.id}
             type="button"
             onClick={() => onNavigate(item.id)}
-            className={`block text-left text-sm text-black leading-snug w-full ${
-              activeSection === item.id ? 'font-black' : 'font-medium'
-            }`}
+            className={itemClass}
           >
-            {item.text}
-          </button>
-        ))}
-      </nav>
-    );
-  }
-
-  return (
-    <nav className="space-y-6">
-      <button
-        type="button"
-        onClick={() => onNavigate(primary.id)}
-        className={`block text-left w-full transition-colors cursor-pointer ${
-          activeSection === primary.id
-            ? 'text-foreground font-bold'
-            : 'text-muted-foreground hover:text-foreground'
-        }`}
-      >
-        <h2 className="text-lg font-semibold flex items-start gap-2">
-          {activeSection === primary.id ? <span>»</span> : null}
-          <span className={activeSection === primary.id ? '' : 'ml-7'}>
-            {primary.text}
-          </span>
-        </h2>
-      </button>
-      {rest.length > 0 ? (
-        <ul className="space-y-4">
-          {rest.map((item) => (
-            <li key={item.id}>
-              <button
-                type="button"
-                onClick={() => onNavigate(item.id)}
-                className={`flex items-start gap-2 transition-colors text-left w-full cursor-pointer ${
-                  activeSection === item.id
-                    ? 'text-foreground font-bold'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {activeSection === item.id ? <span>»</span> : null}
-                <span className={activeSection === item.id ? '' : 'ml-7'}>
-                  {item.text}
+            {isMobile || mode === 'active-only' ? (
+              <>
+                {mode === 'active-only' ? (
+                  <span className={styles.tocMarker} aria-hidden>
+                    »
+                  </span>
+                ) : null}
+                <span className={styles.tocLabel}>{item.text}</span>
+              </>
+            ) : (
+              <>
+                <span
+                  className={
+                    isActive ? styles.tocMarker : styles.tocMarkerHidden
+                  }
+                  aria-hidden
+                >
+                  »
                 </span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : null}
+                <span className={styles.tocLabel}>{item.text}</span>
+              </>
+            )}
+          </button>
+        );
+      })}
     </nav>
   );
 }
@@ -266,6 +270,7 @@ export default function CmsBlogContent({
             activeSection={activeSection}
             onNavigate={scrollToSection}
             variant="desktop"
+            mode="active-only"
           />
         </div>
         {article}

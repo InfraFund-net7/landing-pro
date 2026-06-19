@@ -454,10 +454,11 @@ export default function PostEditorForm({
               <div>
                 <label className={styles.label}>Main Content</label>
                 <p className={styles.fieldHint}>
-                  Only text set to <strong>Heading 1</strong> in the toolbar
-                  becomes a section in the sticky sidebar on the live post. Use
-                  Heading 2 or 3 for subheadings inside a section. Insert images
-                  from your computer with the image button in the toolbar.
+                  Use <strong>Heading 1</strong> for each major section — you
+                  can add as many as you need. Each one appears in the live post
+                  sidebar as you scroll. Use Heading 2 or 3 for subheadings
+                  inside a section. Insert images from your computer with the
+                  image button in the toolbar.
                 </p>
                 <PostRichTextEditor
                   ref={editorRef}

@@ -24,7 +24,7 @@ export default function BlogPage({
   scrollRootRef,
   layoutOffset,
 }: BlogPageProps) {
-  const pagePadding = previewMode ? 'pt-10 pb-24' : 'py-[175px]';
+  const pagePadding = 'py-[175px]';
 
   return (
     <div
@@ -62,13 +62,13 @@ export default function BlogPage({
                     <div className="w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] bg-blue-500 rounded-full shrink-0" />
                   )}
                   <div className="space-y-1.5 text-xs sm:text-sm">
-                    <p className="font-medium">{blog.author}</p>
+                    <p className="font-medium text-white">{blog.author}</p>
                     {blog.authorTitle ? (
                       <p className="font-medium text-[#8a9bb8]">
                         {blog.authorTitle}
                       </p>
                     ) : null}
-                    <div className="flex items-center justify-center sm:justify-start gap-2 text-[#4D4D4D]">
+                    <div className="flex items-center justify-center sm:justify-start gap-2 text-[#8a9bb8]">
                       <span>{blog.date}</span>
                       <div className="w-[1px] h-4 bg-[#4D4D4D]" />
                       <span>{blog.readTime}</span>
@@ -94,7 +94,7 @@ export default function BlogPage({
           )}
         </div>
 
-        <p className="text-sm sm:text-base font-normal text-justify">
+        <p className="text-sm sm:text-base font-normal text-justify text-[#c8d4ea]">
           {blog.description}
         </p>
       </div>

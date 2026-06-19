@@ -26,6 +26,6 @@ export default function PostPreviewFrame() {
   }
 
   return (
-    <BlogPage blog={draft.blog} comments={[]} previewMode layoutOffset={24} />
+    <BlogPage blog={draft.blog} comments={[]} previewMode layoutOffset={130} />
   );
 }

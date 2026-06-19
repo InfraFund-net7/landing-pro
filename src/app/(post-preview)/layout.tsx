@@ -1,3 +1,5 @@
+import Footer from '@/component/footer';
+import Header from '@/component/header';
 import '@/app/globals.css';
 
 export default function PostPreviewSiteLayout({
@@ -5,8 +7,12 @@ export default function PostPreviewSiteLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-[#06080d] text-white antialiased">
-        {children}
+      <body className="antialiased">
+        <div className="website-root">
+          <Header />
+          {children}
+          <Footer />
+        </div>
       </body>
     </html>
   );

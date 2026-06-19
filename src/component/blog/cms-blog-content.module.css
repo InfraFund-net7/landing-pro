@@ -15,13 +15,13 @@
 }
 
 .htmlContent h1 {
-  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-size: clamp(1.5rem, 4vw, 2.25rem) !important;
   margin: 3rem 0 1.5rem;
 }
 
 .htmlContent h2 {
-  font-size: clamp(1.5rem, 4vw, 2.25rem);
-  margin: 3rem 0 1.5rem;
+  font-size: clamp(1.25rem, 3vw, 1.75rem) !important;
+  margin: 2.5rem 0 1.25rem;
   text-wrap: balance;
 }
 
@@ -88,4 +88,106 @@
   .htmlContent {
     font-size: 16px;
   }
+}
+
+.tocNav {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tocActiveOnly {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 320px;
+}
+
+.tocEyebrow {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #5a6b88;
+}
+
+.tocActiveHeading {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  cursor: default;
+  color: #fff;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.tocItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  color: #8a9bb8;
+  font-size: 1rem;
+  line-height: 1.45;
+  transition: color 0.15s ease;
+}
+
+.tocItem:hover {
+  color: #fff;
+}
+
+.tocItemActive {
+  color: #fff;
+  font-weight: 700;
+}
+
+.tocMarker {
+  flex-shrink: 0;
+  width: 1.25rem;
+  color: #24ff8e;
+}
+
+.tocMarkerHidden {
+  visibility: hidden;
+}
+
+.tocLabel {
+  flex: 1;
+}
+
+.tocItemMobile {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  color: #111;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  transition: color 0.15s ease;
+}
+
+.tocItemMobile:hover {
+  color: #000;
+}
+
+.tocItemMobileActive {
+  color: #000;
+  font-weight: 800;
 }

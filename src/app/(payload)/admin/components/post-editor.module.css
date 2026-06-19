@@ -126,24 +126,27 @@
 }
 
 .editorContent :global(.tiptap h1) {
-  font-size: 2em;
+  font-size: 2em !important;
   font-weight: 700;
-  margin: 0.5em 0;
+  margin: 0.75em 0 0.5em;
   color: #fff;
+  line-height: 1.25;
 }
 
 .editorContent :global(.tiptap h2) {
-  font-size: 1.5em;
+  font-size: 1.5em !important;
   font-weight: 700;
-  margin: 0.5em 0;
+  margin: 0.75em 0 0.5em;
   color: #fff;
+  line-height: 1.3;
 }
 
 .editorContent :global(.tiptap h3) {
-  font-size: 1.25em;
+  font-size: 1.25em !important;
   font-weight: 700;
-  margin: 0.5em 0;
+  margin: 0.75em 0 0.5em;
   color: #fff;
+  line-height: 1.35;
 }
 
 .editorContent :global(.tiptap ul),
