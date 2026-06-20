@@ -1,4 +1,5 @@
 import { contentCollectionAccess } from '../access/collection-access.js';
+import { calculateReadTimeFromContent } from '../lib/read-time.js';
 
 /** @type {import('payload').CollectionConfig} */
 export const Posts = {
@@ -20,6 +21,9 @@ export const Posts = {
       ({ data }) => {
         if (data.published && !data.publishedAt) {
           data.publishedAt = new Date().toISOString();
+        }
+        if (typeof data.mainContent === 'string' && data.mainContent.trim()) {
+          data.readTime = calculateReadTimeFromContent(data.mainContent);
         }
         return data;
       },
@@ -77,7 +81,7 @@ export const Posts = {
       defaultValue: '5 min read',
       admin: {
         description:
-          'Estimated reading time shown on the blog, e.g. 8 min read.',
+          'Auto-calculated from main content word count at 225 words per minute.',
       },
     },
     {

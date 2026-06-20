@@ -36,8 +36,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import {
   extractLatestComposeDraft,
+  markdownToPostHtml,
   type ComposePostDraft,
 } from '@/lib/compose-post';
+import { calculateReadTimeFromContent } from '@/lib/read-time.js';
 import { useChat } from '@ai-sdk/react';
 import {
   DefaultChatTransport,
@@ -175,6 +177,9 @@ export default function AiCompositionDashboard({
 
   const artifactMarkdown = useMemo(() => {
     if (!draft) return '';
+    const readTime = calculateReadTimeFromContent(
+      markdownToPostHtml(draft.markdown)
+    );
     const meta = [
       draft.description ? `> ${draft.description}` : '',
       draft.categories.length
@@ -183,7 +188,7 @@ export default function AiCompositionDashboard({
       draft.tags.length
         ? `**Tags:** ${draft.tags.map((t) => `#${t}`).join(' ')}`
         : '',
-      draft.readTime ? `**Read time:** ${draft.readTime}` : '',
+      `**Read time:** ${readTime}`,
     ]
       .filter(Boolean)
       .join('\n\n');

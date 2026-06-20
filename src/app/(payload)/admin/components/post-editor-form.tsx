@@ -15,8 +15,13 @@ import {
   parsePayloadApiError,
   slugifyPost,
 } from '@/lib/admin-post-form-utils.js';
+import {
+  BLOG_READING_WPM,
+  calculateReadTimeFromContent,
+  countWordsInContent,
+} from '@/lib/read-time.js';
 import { Eye, Save, Send, Sparkles } from 'lucide-react';
-import { useCallback, useRef, useState, type FormEvent } from 'react';
+import { useCallback, useMemo, useRef, useState, type FormEvent } from 'react';
 import styles from '../create-post/create-post.module.css';
 
 type PostEditorInitialValues = {
@@ -70,7 +75,6 @@ export default function PostEditorForm({
   const [mainContent, setMainContent] = useState(
     initialValues?.mainContent ?? ''
   );
-  const [readTime, setReadTime] = useState(initialValues?.readTime ?? '');
   const [coverImageUrl, setCoverImageUrl] = useState(
     initialValues?.featuredImageUrl ?? null
   );
@@ -79,6 +83,15 @@ export default function PostEditorForm({
   const [formError, setFormError] = useState(initialError ?? '');
   const [formSuccess, setFormSuccess] = useState(initialSuccess ?? '');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const estimatedReadTime = useMemo(
+    () => calculateReadTimeFromContent(mainContent),
+    [mainContent]
+  );
+  const wordCount = useMemo(
+    () => countWordsInContent(mainContent),
+    [mainContent]
+  );
 
   const setIntent = (value: 'draft' | 'published') => {
     if (intentRef.current) {
@@ -104,7 +117,6 @@ export default function PostEditorForm({
       title,
       slug,
       mainContent: contentHtml,
-      readTimeRaw: readTime,
       authorKind: String(formData.get('author') || 'self'),
       userDisplayName: authorLabel,
       authorTitle,
@@ -121,7 +133,6 @@ export default function PostEditorForm({
     coverImageUrl,
     mainContent,
     postId,
-    readTime,
     slug,
     title,
   ]);
@@ -156,7 +167,6 @@ export default function PostEditorForm({
     const author = String(formData.get('author') || 'self');
     const tagsRaw = String(formData.get('tags') || '');
     const categoriesRaw = String(formData.get('categories') || '');
-    const readTimeRaw = String(formData.get('readTime') || readTime);
 
     if (!title.trim()) {
       setFormError('Title is required');
@@ -178,7 +188,6 @@ export default function PostEditorForm({
       userDisplayName: authorLabel,
       categoriesRaw,
       tagsRaw,
-      readTimeRaw,
       existingPublishedAt: initialValues?.publishedAt,
     });
 
@@ -198,7 +207,6 @@ export default function PostEditorForm({
       submitData.set('author', author);
       submitData.set('tags', tagsRaw);
       submitData.set('categories', categoriesRaw);
-      submitData.set('readTime', readTimeRaw);
       if (initialValues?.publishedAt) {
         submitData.set('existingPublishedAt', initialValues.publishedAt);
       }
@@ -417,18 +425,11 @@ export default function PostEditorForm({
                   />
                 </div>
                 <div>
-                  <label htmlFor="readTime" className={styles.label}>
-                    Estimated read time
-                  </label>
-                  <input
-                    id="readTime"
-                    name="readTime"
-                    className={styles.field}
-                    placeholder="5 min read"
-                    value={readTime}
-                    onChange={(e) => setReadTime(e.target.value)}
-                  />
-                  <p className={styles.fieldHint}>e.g. 8 min read or just 8</p>
+                  <span className={styles.label}>Estimated read time</span>
+                  <p className={styles.readTimeValue}>{estimatedReadTime}</p>
+                  <p className={styles.fieldHint}>
+                    {wordCount.toLocaleString()} words at {BLOG_READING_WPM} WPM
+                  </p>
                 </div>
                 <div>
                   <label htmlFor="author" className={styles.label}>

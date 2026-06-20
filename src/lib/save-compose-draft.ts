@@ -34,7 +34,6 @@ export async function saveComposeDraftAsPost(
     userDisplayName: getUserDisplayName(user),
     categoriesRaw: draft.categories.join(', '),
     tagsRaw: draft.tags.join(', '),
-    readTimeRaw: draft.readTime,
     existingPublishedAt: '',
   });
 

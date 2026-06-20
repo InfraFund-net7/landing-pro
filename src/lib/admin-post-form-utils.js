@@ -1,4 +1,5 @@
 import { absolutizeCmsMediaUrlsInHtml } from './cms-media-url';
+import { calculateReadTimeFromContent } from './read-time.js';
 
 export function slugifyPost(value) {
   return value
@@ -29,26 +30,6 @@ function parseCommaSeparatedList(raw) {
     .filter(Boolean);
 }
 
-function normalizeReadTime(raw) {
-  const trimmed = String(raw ?? '').trim();
-  if (!trimmed) return '5 min read';
-
-  if (/min\s*read/i.test(trimmed)) {
-    return trimmed.replace(/\s+/g, ' ');
-  }
-
-  const minutesOnly = trimmed.match(/^(\d+)$/);
-  if (minutesOnly) {
-    return `${minutesOnly[1]} min read`;
-  }
-
-  if (/^\d+\s*min$/i.test(trimmed)) {
-    return `${trimmed} read`.replace(/\s+/g, ' ');
-  }
-
-  return trimmed;
-}
-
 /** @param {FormData} formData */
 export function parseFeaturedImageIdFromForm(formData) {
   const raw = String(formData.get('featuredImageId') ?? '').trim();
@@ -67,7 +48,6 @@ export function buildPostSaveBody({
   userDisplayName,
   categoriesRaw,
   tagsRaw,
-  readTimeRaw,
   existingPublishedAt,
 }) {
   const resolvedSlug = slug.trim() ? slugifyPost(slug) : slugifyPost(title);
@@ -85,7 +65,7 @@ export function buildPostSaveBody({
     publishedAt: published
       ? existingPublishedAt || new Date().toISOString()
       : existingPublishedAt || null,
-    readTime: normalizeReadTime(readTimeRaw),
+    readTime: calculateReadTimeFromContent(normalizedMainContent),
     author: isSelf ? userDisplayName : 'Editorial',
     authorUser: isSelf && userId ? userId : null,
     category: categories[0] || 'Insights',
@@ -98,7 +78,6 @@ export function buildPreviewBlogFromEditor({
   title,
   slug,
   mainContent,
-  readTimeRaw,
   authorKind,
   userDisplayName,
   authorTitle,
@@ -129,7 +108,7 @@ export function buildPreviewBlogFromEditor({
     mainContent: normalizedMainContent,
     image: coverImageUrl || undefined,
     date,
-    readTime: normalizeReadTime(readTimeRaw),
+    readTime: calculateReadTimeFromContent(normalizedMainContent),
     author: isSelf ? userDisplayName : 'Editorial',
     authorTitle: isSelf ? authorTitle || undefined : undefined,
     authorAvatar: isSelf ? authorAvatarUrl || undefined : undefined,

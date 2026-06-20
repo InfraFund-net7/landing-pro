@@ -422,6 +422,17 @@
   font-weight: 600;
 }
 
+.readTimeValue {
+  margin: 0 0 6px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #2a3b61;
+  background: rgba(255, 255, 255, 0.02);
+  color: #24ff8e;
+  font-size: 15px;
+  font-weight: 600;
+}
+
 .field {
   width: 100%;
   background: #0d1425;
