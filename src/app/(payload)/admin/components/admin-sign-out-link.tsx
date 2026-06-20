@@ -16,7 +16,11 @@ type AdminSignOutLinkProps = {
 
 export default function AdminSignOutLink({ style }: AdminSignOutLinkProps) {
   return (
-    <Link href="/admin/logout" style={{ ...adminNavLinkStyle, ...style }}>
+    <Link
+      href="/admin/logout"
+      prefetch={false}
+      style={{ ...adminNavLinkStyle, ...style }}
+    >
       Sign out
     </Link>
   );
