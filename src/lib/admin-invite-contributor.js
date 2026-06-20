@@ -87,7 +87,7 @@ function buildInviteEmailHtml({
       <tr>
         <td style="padding:0 28px 24px;">
           <a href="${inviteUrl}" style="display:inline-block;padding:12px 18px;border-radius:10px;background:#24ff8e;color:#032514;font-size:15px;font-weight:700;text-decoration:none;">
-            Accept invite
+            Set your password
           </a>
         </td>
       </tr>
