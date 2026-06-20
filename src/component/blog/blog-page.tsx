@@ -1,6 +1,4 @@
 import Image from 'next/image';
-import linkedinIcon from '@/../public/svg/linkedin.svg';
-import xIcon from '@/../public/svg/X.svg';
 import { cmsImageNeedsUnoptimized } from '@/lib/cms-next-image';
 import type { RefObject } from 'react';
 import BlogComments from './blog-comments';
@@ -47,48 +45,39 @@ export default function BlogPage({
               />
             ) : null}
 
-            <div className="w-full flex flex-col sm:flex-row justify-between items-center lg:items-start gap-6">
-              <div className="flex flex-col gap-6">
-                <div className="flex justify-center sm:justify-start items-center gap-3 w-fit">
-                  {blog.authorAvatar ? (
-                    <Image
-                      src={blog.authorAvatar}
-                      width={60}
-                      height={60}
-                      alt={blog.author}
-                      unoptimized={cmsImageNeedsUnoptimized(blog.authorAvatar)}
-                      className="w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] rounded-full object-cover shrink-0"
-                    />
-                  ) : (
-                    <div className="w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] bg-blue-500 rounded-full shrink-0" />
-                  )}
-                  <div className="space-y-1.5 text-xs sm:text-sm">
-                    <p className="font-medium text-white">{blog.author}</p>
-                    {blog.authorTitle ? (
-                      <p className="font-medium text-[#8a9bb8]">
-                        {blog.authorTitle}
-                      </p>
-                    ) : null}
-                    <div className="flex items-center justify-center sm:justify-start gap-2 text-[#8a9bb8]">
-                      <span>{blog.date}</span>
-                      <div className="w-[1px] h-4 bg-[#4D4D4D]" />
-                      <span>{blog.readTime}</span>
-                    </div>
-                    <AuthorSocialLinks
-                      linkedinUrl={blog.authorLinkedInUrl}
-                      xUrl={blog.authorXUrl}
-                      authorName={blog.author}
-                      className="flex lg:hidden justify-center sm:justify-start pt-1"
-                    />
+            <div className="w-full flex justify-center sm:justify-start">
+              <div className="flex justify-center sm:justify-start items-start gap-3 w-fit">
+                {blog.authorAvatar ? (
+                  <Image
+                    src={blog.authorAvatar}
+                    width={60}
+                    height={60}
+                    alt={blog.author}
+                    unoptimized={cmsImageNeedsUnoptimized(blog.authorAvatar)}
+                    className="w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] rounded-full object-cover shrink-0"
+                  />
+                ) : (
+                  <div className="w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] bg-blue-500 rounded-full shrink-0" />
+                )}
+                <div className="space-y-1.5 text-xs sm:text-sm">
+                  <p className="font-medium text-white">{blog.author}</p>
+                  {blog.authorTitle ? (
+                    <p className="font-medium text-[#8a9bb8]">
+                      {blog.authorTitle}
+                    </p>
+                  ) : null}
+                  <AuthorSocialLinks
+                    linkedinUrl={blog.authorLinkedInUrl}
+                    xUrl={blog.authorXUrl}
+                    authorName={blog.author}
+                  />
+                  <div className="flex items-center justify-center sm:justify-start gap-2 text-[#8a9bb8] pt-0.5">
+                    <span>{blog.date}</span>
+                    <div className="w-[1px] h-4 bg-[#4D4D4D]" />
+                    <span>{blog.readTime}</span>
                   </div>
                 </div>
               </div>
-              <AuthorSocialLinks
-                linkedinUrl={blog.authorLinkedInUrl}
-                xUrl={blog.authorXUrl}
-                authorName={blog.author}
-                className="hidden lg:flex w-[108px] h-full justify-center items-end"
-              />
             </div>
           </div>
 
@@ -135,28 +124,29 @@ function AuthorSocialLinks({
   linkedinUrl,
   xUrl,
   authorName,
-  className = '',
 }: {
   linkedinUrl?: string;
   xUrl?: string;
   authorName: string;
-  className?: string;
 }) {
   if (!linkedinUrl && !xUrl) {
     return null;
   }
 
+  const iconButtonClass =
+    'inline-flex h-9 w-9 items-center justify-center rounded-[10px] transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#24FF8E]';
+
   return (
-    <div className={`gap-3 ${className}`}>
+    <div className="flex items-center gap-2.5 pt-1">
       {linkedinUrl ? (
         <a
           href={linkedinUrl}
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Open ${authorName} on LinkedIn`}
-          className="inline-flex transition-opacity hover:opacity-80"
+          className={`${iconButtonClass} bg-[#0A66C2] text-white shadow-[0_4px_14px_rgba(10,102,194,0.35)] hover:bg-[#004182]`}
         >
-          <Image src={linkedinIcon} alt="" width={20} height={20} />
+          <LinkedInMark />
         </a>
       ) : null}
       {xUrl ? (
@@ -165,12 +155,33 @@ function AuthorSocialLinks({
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Open ${authorName} on X`}
-          className="inline-flex transition-opacity hover:opacity-80"
+          className={`${iconButtonClass} bg-white text-black shadow-[0_4px_14px_rgba(255,255,255,0.12)] hover:bg-[#e8e8e8]`}
         >
-          <Image src={xIcon} alt="" width={17} height={15} />
+          <XMark />
         </a>
       ) : null}
     </div>
+  );
+}
+
+function LinkedInMark() {
+  return (
+    <span className="text-[15px] font-bold leading-none tracking-[-0.03em]">
+      in
+    </span>
+  );
+}
+
+function XMark() {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      className="h-4.5 w-4.5"
+      fill="currentColor"
+    >
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
   );
 }
 
