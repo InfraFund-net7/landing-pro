@@ -49,17 +49,19 @@ export function buildPostSaveBody({
   categoriesRaw,
   tagsRaw,
   existingPublishedAt,
+  seoSummary,
 }) {
   const resolvedSlug = slug.trim() ? slugifyPost(slug) : slugifyPost(title);
   const published = intent === 'published';
   const categories = parseCommaSeparatedList(categoriesRaw);
   const normalizedMainContent = absolutizeCmsMediaUrlsInHtml(mainContent);
   const isSelf = authorKind === 'self';
+  const trimmedSummary = String(seoSummary ?? '').trim();
 
   return {
     title: title.trim(),
     slug: resolvedSlug,
-    description: excerptFromHtml(normalizedMainContent),
+    description: trimmedSummary || excerptFromHtml(normalizedMainContent),
     mainContent: normalizedMainContent,
     published,
     publishedAt: published
@@ -88,6 +90,7 @@ export function buildPreviewBlogFromEditor({
   categoriesRaw,
   tagsRaw,
   postId,
+  seoSummary,
 }) {
   const resolvedSlug = slug.trim() ? slugifyPost(slug) : slugifyPost(title);
   const categories = parseCommaSeparatedList(categoriesRaw);
@@ -105,6 +108,7 @@ export function buildPreviewBlogFromEditor({
     slug: resolvedSlug || 'preview',
     title: title.trim() || 'Untitled post',
     description:
+      String(seoSummary ?? '').trim() ||
       excerptFromHtml(normalizedMainContent) ||
       'Add content to generate a summary.',
     mainContent: normalizedMainContent,

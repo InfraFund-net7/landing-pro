@@ -23,6 +23,7 @@ export async function updatePostFromFormData(id, formData, user) {
   const existingPublishedAt = String(
     formData.get('existingPublishedAt') || ''
   ).trim();
+  const seoSummary = String(formData.get('seoSummary') || '').trim();
 
   if (!title) {
     return { ok: false, error: 'Title is required' };
@@ -42,6 +43,7 @@ export async function updatePostFromFormData(id, formData, user) {
     categoriesRaw,
     tagsRaw,
     existingPublishedAt: existingPublishedAt || undefined,
+    seoSummary,
   });
   data.featuredImage = parseFeaturedImageIdFromForm(formData);
 

@@ -73,5 +73,6 @@ export function postToEditorInitialValues(post) {
         ? featuredImageId
         : null,
     featuredImageUrl,
+    seoSummary: String(post.description ?? ''),
   };
 }

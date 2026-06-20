@@ -37,6 +37,7 @@ type PostEditorInitialValues = {
   publishedAt: string;
   featuredImageId?: number | null;
   featuredImageUrl?: string | null;
+  seoSummary?: string;
 };
 
 type PostEditorFormProps = {
@@ -93,7 +94,7 @@ export default function PostEditorForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [summary, setSummary] = useState('');
+  const [summary, setSummary] = useState(initialValues?.seoSummary ?? '');
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [summarizeError, setSummarizeError] = useState('');
 
@@ -178,6 +179,7 @@ export default function PostEditorForm({
       categoriesRaw: String(formData.get('categories') || ''),
       tagsRaw: String(formData.get('tags') || ''),
       postId: postId ? Number(postId) : undefined,
+      seoSummary: summary,
     });
   }, [
     authorAvatarUrl,
@@ -189,6 +191,7 @@ export default function PostEditorForm({
     mainContent,
     postId,
     slug,
+    summary,
     title,
   ]);
 
@@ -244,6 +247,7 @@ export default function PostEditorForm({
       categoriesRaw,
       tagsRaw,
       existingPublishedAt: initialValues?.publishedAt,
+      seoSummary: summary,
     });
 
     if (!body.slug) {
@@ -269,6 +273,7 @@ export default function PostEditorForm({
         'featuredImageId',
         String(formData.get('featuredImageId') ?? '')
       );
+      submitData.set('seoSummary', summary);
 
       const endpoint = isEdit
         ? `/admin/api/posts/${postId}`
@@ -501,6 +506,7 @@ export default function PostEditorForm({
               value={mainContent}
               readOnly
             />
+            <input type="hidden" name="seoSummary" value={summary} readOnly />
             <div className={styles.formGrid}>
               <div>
                 <label htmlFor="title" className={styles.label}>
