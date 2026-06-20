@@ -1,17 +1,16 @@
 'use client';
 
-import { Loader2, UserPlus } from 'lucide-react';
-import { useEffect, useState, type FormEvent } from 'react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { UserPlus } from 'lucide-react';
 import styles from '../create-post/create-post.module.css';
 
-export default function InviteContributorButton() {
+export default function InviteContributorNavLink({
+  isActive = false,
+}: {
+  isActive?: boolean;
+}) {
   const [canInvite, setCanInvite] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [email, setEmail] = useState('');
-  const [fullName, setFullName] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -37,167 +36,17 @@ export default function InviteContributorButton() {
     };
   }, []);
 
-  function resetForm() {
-    setEmail('');
-    setFullName('');
-    setError('');
-    setSuccess('');
-  }
-
-  function closeModal() {
-    setOpen(false);
-    resetForm();
-  }
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSubmitting(true);
-    setError('');
-    setSuccess('');
-
-    const formData = new FormData();
-    formData.set('email', email.trim());
-    formData.set('fullName', fullName.trim());
-
-    try {
-      const response = await fetch('/admin/api/invite-contributor', {
-        method: 'POST',
-        credentials: 'same-origin',
-        body: formData,
-      });
-      const data = (await response.json().catch(() => null)) as {
-        message?: string;
-      } | null;
-
-      if (!response.ok) {
-        setError(data?.message || 'Unable to send invite. Please try again.');
-        return;
-      }
-
-      setSuccess(
-        data?.message ||
-          'Invite sent. They will receive an email to create their password.'
-      );
-      setEmail('');
-      setFullName('');
-    } catch {
-      setError('Network error while sending invite.');
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
   if (!canInvite) {
     return null;
   }
 
   return (
-    <>
-      <button
-        type="button"
-        className={styles.inviteNavButton}
-        onClick={() => {
-          setOpen(true);
-          setError('');
-          setSuccess('');
-        }}
-      >
-        <UserPlus size={20} strokeWidth={1.75} />
-        Create user
-      </button>
-
-      {open ? (
-        <div
-          className={styles.modalBackdrop}
-          role="presentation"
-          onClick={(event) => {
-            if (event.target === event.currentTarget) {
-              closeModal();
-            }
-          }}
-        >
-          <form
-            className={`${styles.modal} ${styles.inviteModal}`}
-            onSubmit={(event) => void handleSubmit(event)}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <h2 className={styles.modalTitle}>Create user</h2>
-            <p className={styles.modalText}>
-              Enter the contributor&apos;s name and email. They will receive a
-              link to create their password and join the blog team.
-            </p>
-
-            {error ? (
-              <p className={`${styles.alert} ${styles.alertError}`}>{error}</p>
-            ) : null}
-            {success ? (
-              <p className={`${styles.alert} ${styles.alertSuccess}`}>
-                {success}
-              </p>
-            ) : null}
-
-            <div className={styles.inviteModalFields}>
-              <div>
-                <label htmlFor="invite-full-name" className={styles.label}>
-                  Full name
-                </label>
-                <input
-                  id="invite-full-name"
-                  name="fullName"
-                  className={styles.field}
-                  placeholder="Dr. Yifeng Tian"
-                  value={fullName}
-                  onChange={(event) => setFullName(event.target.value)}
-                  autoComplete="name"
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="invite-email" className={styles.label}>
-                  Email
-                </label>
-                <input
-                  id="invite-email"
-                  name="email"
-                  type="email"
-                  className={styles.field}
-                  placeholder="contributor@example.com"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  required
-                  autoComplete="email"
-                />
-              </div>
-            </div>
-
-            <div className={styles.modalActions}>
-              <button
-                type="button"
-                className={styles.btnOutline}
-                onClick={closeModal}
-                disabled={submitting}
-              >
-                {success ? 'Close' : 'Cancel'}
-              </button>
-              <button
-                type="submit"
-                className={styles.btnPrimary}
-                disabled={submitting}
-              >
-                {submitting ? (
-                  <>
-                    <Loader2 size={16} className={styles.spinIcon} />
-                    Sending…
-                  </>
-                ) : (
-                  'Invite to join'
-                )}
-              </button>
-            </div>
-          </form>
-        </div>
-      ) : null}
-    </>
+    <Link
+      href="/admin/create-user"
+      className={`${styles.navLink} ${styles.navLinkSpaced} ${isActive ? styles.navLinkActive : ''}`}
+    >
+      <UserPlus size={20} strokeWidth={1.75} />
+      Create user
+    </Link>
   );
 }

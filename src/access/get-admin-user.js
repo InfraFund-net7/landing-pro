@@ -2,7 +2,7 @@ import { importMap } from '@/app/(payload)/admin/importMap.js';
 import config from '@payload-config';
 import { redirect } from 'next/navigation';
 import { initReq } from 'payload-init-req';
-import { canManageContent } from './roles.js';
+import { canManageContent, isMasterAdmin } from './roles.js';
 
 /** @returns {Promise<import('payload').TypedUser | null>} */
 async function getAuthenticatedAdminUser() {
@@ -20,6 +20,15 @@ export async function requireContentManager(
 ) {
   const user = await getAuthenticatedAdminUser();
   if (!canManageContent(user)) {
+    redirect(`/admin/login?redirect=${encodeURIComponent(redirectPath)}`);
+  }
+  return user;
+}
+
+/** @returns {Promise<import('payload').TypedUser>} */
+export async function requireMasterAdmin(redirectPath = '/admin/create-user') {
+  const user = await getAuthenticatedAdminUser();
+  if (!isMasterAdmin(user)) {
     redirect(`/admin/login?redirect=${encodeURIComponent(redirectPath)}`);
   }
   return user;

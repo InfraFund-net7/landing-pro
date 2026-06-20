@@ -17,8 +17,8 @@ export const Users = {
     useAsTitle: 'email',
     group: 'Administration',
     description:
-      'Master admins can invite other admins and assign the Content Editor role.',
-    hidden: ({ user }) => !isMasterAdmin(user),
+      'Use the Create user page in the blog admin portal to invite contributors by email.',
+    hidden: () => true,
   },
   // Vercel: skip session rows in DB (updateOne + transactions use WebSocket and timeout).
   auth: resolveUsersAuthConfig(),
@@ -28,7 +28,6 @@ export const Users = {
     update: masterAdminOrSelf,
     delete: ({ req }) => isMasterAdmin(req.user),
     create: async ({ req }) => {
-      if (isMasterAdmin(req.user)) return true;
       const { totalDocs } = await req.payload.count({
         collection: 'users',
         req,

@@ -74,8 +74,10 @@ export default function AdminPortalLayout({
   children,
 }: AdminPortalLayoutProps) {
   const pathname = usePathname();
-  const isDashboardActive = pathname === '/admin';
+  const isDashboardActive =
+    pathname === '/admin/create-post' || pathname === '/admin';
   const isAccountActive = pathname.startsWith('/admin/account');
+  const isCreateUserActive = pathname.startsWith('/admin/create-user');
 
   return (
     <div className={styles.page}>
@@ -95,7 +97,7 @@ export default function AdminPortalLayout({
 
           <nav className={styles.nav}>
             <Link
-              href="/admin"
+              href="/admin/create-post"
               className={`${styles.navLink} ${isDashboardActive ? styles.navLinkActive : ''}`}
             >
               <Home size={20} strokeWidth={1.75} />
@@ -125,11 +127,11 @@ export default function AdminPortalLayout({
               </div>
             </div>
 
-            <InviteContributorButton />
+            <InviteContributorButton isActive={isCreateUserActive} />
 
             <Link
               href="/admin/account"
-              className={`${styles.navLink} ${styles.navLinkSpaced} ${isAccountActive ? styles.navLinkActive : ''}`}
+              className={`${styles.navLink} ${isAccountActive ? styles.navLinkActive : ''}`}
             >
               <Settings size={20} strokeWidth={1.75} />
               Account Setting

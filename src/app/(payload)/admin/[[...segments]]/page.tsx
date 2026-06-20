@@ -6,7 +6,6 @@ import config from '@payload-config';
 import { generatePageMetadata } from '@payloadcms/next/views';
 import { redirect } from 'next/navigation';
 import { formatAdminURL } from 'payload/shared';
-import { payloadAdminDashboardPage } from '@/lib/payload-admin-dashboard-page';
 import { probeNeonHasPayloadUser } from '@/lib/neon-user-probe.js';
 import { payloadAdminRootPage } from '@/lib/payload-admin-root.js';
 import { importMap } from '../importMap';
@@ -40,6 +39,13 @@ const Page = async ({ params, searchParams }: Args) => {
     redirect('/admin/comment-management');
   }
 
+  if (segments[0] === 'collections' && segments[1] === 'users') {
+    if (segments[2] === 'create') {
+      redirect('/admin/create-user');
+    }
+    redirect('/admin/create-user');
+  }
+
   if (segments[0] === 'collections' && segments[1] === 'posts') {
     const postId = segments[2];
     if (postId && /^\d+$/.test(postId)) {
@@ -65,12 +71,7 @@ const Page = async ({ params, searchParams }: Args) => {
       }
     }
 
-    return payloadAdminDashboardPage({
-      config,
-      importMap,
-      params: Promise.resolve({ segments: [] }),
-      searchParams,
-    });
+    redirect('/admin/create-post');
   }
 
   return payloadAdminRootPage({
