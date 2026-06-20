@@ -76,6 +76,9 @@ Also set manually (not from Neon): `PAYLOAD_PUBLIC_SERVER_URL`, `INFRA_CONTACT_F
 | `NEXT_PUBLIC_DASH_LOGIN_URL` | `https://dashboard.infrafund.net/login` |
 | `SKIP_PAYLOAD_FETCH_AT_BUILD` | `1` (optional; build skips CMS without it too) |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob (CMS media uploads) |
+| `BLOG_SUMMARIZE_AZURE_API_KEY` | Azure OpenAI key for post **Summarize** in the manual editor |
+| `BLOG_SUMMARIZE_AZURE_BASE_URL` | Optional; defaults to `https://blog-post-news-resource.openai.azure.com/openai/v1` |
+| `BLOG_SUMMARIZE_MODEL` | Optional; defaults to `gpt-5.4-mini` |
 
 ### Preview (`develop`, `beta.infrafund.net`)
 
@@ -91,6 +94,9 @@ Also set manually (not from Neon): `PAYLOAD_PUBLIC_SERVER_URL`, `INFRA_CONTACT_F
 | `NEXT_PUBLIC_DASH_LOGIN_URL` | Dev dashboard login |
 | `SKIP_PAYLOAD_FETCH_AT_BUILD` | `1` (optional) |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob (CMS media uploads) |
+| `BLOG_SUMMARIZE_AZURE_API_KEY` | Azure OpenAI key for post **Summarize** in the manual editor |
+| `BLOG_SUMMARIZE_AZURE_BASE_URL` | Optional; defaults to `https://blog-post-news-resource.openai.azure.com/openai/v1` |
+| `BLOG_SUMMARIZE_MODEL` | Optional; defaults to `gpt-5.4-mini` |
 
 Optional CMS: `CMS_REPLACE_EXISTING_PAGES`. Home page uses Payload when `DATABASE_URL` is set.
 

@@ -20,7 +20,7 @@ import {
   calculateReadTimeFromContent,
   countWordsInContent,
 } from '@/lib/read-time.js';
-import { Eye, Save, Send, Sparkles, Trash2 } from 'lucide-react';
+import { Eye, Save, Send, Sparkles, Trash2, Wand2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useRef, useState, type FormEvent } from 'react';
 import styles from '../create-post/create-post.module.css';
@@ -93,6 +93,9 @@ export default function PostEditorForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [summary, setSummary] = useState('');
+  const [isSummarizing, setIsSummarizing] = useState(false);
+  const [summarizeError, setSummarizeError] = useState('');
 
   const estimatedReadTime = useMemo(
     () => calculateReadTimeFromContent(mainContent),
@@ -113,6 +116,44 @@ export default function PostEditorForm({
     setTitle(value);
     if (!slugTouched) {
       setSlug(slugifyPost(value));
+    }
+  };
+
+  const handleSummarize = async () => {
+    setSummarizeError('');
+    const contentHtml = editorRef.current?.getHtml() ?? mainContent;
+
+    if (isEmptyHtml(contentHtml)) {
+      setSummarizeError('Add main content before generating a summary.');
+      return;
+    }
+
+    setIsSummarizing(true);
+
+    try {
+      const response = await fetch('/admin/api/summarize-post', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mainContent: contentHtml }),
+      });
+      const data = (await response.json().catch(() => null)) as {
+        summary?: string;
+        message?: string;
+      };
+
+      if (!response.ok || !data?.summary) {
+        setSummarizeError(
+          parsePayloadApiError(data, 'Unable to generate summary.')
+        );
+        return;
+      }
+
+      setSummary(data.summary);
+    } catch {
+      setSummarizeError('Network error while generating summary.');
+    } finally {
+      setIsSummarizing(false);
     }
   };
 
@@ -543,6 +584,36 @@ export default function PostEditorForm({
                   defaultValue={initialValues?.mainContent}
                   onChange={setMainContent}
                 />
+                <div className={styles.editorFooterRow}>
+                  <button
+                    type="button"
+                    className={styles.summarizeBtn}
+                    disabled={isSummarizing || isSubmitting}
+                    onClick={() => void handleSummarize()}
+                  >
+                    <Wand2 size={15} />
+                    {isSummarizing ? 'Summarizing…' : 'Summarize'}
+                  </button>
+                </div>
+                {summarizeError ? (
+                  <p
+                    className={`${styles.alert} ${styles.alertError}`}
+                    style={{ marginTop: 12, marginBottom: 0 }}
+                  >
+                    {summarizeError}
+                  </p>
+                ) : null}
+                <div className={styles.summaryPanel}>
+                  <p className={styles.summaryPanelLabel}>SEO summary</p>
+                  {summary ? (
+                    <p className={styles.summaryPanelText}>{summary}</p>
+                  ) : (
+                    <p className={styles.summaryPanelPlaceholder}>
+                      Generate a professional, SEO-optimized summary from your
+                      main content.
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div className={styles.row2Bottom}>

@@ -495,6 +495,78 @@
   font-weight: 600;
 }
 
+.editorFooterRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.summarizeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(36, 255, 142, 0.35);
+  background: linear-gradient(
+    135deg,
+    rgba(36, 255, 142, 0.12),
+    rgba(36, 255, 142, 0.04)
+  );
+  color: #24ff8e;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    transform 0.15s;
+}
+
+.summarizeBtn:hover:not(:disabled) {
+  background: rgba(36, 255, 142, 0.16);
+  border-color: #24ff8e;
+  transform: translateY(-1px);
+}
+
+.summaryPanel {
+  margin-top: 14px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 1px solid #24365f;
+  background: linear-gradient(
+    180deg,
+    rgba(16, 34, 71, 0.55),
+    rgba(13, 20, 37, 0.85)
+  );
+}
+
+.summaryPanelLabel {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #7d8fb3;
+}
+
+.summaryPanelText {
+  margin: 0;
+  color: #dbe6ff;
+  font-size: 14px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.summaryPanelPlaceholder {
+  margin: 0;
+  color: #8a9bb8;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
 .field {
   width: 100%;
   background: #0d1425;
