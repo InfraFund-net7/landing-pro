@@ -17,7 +17,7 @@ import {
   Search,
   Trash2,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styles from './post-management.module.css';
 
 type PostManagementPanelProps = {
@@ -83,26 +83,32 @@ export default function PostManagementPanel({
   flashSuccess,
 }: PostManagementPanelProps) {
   const router = useRouter();
+  const [items, setItems] = useState(posts);
   const [search, setSearch] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<AdminPost | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deleteError, setDeleteError] = useState('');
   const [actionError, setActionError] = useState('');
   const [actionSuccess, setActionSuccess] = useState(flashSuccess ?? '');
 
+  useEffect(() => {
+    setItems(posts);
+  }, [posts]);
+
   const categories = useMemo(() => {
     const values = new Set<string>();
-    for (const post of posts) {
+    for (const post of items) {
       for (const category of post.categories) {
         values.add(category);
       }
     }
     return [...values].sort((a, b) => a.localeCompare(b));
-  }, [posts]);
+  }, [items]);
 
   const filteredPosts = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    let next = posts.filter((post) => {
+    let next = items.filter((post) => {
       if (statusFilter !== 'all' && post.status !== statusFilter) {
         return false;
       }
@@ -154,10 +160,16 @@ export default function PostManagementPanel({
     });
 
     return next;
-  }, [posts, search, statusFilter, categoryFilter, sort]);
+  }, [items, search, statusFilter, categoryFilter, sort]);
+
+  const openDeleteModal = (post: AdminPost) => {
+    setDeleteError('');
+    setDeleteTarget(post);
+  };
 
   const handleDelete = async (post: AdminPost) => {
     setDeletingId(post.id);
+    setDeleteError('');
     setActionError('');
     setActionSuccess('');
 
@@ -166,7 +178,9 @@ export default function PostManagementPanel({
         method: 'DELETE',
         credentials: 'same-origin',
       });
-      const data = (await response.json()) as { message?: string };
+      const data = (await response.json().catch(() => null)) as {
+        message?: string;
+      } | null;
 
       if (response.status === 401) {
         window.location.href =
@@ -176,15 +190,20 @@ export default function PostManagementPanel({
       }
 
       if (!response.ok) {
-        setActionError(data.message || 'Unable to delete post.');
+        const message = data?.message || 'Unable to delete post.';
+        setDeleteError(message);
+        setActionError(message);
         return;
       }
 
+      setItems((current) => current.filter((entry) => entry.id !== post.id));
       setDeleteTarget(null);
       setActionSuccess('Post deleted.');
       router.refresh();
     } catch {
-      setActionError('Unable to delete post.');
+      const message = 'Unable to delete post.';
+      setDeleteError(message);
+      setActionError(message);
     } finally {
       setDeletingId(null);
     }
@@ -316,7 +335,7 @@ export default function PostManagementPanel({
 
       <p className={styles.resultsMeta}>
         Showing <strong>{filteredPosts.length}</strong> of{' '}
-        <strong>{posts.length}</strong> posts
+        <strong>{items.length}</strong> posts
         {search.trim() ? ` matching “${search.trim()}”` : ''}
       </p>
 
@@ -343,7 +362,7 @@ export default function PostManagementPanel({
                 <PostRow
                   key={post.id}
                   post={post}
-                  onDelete={() => setDeleteTarget(post)}
+                  onDelete={() => openDeleteModal(post)}
                 />
               ))}
             </tbody>
@@ -359,6 +378,9 @@ export default function PostManagementPanel({
               This permanently removes &ldquo;{deleteTarget.title}&rdquo; from
               the CMS and the public blog. This cannot be undone.
             </p>
+            {deleteError ? (
+              <p className={styles.modalError}>{deleteError}</p>
+            ) : null}
             <div className={styles.modalActions}>
               <button
                 type="button"

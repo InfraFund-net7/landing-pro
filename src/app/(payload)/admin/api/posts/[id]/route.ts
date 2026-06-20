@@ -37,7 +37,7 @@ export async function POST(request: Request, context: RouteContext) {
 
 export async function DELETE(_request: Request, context: RouteContext) {
   const { id } = await context.params;
-  const { user } = await getAdminApiContext(_request);
+  const { user, payload } = await getAdminApiContext(_request);
 
   if (!user) {
     return NextResponse.json(
@@ -53,7 +53,7 @@ export async function DELETE(_request: Request, context: RouteContext) {
     );
   }
 
-  const result = await deletePostFromAdmin(id, user);
+  const result = await deletePostFromAdmin(id, user, payload);
 
   if (!result.ok) {
     return NextResponse.json({ message: result.error }, { status: 400 });

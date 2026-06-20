@@ -418,6 +418,17 @@
   line-height: 1.5;
 }
 
+.modalError {
+  margin: -8px 0 16px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #7f1d1d;
+  background: rgba(127, 29, 29, 0.15);
+  color: #fca5a5;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 .modalActions {
   display: flex;
   justify-content: flex-end;
