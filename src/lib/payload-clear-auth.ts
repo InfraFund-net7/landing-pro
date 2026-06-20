@@ -1,41 +1,18 @@
 import { importMap } from '@/app/(payload)/admin/importMap.js';
 import config from '@payload-config';
 import { cookies } from 'next/headers';
-import { generateExpiredPayloadCookie, getPayload } from 'payload';
-import { resolveUsersAuthConfig } from './payload-auth-cookies.js';
-
-type CollectionAuthConfig = {
-  cookies?: {
-    domain?: string;
-    secure?: boolean;
-    sameSite?: boolean | 'Lax' | 'Strict' | 'None' | 'lax' | 'strict' | 'none';
-  };
-  tokenExpiration?: number;
-};
-
-function resolveCollectionAuthConfigForCookies(): CollectionAuthConfig {
-  const auth = resolveUsersAuthConfig();
-  if (typeof auth === 'object' && auth !== null) {
-    return auth;
-  }
-
-  return {
-    cookies: {
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Lax',
-    },
-    tokenExpiration: 7200,
-  };
-}
-
-type CookieToSet = Parameters<Awaited<ReturnType<typeof cookies>>['set']>[0];
+import { getPayload } from 'payload';
 
 /** Remove Payload auth cookies, including domain-scoped cookies on Vercel. */
 export async function clearPayloadAuthCookies() {
   const payload = await getPayload({ config, importMap });
-  const collectionAuthConfig = resolveCollectionAuthConfigForCookies();
+  const usersAuth = payload.collections.users.config.auth;
   const cookiePrefix = payload.config.cookiePrefix;
-  const domain = collectionAuthConfig.cookies?.domain;
+  const authCookies =
+    typeof usersAuth === 'object' && usersAuth !== null
+      ? usersAuth.cookies
+      : undefined;
+  const domain = authCookies?.domain;
   const store = await cookies();
 
   const names = new Set<string>([`${cookiePrefix}-token`]);
@@ -52,11 +29,17 @@ export async function clearPayloadAuthCookies() {
     }
   }
 
-  const expiredCookie = generateExpiredPayloadCookie({
-    collectionAuthConfig,
-    cookiePrefix,
-    returnCookieAsObject: true,
-  }) as CookieToSet;
+  const expiredCookie = {
+    name: `${cookiePrefix}-token`,
+    value: '',
+    path: '/',
+    httpOnly: true,
+    secure: authCookies?.secure ?? process.env.NODE_ENV === 'production',
+    sameSite: 'lax' as const,
+    expires: new Date(0),
+    maxAge: 0,
+    ...(domain ? { domain } : {}),
+  };
 
   store.set(expiredCookie);
 }
