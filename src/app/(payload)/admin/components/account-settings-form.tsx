@@ -3,7 +3,7 @@
 import AdminPortalLayout from '@/app/(payload)/admin/components/admin-portal-layout';
 import { cmsImageNeedsUnoptimized } from '@/lib/cms-next-image';
 import { parsePayloadApiError } from '@/lib/admin-post-form-utils.js';
-import { Upload, User } from 'lucide-react';
+import { Upload, User, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRef, useState, type FormEvent } from 'react';
 import styles from '../create-post/create-post.module.css';
@@ -48,6 +48,12 @@ export default function AccountSettingsForm({
   const pickFile = () => {
     setFormError('');
     inputRef.current?.click();
+  };
+
+  const clearPhoto = () => {
+    setPreviewUrl(null);
+    setMediaId(null);
+    setFormError('');
   };
 
   const handleFile = async (file: File) => {
@@ -168,31 +174,53 @@ export default function AccountSettingsForm({
                 }}
               />
               {previewUrl ? (
-                <div className={styles.coverPreview}>
-                  <Image
-                    src={previewUrl}
-                    alt={fullName || userName}
-                    width={120}
-                    height={120}
-                    unoptimized={cmsImageNeedsUnoptimized(previewUrl)}
-                    className={styles.coverPreviewImg}
-                  />
-                </div>
+                <>
+                  <div className={styles.profilePhotoPreview}>
+                    <Image
+                      src={previewUrl}
+                      alt={fullName || userName}
+                      fill
+                      unoptimized={cmsImageNeedsUnoptimized(previewUrl)}
+                      className={styles.coverPreviewImg}
+                      sizes="160px"
+                    />
+                  </div>
+                  <div className={styles.profilePhotoActions}>
+                    <button
+                      type="button"
+                      className={styles.btnOutline}
+                      onClick={pickFile}
+                      disabled={uploading}
+                    >
+                      <Upload size={16} />
+                      {uploading ? 'Uploading…' : 'Replace'}
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.coverRemoveBtn}
+                      onClick={clearPhoto}
+                      disabled={uploading}
+                      aria-label="Remove profile photo"
+                    >
+                      <X size={16} />
+                      Remove
+                    </button>
+                  </div>
+                </>
               ) : (
-                <div className={styles.coverUploadZone}>
+                <button
+                  type="button"
+                  className={`${styles.coverUploadZone} ${styles.profilePhotoUploadZone}`}
+                  onClick={pickFile}
+                  disabled={uploading}
+                >
                   <User size={32} />
+                  <span className={styles.coverUploadTitle}>
+                    {uploading ? 'Uploading…' : 'Upload photo'}
+                  </span>
                   <span className={styles.coverUploadHint}>No photo yet</span>
-                </div>
+                </button>
               )}
-              <button
-                type="button"
-                className={styles.btnOutline}
-                onClick={pickFile}
-                disabled={uploading}
-              >
-                <Upload size={16} />
-                {uploading ? 'Uploading…' : 'Upload photo'}
-              </button>
             </div>
           </div>
 

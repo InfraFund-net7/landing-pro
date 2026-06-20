@@ -780,6 +780,28 @@
   color: #fecaca;
 }
 
+.profilePhotoPreview {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #1e2b47;
+  background: #080f1d;
+}
+
+.profilePhotoActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.profilePhotoUploadZone {
+  width: 160px;
+  min-height: 160px;
+  padding: 20px 16px;
+}
+
 @media (max-width: 900px) {
   .shell {
     flex-direction: column;
