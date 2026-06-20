@@ -1,4 +1,4 @@
-import { canManageContent } from '@/access/roles.js';
+import { canManageContent, isMasterAdmin } from '@/access/roles.js';
 import { importMap } from '@/app/(payload)/admin/importMap.js';
 import config from '@payload-config';
 import { executeAuthStrategies, getPayload } from 'payload';
@@ -19,4 +19,9 @@ export async function getAdminApiContext(request) {
 /** @param {import('payload').TypedUser | null | undefined} user */
 export function isContentManager(user) {
   return canManageContent(user);
+}
+
+/** @param {import('payload').TypedUser | null | undefined} user */
+export function isMasterAdminUser(user) {
+  return isMasterAdmin(user);
 }

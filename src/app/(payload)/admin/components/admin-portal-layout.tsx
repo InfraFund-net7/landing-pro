@@ -1,6 +1,7 @@
 'use client';
 
 import AdminHeaderActions from '@/app/(payload)/admin/components/admin-header-actions';
+import InviteContributorButton from '@/app/(payload)/admin/components/invite-contributor-button';
 import InfraFundLogo from '@/../public/svg/infrafund.svg';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -123,6 +124,8 @@ export default function AdminPortalLayout({
                 })}
               </div>
             </div>
+
+            <InviteContributorButton />
 
             <Link
               href="/admin/account"

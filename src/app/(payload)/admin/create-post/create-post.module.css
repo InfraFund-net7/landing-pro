@@ -802,6 +802,51 @@
   padding: 20px 16px;
 }
 
+.inviteNavButton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #24ff8e;
+  background: rgba(36, 255, 142, 0.06);
+  color: #24ff8e;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.inviteNavButton:hover {
+  background: rgba(36, 255, 142, 0.12);
+}
+
+.inviteModal {
+  max-width: 480px;
+}
+
+.inviteModalFields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.spinIcon {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 900px) {
   .shell {
     flex-direction: column;
