@@ -1,4 +1,5 @@
 import { requireContentManager } from '@/access/get-admin-user';
+import { isMasterAdmin } from '@/access/roles.js';
 import PostManagementPanel from '@/app/(payload)/admin/post-management/post-management-panel';
 import {
   buildAdminPostStats,
@@ -55,6 +56,7 @@ export default async function PostManagementPage({ searchParams }: PageProps) {
       sort={parseSort(qs.sort)}
       userName={displayName}
       userInitial={userInitial}
+      isMasterAdmin={isMasterAdmin(user)}
       flashSuccess={qs.success}
     />
   );

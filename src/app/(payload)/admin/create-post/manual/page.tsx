@@ -1,4 +1,5 @@
 import { requireContentManager } from '@/access/get-admin-user';
+import { isMasterAdmin } from '@/access/roles.js';
 import PostEditorForm from '@/app/(payload)/admin/components/post-editor-form';
 import { fetchUserProfileForEdit } from '@/lib/admin-update-profile.js';
 import { getUserDisplayName } from '@/lib/user-profile.js';
@@ -24,9 +25,12 @@ export default async function ManualCreatePostPage({
       mode="create"
       userName={displayName}
       userInitial={userInitial}
+      isMasterAdmin={isMasterAdmin(user)}
       authorLabel={displayName}
       authorTitle={profile.jobTitle}
       authorAvatarUrl={profile.profilePhotoUrl ?? ''}
+      authorLinkedInUrl={profile.linkedinUrl ?? ''}
+      authorXUrl={profile.xUrl ?? ''}
       error={qs.error}
       success={qs.success}
       backToAiHref="/admin/create-post"

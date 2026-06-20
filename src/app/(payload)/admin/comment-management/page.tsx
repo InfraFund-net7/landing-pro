@@ -1,4 +1,5 @@
 import { requireContentManager } from '@/access/get-admin-user';
+import { isMasterAdmin } from '@/access/roles.js';
 import CommentManagementPanel from '@/app/(payload)/admin/comment-management/comment-management-panel';
 import { fetchUserProfileForEdit } from '@/lib/admin-update-profile.js';
 import { fetchAllCommentsForAdmin } from '@/lib/cms-comments';
@@ -55,6 +56,7 @@ export default async function CommentManagementPage({
       pendingCount={pendingCount}
       userName={displayName}
       userInitial={userInitial}
+      isMasterAdmin={isMasterAdmin(user)}
       editorProfile={{
         name: displayName,
         title: profile.jobTitle,

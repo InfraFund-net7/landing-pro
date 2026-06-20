@@ -45,9 +45,12 @@ type PostEditorFormProps = {
   initialValues?: PostEditorInitialValues;
   userName: string;
   userInitial: string;
+  isMasterAdmin?: boolean;
   authorLabel: string;
   authorTitle?: string;
   authorAvatarUrl?: string;
+  authorLinkedInUrl?: string;
+  authorXUrl?: string;
   error?: string;
   success?: string;
   backToAiHref?: string;
@@ -59,9 +62,12 @@ export default function PostEditorForm({
   initialValues,
   userName,
   userInitial,
+  isMasterAdmin = false,
   authorLabel,
   authorTitle = '',
   authorAvatarUrl = '',
+  authorLinkedInUrl = '',
+  authorXUrl = '',
   error: initialError,
   success: initialSuccess,
   backToAiHref,
@@ -125,6 +131,8 @@ export default function PostEditorForm({
       userDisplayName: authorLabel,
       authorTitle,
       authorAvatarUrl,
+      authorLinkedInUrl,
+      authorXUrl,
       coverImageUrl,
       categoriesRaw: String(formData.get('categories') || ''),
       tagsRaw: String(formData.get('tags') || ''),
@@ -132,6 +140,8 @@ export default function PostEditorForm({
     });
   }, [
     authorAvatarUrl,
+    authorLinkedInUrl,
+    authorXUrl,
     authorLabel,
     authorTitle,
     coverImageUrl,
@@ -339,7 +349,11 @@ export default function PostEditorForm({
       ) : null}
 
       <div className={viewMode === 'preview' ? styles.editorHidden : undefined}>
-        <AdminPortalLayout userName={userName} userInitial={userInitial}>
+        <AdminPortalLayout
+          userName={userName}
+          userInitial={userInitial}
+          isMasterAdmin={isMasterAdmin}
+        >
           <div className={styles.pageHeader}>
             <h1 className={styles.pageTitle}>
               {isEdit ? 'Edit Post' : 'Create New Post'}

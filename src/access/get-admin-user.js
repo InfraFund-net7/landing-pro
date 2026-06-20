@@ -29,6 +29,9 @@ export async function requireContentManager(
 export async function requireMasterAdmin(redirectPath = '/admin/create-user') {
   const user = await getAuthenticatedAdminUser();
   if (!isMasterAdmin(user)) {
+    if (canManageContent(user)) {
+      redirect('/admin/create-post');
+    }
     redirect(`/admin/login?redirect=${encodeURIComponent(redirectPath)}`);
   }
   return user;

@@ -12,6 +12,8 @@ type AccountProfileValues = {
   email: string;
   fullName: string;
   jobTitle: string;
+  linkedinUrl?: string;
+  xUrl?: string;
   profilePhotoId?: number | null;
   profilePhotoUrl?: string | null;
 };
@@ -19,6 +21,7 @@ type AccountProfileValues = {
 type AccountSettingsFormProps = {
   userName: string;
   userInitial: string;
+  isMasterAdmin?: boolean;
   initialValues: AccountProfileValues;
   error?: string;
   success?: string;
@@ -27,6 +30,7 @@ type AccountSettingsFormProps = {
 export default function AccountSettingsForm({
   userName,
   userInitial,
+  isMasterAdmin = false,
   initialValues,
   error: initialError,
   success: initialSuccess,
@@ -34,6 +38,10 @@ export default function AccountSettingsForm({
   const inputRef = useRef<HTMLInputElement>(null);
   const [fullName, setFullName] = useState(initialValues.fullName || userName);
   const [jobTitle, setJobTitle] = useState(initialValues.jobTitle ?? '');
+  const [linkedinUrl, setLinkedinUrl] = useState(
+    initialValues.linkedinUrl ?? ''
+  );
+  const [xUrl, setXUrl] = useState(initialValues.xUrl ?? '');
   const [previewUrl, setPreviewUrl] = useState(
     initialValues.profilePhotoUrl ?? null
   );
@@ -111,6 +119,8 @@ export default function AccountSettingsForm({
     const formData = new FormData();
     formData.set('fullName', fullName.trim());
     formData.set('jobTitle', jobTitle.trim());
+    formData.set('linkedinUrl', linkedinUrl.trim());
+    formData.set('xUrl', xUrl.trim());
     formData.set('profilePhotoId', mediaId != null ? String(mediaId) : '');
 
     setIsSubmitting(true);
@@ -137,13 +147,17 @@ export default function AccountSettingsForm({
   };
 
   return (
-    <AdminPortalLayout userName={userName} userInitial={userInitial}>
+    <AdminPortalLayout
+      userName={userName}
+      userInitial={userInitial}
+      isMasterAdmin={isMasterAdmin}
+    >
       <div className={styles.pageHeader}>
         <div>
           <h1 className={styles.pageTitle}>Account Settings</h1>
           <p className={styles.fieldHint}>
-            Update how your name, title, and photo appear on blog posts you
-            author.
+            Update how your name, title, photo, and social links appear on blog
+            posts you author.
           </p>
         </div>
       </div>
@@ -264,6 +278,36 @@ export default function AccountSettingsForm({
               placeholder="Head of Research and Development"
               value={jobTitle}
               onChange={(event) => setJobTitle(event.target.value)}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="linkedinUrl" className={styles.label}>
+              LinkedIn URL
+            </label>
+            <input
+              id="linkedinUrl"
+              name="linkedinUrl"
+              type="url"
+              className={styles.field}
+              placeholder="https://www.linkedin.com/in/your-name"
+              value={linkedinUrl}
+              onChange={(event) => setLinkedinUrl(event.target.value)}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="xUrl" className={styles.label}>
+              X URL
+            </label>
+            <input
+              id="xUrl"
+              name="xUrl"
+              type="url"
+              className={styles.field}
+              placeholder="https://x.com/your-handle"
+              value={xUrl}
+              onChange={(event) => setXUrl(event.target.value)}
             />
           </div>
 

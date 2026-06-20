@@ -76,6 +76,7 @@ const suggestions = [
 type AiCompositionDashboardProps = {
   userName: string;
   userInitial: string;
+  isMasterAdmin?: boolean;
   modelLabel?: string;
 };
 
@@ -96,6 +97,7 @@ function getReasoningFromParts(parts: UIMessage['parts']): string {
 export default function AiCompositionDashboard({
   userName,
   userInitial,
+  isMasterAdmin = false,
   modelLabel = 'gpt-4.1-mini',
 }: AiCompositionDashboardProps) {
   const router = useRouter();
@@ -197,7 +199,11 @@ export default function AiCompositionDashboard({
   }, [draft]);
 
   return (
-    <AdminPortalLayout userName={userName} userInitial={userInitial}>
+    <AdminPortalLayout
+      userName={userName}
+      userInitial={userInitial}
+      isMasterAdmin={isMasterAdmin}
+    >
       <TooltipProvider>
         <div className={`dark ${styles.workspace}`}>
           <header className={styles.header}>

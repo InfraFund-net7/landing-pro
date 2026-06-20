@@ -14,6 +14,8 @@ export interface Blog {
   author: string;
   authorTitle?: string;
   authorAvatar?: string;
+  authorLinkedInUrl?: string;
+  authorXUrl?: string;
   category: string;
   categories?: string[];
   tags?: string[];

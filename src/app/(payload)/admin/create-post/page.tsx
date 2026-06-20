@@ -1,4 +1,5 @@
 import { requireContentManager } from '@/access/get-admin-user';
+import { isMasterAdmin } from '@/access/roles.js';
 import AiCompositionDashboard from '@/app/(payload)/admin/components/ai-composition-dashboard';
 import { fetchUserProfileForEdit } from '@/lib/admin-update-profile.js';
 import { getUserDisplayName } from '@/lib/user-profile.js';
@@ -16,6 +17,7 @@ export default async function CreatePostPage() {
     <AiCompositionDashboard
       userName={displayName}
       userInitial={userInitial}
+      isMasterAdmin={isMasterAdmin(user)}
       modelLabel={modelLabel}
     />
   );

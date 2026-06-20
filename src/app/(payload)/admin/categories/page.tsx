@@ -1,4 +1,5 @@
 import { requireContentManager } from '@/access/get-admin-user';
+import { isMasterAdmin } from '@/access/roles.js';
 import BlogTaxonomyPanel from '@/app/(payload)/admin/components/blog-taxonomy-panel';
 import {
   collectUniqueCategories,
@@ -23,6 +24,7 @@ export default async function CategoriesPage() {
       emptyMessage="No categories yet. Add categories when creating or editing a post."
       userName={displayName}
       userInitial={userInitial}
+      isMasterAdmin={isMasterAdmin(user)}
       linkMode="category"
     />
   );

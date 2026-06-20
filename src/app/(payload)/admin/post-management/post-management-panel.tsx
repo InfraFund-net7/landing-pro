@@ -28,6 +28,7 @@ type PostManagementPanelProps = {
   sort: AdminPostSort;
   userName: string;
   userInitial: string;
+  isMasterAdmin?: boolean;
   flashSuccess?: string;
 };
 
@@ -80,6 +81,7 @@ export default function PostManagementPanel({
   sort,
   userName,
   userInitial,
+  isMasterAdmin = false,
   flashSuccess,
 }: PostManagementPanelProps) {
   const router = useRouter();
@@ -210,7 +212,11 @@ export default function PostManagementPanel({
   };
 
   return (
-    <AdminPortalLayout userName={userName} userInitial={userInitial}>
+    <AdminPortalLayout
+      userName={userName}
+      userInitial={userInitial}
+      isMasterAdmin={isMasterAdmin}
+    >
       <div className={styles.header}>
         <div className={styles.titleBlock}>
           <h1>All Posts</h1>

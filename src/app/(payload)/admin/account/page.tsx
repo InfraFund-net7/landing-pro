@@ -1,4 +1,5 @@
 import { requireContentManager } from '@/access/get-admin-user';
+import { isMasterAdmin } from '@/access/roles.js';
 import AccountSettingsForm from '@/app/(payload)/admin/components/account-settings-form';
 import { fetchUserProfileForEdit } from '@/lib/admin-update-profile.js';
 import { getUserDisplayName } from '@/lib/user-profile.js';
@@ -21,6 +22,7 @@ export default async function AccountSettingsPage({ searchParams }: PageProps) {
     <AccountSettingsForm
       userName={displayName}
       userInitial={userInitial}
+      isMasterAdmin={isMasterAdmin(user)}
       initialValues={profile}
       error={qs.error}
       success={qs.success}

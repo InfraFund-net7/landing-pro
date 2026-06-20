@@ -17,7 +17,11 @@ export default async function CreateUserPage() {
   const userInitial = displayName.charAt(0).toUpperCase();
 
   return (
-    <AdminPortalLayout userName={displayName} userInitial={userInitial}>
+    <AdminPortalLayout
+      userName={displayName}
+      userInitial={userInitial}
+      isMasterAdmin
+    >
       <CreateUserPanel />
     </AdminPortalLayout>
   );

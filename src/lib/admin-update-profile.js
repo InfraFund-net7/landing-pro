@@ -20,6 +20,8 @@ export async function fetchUserProfileForEdit(user) {
     email: String(doc.email ?? user.email ?? ''),
     fullName: String(doc.fullName ?? ''),
     jobTitle: String(doc.jobTitle ?? ''),
+    linkedinUrl: String(doc.linkedinUrl ?? ''),
+    xUrl: String(doc.xUrl ?? ''),
     profilePhotoId:
       doc.profilePhoto && typeof doc.profilePhoto === 'object'
         ? Number(doc.profilePhoto.id)
@@ -37,6 +39,8 @@ export async function fetchUserProfileForEdit(user) {
 export async function updateProfileFromFormData(formData, user) {
   const fullName = String(formData.get('fullName') || '').trim();
   const jobTitle = String(formData.get('jobTitle') || '').trim();
+  const linkedinUrl = String(formData.get('linkedinUrl') || '').trim();
+  const xUrl = String(formData.get('xUrl') || '').trim();
   const profilePhotoRaw = String(formData.get('profilePhotoId') ?? '').trim();
   const profilePhoto =
     profilePhotoRaw && Number.isFinite(Number(profilePhotoRaw))
@@ -58,6 +62,8 @@ export async function updateProfileFromFormData(formData, user) {
       data: {
         fullName,
         jobTitle,
+        linkedinUrl,
+        xUrl,
         profilePhoto,
       },
     });

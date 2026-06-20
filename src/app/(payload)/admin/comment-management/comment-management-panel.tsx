@@ -20,6 +20,7 @@ type CommentManagementPanelProps = {
   editorProfile: EditorReplyProfile;
   userName: string;
   userInitial: string;
+  isMasterAdmin?: boolean;
   flashSuccess?: string;
   flashError?: string;
   focusCommentId?: number | null;
@@ -43,6 +44,7 @@ export default function CommentManagementPanel({
   editorProfile,
   userName,
   userInitial,
+  isMasterAdmin = false,
   flashSuccess,
   flashError,
   focusCommentId = null,
@@ -182,7 +184,11 @@ export default function CommentManagementPanel({
   );
 
   return (
-    <AdminPortalLayout userName={userName} userInitial={userInitial}>
+    <AdminPortalLayout
+      userName={userName}
+      userInitial={userInitial}
+      isMasterAdmin={isMasterAdmin}
+    >
       <div className={styles.header}>
         <div className={styles.titleBlock}>
           <h1>Comments</h1>

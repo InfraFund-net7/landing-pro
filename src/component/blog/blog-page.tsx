@@ -1,11 +1,12 @@
 import Image from 'next/image';
+import linkedinIcon from '@/../public/svg/linkedin.svg';
+import xIcon from '@/../public/svg/X.svg';
 import { cmsImageNeedsUnoptimized } from '@/lib/cms-next-image';
 import type { RefObject } from 'react';
 import BlogComments from './blog-comments';
 import BlogContents from './blog-contents';
 import CmsBlogContent from './cms-blog-content';
 import RelatedBlog from './related-blog';
-import ProjectSection from './project-section';
 import type { Blog } from '@/data/mockBlog';
 import type { BlogComment } from '@/lib/cms-comments';
 
@@ -73,12 +74,21 @@ export default function BlogPage({
                       <div className="w-[1px] h-4 bg-[#4D4D4D]" />
                       <span>{blog.readTime}</span>
                     </div>
+                    <AuthorSocialLinks
+                      linkedinUrl={blog.authorLinkedInUrl}
+                      xUrl={blog.authorXUrl}
+                      authorName={blog.author}
+                      className="flex lg:hidden justify-center sm:justify-start pt-1"
+                    />
                   </div>
                 </div>
               </div>
-              <div className="hidden lg:flex w-[108px] h-full justify-center items-end">
-                Socials
-              </div>
+              <AuthorSocialLinks
+                linkedinUrl={blog.authorLinkedInUrl}
+                xUrl={blog.authorXUrl}
+                authorName={blog.author}
+                className="hidden lg:flex w-[108px] h-full justify-center items-end"
+              />
             </div>
           </div>
 
@@ -117,7 +127,49 @@ export default function BlogPage({
       ) : null}
       <hr className="w-full h-[1px] bg-[#DCDCE0]" />
       <RelatedBlog />
-      <ProjectSection />
+    </div>
+  );
+}
+
+function AuthorSocialLinks({
+  linkedinUrl,
+  xUrl,
+  authorName,
+  className = '',
+}: {
+  linkedinUrl?: string;
+  xUrl?: string;
+  authorName: string;
+  className?: string;
+}) {
+  if (!linkedinUrl && !xUrl) {
+    return null;
+  }
+
+  return (
+    <div className={`gap-3 ${className}`}>
+      {linkedinUrl ? (
+        <a
+          href={linkedinUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Open ${authorName} on LinkedIn`}
+          className="inline-flex transition-opacity hover:opacity-80"
+        >
+          <Image src={linkedinIcon} alt="" width={20} height={20} />
+        </a>
+      ) : null}
+      {xUrl ? (
+        <a
+          href={xUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Open ${authorName} on X`}
+          className="inline-flex transition-opacity hover:opacity-80"
+        >
+          <Image src={xIcon} alt="" width={17} height={15} />
+        </a>
+      ) : null}
     </div>
   );
 }

@@ -11,6 +11,7 @@ type BlogTaxonomyPanelProps = {
   emptyMessage: string;
   userName: string;
   userInitial: string;
+  isMasterAdmin?: boolean;
   linkMode?: 'category';
 };
 
@@ -32,10 +33,15 @@ export default function BlogTaxonomyPanel({
   emptyMessage,
   userName,
   userInitial,
+  isMasterAdmin = false,
   linkMode,
 }: BlogTaxonomyPanelProps) {
   return (
-    <AdminPortalLayout userName={userName} userInitial={userInitial}>
+    <AdminPortalLayout
+      userName={userName}
+      userInitial={userInitial}
+      isMasterAdmin={isMasterAdmin}
+    >
       <div className={styles.pageHeader}>
         <div>
           <h1 className={styles.pageTitle}>{title}</h1>

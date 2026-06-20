@@ -27,12 +27,21 @@ export function getUserAvatarUrl(user) {
   return cmsMediaFromRelation(photo) ?? '';
 }
 
+/** @param {import('payload').TypedUser | null | undefined | Record<string, unknown>} user */
+function getUserSocialUrl(user, field) {
+  if (!user || typeof user !== 'object') return '';
+  const value = user[field];
+  return typeof value === 'string' ? value.trim() : '';
+}
+
 /** @param {import('payload').TypedUser} user */
 function userToAuthorProfile(user) {
   return {
     name: getUserDisplayName(user),
     title: getUserJobTitle(user),
     avatar: getUserAvatarUrl(user),
+    linkedinUrl: getUserSocialUrl(user, 'linkedinUrl'),
+    xUrl: getUserSocialUrl(user, 'xUrl'),
   };
 }
 
@@ -86,7 +95,7 @@ export async function fetchPublicAuthorProfilesByIds(userIds) {
 /** @param {unknown} authorUser */
 export function authorProfileFromRelation(authorUser) {
   if (!authorUser || typeof authorUser !== 'object') {
-    return { name: '', title: '', avatar: '' };
+    return { name: '', title: '', avatar: '', linkedinUrl: '', xUrl: '' };
   }
   return userToAuthorProfile(authorUser);
 }

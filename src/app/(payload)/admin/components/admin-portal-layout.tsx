@@ -1,7 +1,6 @@
 'use client';
 
 import AdminHeaderActions from '@/app/(payload)/admin/components/admin-header-actions';
-import InviteContributorButton from '@/app/(payload)/admin/components/invite-contributor-button';
 import InfraFundLogo from '@/../public/svg/infrafund.svg';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -14,6 +13,7 @@ import {
   PenLine,
   Settings,
   Tag,
+  UserPlus,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
@@ -22,6 +22,7 @@ import styles from '../create-post/create-post.module.css';
 type AdminPortalLayoutProps = {
   userName: string;
   userInitial: string;
+  isMasterAdmin?: boolean;
   children: ReactNode;
 };
 
@@ -71,6 +72,7 @@ const blogNavItems: BlogNavItem[] = [
 export default function AdminPortalLayout({
   userName,
   userInitial,
+  isMasterAdmin = false,
   children,
 }: AdminPortalLayoutProps) {
   const pathname = usePathname();
@@ -127,7 +129,15 @@ export default function AdminPortalLayout({
               </div>
             </div>
 
-            <InviteContributorButton isActive={isCreateUserActive} />
+            {isMasterAdmin ? (
+              <Link
+                href="/admin/create-user"
+                className={`${styles.navLink} ${styles.navLinkSpaced} ${isCreateUserActive ? styles.navLinkActive : ''}`}
+              >
+                <UserPlus size={20} strokeWidth={1.75} />
+                Create user
+              </Link>
+            ) : null}
 
             <Link
               href="/admin/account"

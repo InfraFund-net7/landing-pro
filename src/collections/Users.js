@@ -115,6 +115,30 @@ export const Users = {
       },
     },
     {
+      name: 'linkedinUrl',
+      type: 'text',
+      admin: {
+        description:
+          'LinkedIn profile URL shown on blog posts you author, e.g. https://www.linkedin.com/in/your-name',
+      },
+      access: {
+        read: () => true,
+        update: profileFieldUpdateAccess,
+      },
+    },
+    {
+      name: 'xUrl',
+      type: 'text',
+      admin: {
+        description:
+          'X profile URL shown on blog posts you author, e.g. https://x.com/your-handle',
+      },
+      access: {
+        read: () => true,
+        update: profileFieldUpdateAccess,
+      },
+    },
+    {
       name: 'role',
       type: 'select',
       required: true,

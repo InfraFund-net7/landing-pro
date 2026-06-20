@@ -95,6 +95,8 @@ export async function fetchCmsPostBySlug(slug: string): Promise<Blog | null> {
     const authorName = linkedAuthor.name || String(doc.author ?? '');
     const authorTitle = linkedAuthor.title;
     const authorAvatar = linkedAuthor.avatar;
+    const authorLinkedInUrl = linkedAuthor.linkedinUrl || undefined;
+    const authorXUrl = linkedAuthor.xUrl || undefined;
 
     const categories = Array.isArray(doc.categories)
       ? doc.categories.map(String).filter(Boolean)
@@ -129,6 +131,8 @@ export async function fetchCmsPostBySlug(slug: string): Promise<Blog | null> {
       author: authorName,
       authorTitle,
       authorAvatar,
+      authorLinkedInUrl,
+      authorXUrl,
       category: legacyCategory || allCategories[0] || 'Insights',
       categories: allCategories,
       tags,
