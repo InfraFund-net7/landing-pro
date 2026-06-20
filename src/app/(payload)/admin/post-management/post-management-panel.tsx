@@ -8,12 +8,14 @@ import type {
   AdminPostStatusFilter,
 } from '@/lib/cms-post-types';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   ExternalLink,
   MessageSquare,
   Pencil,
   Plus,
   Search,
+  Trash2,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import styles from './post-management.module.css';
@@ -26,6 +28,7 @@ type PostManagementPanelProps = {
   sort: AdminPostSort;
   userName: string;
   userInitial: string;
+  flashSuccess?: string;
 };
 
 const statusFilters: Array<{ value: AdminPostStatusFilter; label: string }> = [
@@ -77,8 +80,14 @@ export default function PostManagementPanel({
   sort,
   userName,
   userInitial,
+  flashSuccess,
 }: PostManagementPanelProps) {
+  const router = useRouter();
   const [search, setSearch] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<AdminPost | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [actionError, setActionError] = useState('');
+  const [actionSuccess, setActionSuccess] = useState(flashSuccess ?? '');
 
   const categories = useMemo(() => {
     const values = new Set<string>();
@@ -147,6 +156,40 @@ export default function PostManagementPanel({
     return next;
   }, [posts, search, statusFilter, categoryFilter, sort]);
 
+  const handleDelete = async (post: AdminPost) => {
+    setDeletingId(post.id);
+    setActionError('');
+    setActionSuccess('');
+
+    try {
+      const response = await fetch(`/admin/api/posts/${post.id}`, {
+        method: 'DELETE',
+        credentials: 'same-origin',
+      });
+      const data = (await response.json()) as { message?: string };
+
+      if (response.status === 401) {
+        window.location.href =
+          '/admin/login?redirect=' +
+          encodeURIComponent('/admin/post-management');
+        return;
+      }
+
+      if (!response.ok) {
+        setActionError(data.message || 'Unable to delete post.');
+        return;
+      }
+
+      setDeleteTarget(null);
+      setActionSuccess('Post deleted.');
+      router.refresh();
+    } catch {
+      setActionError('Unable to delete post.');
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <AdminPortalLayout userName={userName} userInitial={userInitial}>
       <div className={styles.header}>
@@ -192,6 +235,11 @@ export default function PostManagementPanel({
           <p className={styles.statHint}>Based on publish date</p>
         </article>
       </section>
+
+      {actionError ? <p className={styles.alertError}>{actionError}</p> : null}
+      {actionSuccess ? (
+        <p className={styles.alertSuccess}>{actionSuccess}</p>
+      ) : null}
 
       <div className={styles.toolbar}>
         <div className={styles.searchWrap}>
@@ -292,17 +340,57 @@ export default function PostManagementPanel({
             </thead>
             <tbody>
               {filteredPosts.map((post) => (
-                <PostRow key={post.id} post={post} />
+                <PostRow
+                  key={post.id}
+                  post={post}
+                  onDelete={() => setDeleteTarget(post)}
+                />
               ))}
             </tbody>
           </table>
         </div>
       )}
+
+      {deleteTarget ? (
+        <div className={styles.modalBackdrop} role="presentation">
+          <div className={styles.modal} role="dialog" aria-modal="true">
+            <h2 className={styles.modalTitle}>Delete post?</h2>
+            <p className={styles.modalText}>
+              This permanently removes &ldquo;{deleteTarget.title}&rdquo; from
+              the CMS and the public blog. This cannot be undone.
+            </p>
+            <div className={styles.modalActions}>
+              <button
+                type="button"
+                className={styles.actionLinkMuted}
+                disabled={deletingId === deleteTarget.id}
+                onClick={() => setDeleteTarget(null)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={styles.actionDelete}
+                disabled={deletingId === deleteTarget.id}
+                onClick={() => void handleDelete(deleteTarget)}
+              >
+                {deletingId === deleteTarget.id ? 'Deleting…' : 'Delete post'}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </AdminPortalLayout>
   );
 }
 
-function PostRow({ post }: { post: AdminPost }) {
+function PostRow({
+  post,
+  onDelete,
+}: {
+  post: AdminPost;
+  onDelete: () => void;
+}) {
   const initial = post.title.charAt(0).toUpperCase() || 'P';
 
   return (
@@ -390,6 +478,14 @@ function PostRow({ post }: { post: AdminPost }) {
             <MessageSquare size={14} />
             Comments
           </Link>
+          <button
+            type="button"
+            className={styles.actionDelete}
+            onClick={onDelete}
+          >
+            <Trash2 size={14} />
+            Delete
+          </button>
         </div>
       </td>
     </tr>

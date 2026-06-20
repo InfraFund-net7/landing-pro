@@ -16,6 +16,7 @@ type PageProps = {
     status?: string;
     category?: string;
     sort?: string;
+    success?: string;
   }>;
 };
 
@@ -54,6 +55,7 @@ export default async function PostManagementPage({ searchParams }: PageProps) {
       sort={parseSort(qs.sort)}
       userName={displayName}
       userInitial={userInitial}
+      flashSuccess={qs.success}
     />
   );
 }

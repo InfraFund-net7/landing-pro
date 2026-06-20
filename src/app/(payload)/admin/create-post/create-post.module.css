@@ -366,11 +366,6 @@
   background: rgba(36, 255, 142, 0.08);
 }
 
-.btnOutline:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 .btnPrimary {
   display: inline-flex;
   align-items: center;
@@ -388,6 +383,73 @@
 
 .btnPrimary:hover {
   background: #1ad87a;
+}
+
+.btnDanger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid #7f1d1d;
+  background: rgba(127, 29, 29, 0.2);
+  color: #fca5a5;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.btnDanger:hover {
+  background: rgba(127, 29, 29, 0.35);
+  border-color: #ef4444;
+}
+
+.btnDanger:disabled,
+.btnOutline:disabled,
+.btnPrimary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 8, 18, 0.72);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  z-index: 50;
+}
+
+.modal {
+  width: 100%;
+  max-width: 420px;
+  background: #0b1220;
+  border: 1px solid #1e2b47;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.modalTitle {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #fff;
+}
+
+.modalText {
+  margin: 0 0 18px;
+  color: #a7b7d9;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 .formCard {

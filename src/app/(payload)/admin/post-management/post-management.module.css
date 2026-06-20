@@ -341,6 +341,89 @@
   color: #8a9bb8;
 }
 
+.actionDelete {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid #7f1d1d;
+  background: rgba(127, 29, 29, 0.15);
+  color: #fca5a5;
+  cursor: pointer;
+}
+
+.actionDelete:hover {
+  border-color: #ef4444;
+  background: rgba(127, 29, 29, 0.3);
+}
+
+.actionDelete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.alertError,
+.alertSuccess {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.alertError {
+  border: 1px solid #7f1d1d;
+  background: rgba(127, 29, 29, 0.15);
+  color: #fca5a5;
+}
+
+.alertSuccess {
+  border: 1px solid #166534;
+  background: rgba(22, 101, 52, 0.15);
+  color: #86efac;
+}
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 8, 18, 0.72);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  z-index: 50;
+}
+
+.modal {
+  width: 100%;
+  max-width: 420px;
+  background: #0b1220;
+  border: 1px solid #1e2b47;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.modalTitle {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #fff;
+}
+
+.modalText {
+  margin: 0 0 18px;
+  color: #a7b7d9;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
 .emptyState {
   border: 1px dashed #2a3b61;
   border-radius: 16px;

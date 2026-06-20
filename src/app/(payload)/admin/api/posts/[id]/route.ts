@@ -1,4 +1,5 @@
 import { getAdminApiContext, isContentManager } from '@/lib/admin-api-auth.js';
+import { deletePostFromAdmin } from '@/lib/admin-delete-post.js';
 import { updatePostFromFormData } from '@/lib/admin-update-post.js';
 import { NextResponse } from 'next/server';
 
@@ -32,4 +33,31 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   return NextResponse.json({ ok: true });
+}
+
+export async function DELETE(_request: Request, context: RouteContext) {
+  const { id } = await context.params;
+  const { user } = await getAdminApiContext(_request);
+
+  if (!user) {
+    return NextResponse.json(
+      { message: 'Your session expired. Please sign in again.' },
+      { status: 401 }
+    );
+  }
+
+  if (!isContentManager(user)) {
+    return NextResponse.json(
+      { message: 'You do not have permission to delete posts.' },
+      { status: 403 }
+    );
+  }
+
+  const result = await deletePostFromAdmin(id, user);
+
+  if (!result.ok) {
+    return NextResponse.json({ message: result.error }, { status: 400 });
+  }
+
+  return NextResponse.json({ ok: true, message: 'Post deleted.' });
 }

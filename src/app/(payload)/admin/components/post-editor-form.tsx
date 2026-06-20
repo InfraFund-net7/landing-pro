@@ -20,7 +20,8 @@ import {
   calculateReadTimeFromContent,
   countWordsInContent,
 } from '@/lib/read-time.js';
-import { Eye, Save, Send, Sparkles } from 'lucide-react';
+import { Eye, Save, Send, Sparkles, Trash2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useRef, useState, type FormEvent } from 'react';
 import styles from '../create-post/create-post.module.css';
 
@@ -65,6 +66,7 @@ export default function PostEditorForm({
   success: initialSuccess,
   backToAiHref,
 }: PostEditorFormProps) {
+  const router = useRouter();
   const isEdit = mode === 'edit';
   const formRef = useRef<HTMLFormElement>(null);
   const intentRef = useRef<HTMLInputElement>(null);
@@ -83,6 +85,8 @@ export default function PostEditorForm({
   const [formError, setFormError] = useState(initialError ?? '');
   const [formSuccess, setFormSuccess] = useState(initialSuccess ?? '');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const estimatedReadTime = useMemo(
     () => calculateReadTimeFromContent(mainContent),
@@ -278,6 +282,46 @@ export default function PostEditorForm({
     window.scrollTo({ top: 0, behavior: 'auto' });
   }, []);
 
+  const handleDelete = async () => {
+    if (!postId) return;
+
+    setIsDeleting(true);
+    setFormError('');
+
+    try {
+      const response = await fetch(`/admin/api/posts/${postId}`, {
+        method: 'DELETE',
+        credentials: 'same-origin',
+      });
+      const data = await response.json().catch(() => null);
+
+      if (response.status === 401) {
+        window.location.href =
+          '/admin/login?redirect=' +
+          encodeURIComponent(`/admin/edit-post/${postId}`);
+        return;
+      }
+
+      if (!response.ok) {
+        setFormError(
+          parsePayloadApiError(data, 'Unable to delete post. Please try again.')
+        );
+        setShowDeleteConfirm(false);
+        return;
+      }
+
+      router.push(
+        '/admin/post-management?success=' +
+          encodeURIComponent('Post deleted successfully.')
+      );
+    } catch {
+      setFormError('Network error. Check your connection and try again.');
+      setShowDeleteConfirm(false);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const defaultIntent =
     isEdit && initialValues?.published ? 'published' : 'draft';
 
@@ -311,7 +355,7 @@ export default function PostEditorForm({
                 type="submit"
                 form="post-editor-form"
                 className={styles.btnOutline}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isDeleting}
                 onClick={() => setIntent('draft')}
               >
                 <Save size={16} />
@@ -321,7 +365,7 @@ export default function PostEditorForm({
                 type="button"
                 className={styles.btnOutline}
                 onClick={handlePreview}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isDeleting}
               >
                 <Eye size={16} />
                 Preview
@@ -330,7 +374,7 @@ export default function PostEditorForm({
                 type="submit"
                 form="post-editor-form"
                 className={styles.btnPrimary}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isDeleting}
                 onClick={() => setIntent('published')}
               >
                 <Send size={16} />
@@ -342,6 +386,17 @@ export default function PostEditorForm({
                     ? 'Update'
                     : 'Publish'}
               </button>
+              {isEdit && postId ? (
+                <button
+                  type="button"
+                  className={styles.btnDanger}
+                  disabled={isSubmitting || isDeleting}
+                  onClick={() => setShowDeleteConfirm(true)}
+                >
+                  <Trash2 size={16} />
+                  Delete
+                </button>
+              ) : null}
             </div>
           </div>
 
@@ -505,6 +560,36 @@ export default function PostEditorForm({
           </form>
         </AdminPortalLayout>
       </div>
+
+      {showDeleteConfirm && isEdit ? (
+        <div className={styles.modalBackdrop} role="presentation">
+          <div className={styles.modal} role="dialog" aria-modal="true">
+            <h2 className={styles.modalTitle}>Delete post?</h2>
+            <p className={styles.modalText}>
+              This permanently removes &ldquo;{title || 'this post'}&rdquo; from
+              the CMS and the public blog. This cannot be undone.
+            </p>
+            <div className={styles.modalActions}>
+              <button
+                type="button"
+                className={styles.btnOutline}
+                disabled={isDeleting}
+                onClick={() => setShowDeleteConfirm(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={styles.btnDanger}
+                disabled={isDeleting}
+                onClick={() => void handleDelete()}
+              >
+                {isDeleting ? 'Deleting…' : 'Delete post'}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }
