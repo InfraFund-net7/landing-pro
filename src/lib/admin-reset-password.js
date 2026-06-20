@@ -53,6 +53,7 @@ export async function validateResetToken(token) {
   return {
     ok: true,
     email: typeof user.email === 'string' ? user.email : '',
+    fullName: typeof user.fullName === 'string' ? user.fullName : '',
   };
 }
 

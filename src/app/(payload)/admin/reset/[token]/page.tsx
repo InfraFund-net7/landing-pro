@@ -27,5 +27,11 @@ export default async function SetPasswordPage({
     );
   }
 
-  return <SetPasswordForm token={token} email={validation.email} />;
+  return (
+    <SetPasswordForm
+      token={token}
+      email={validation.email}
+      fullName={validation.fullName}
+    />
+  );
 }

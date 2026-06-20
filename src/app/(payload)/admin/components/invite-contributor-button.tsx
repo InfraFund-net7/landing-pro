@@ -9,7 +9,6 @@ export default function InviteContributorButton() {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
-  const [jobTitle, setJobTitle] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -41,7 +40,6 @@ export default function InviteContributorButton() {
   function resetForm() {
     setEmail('');
     setFullName('');
-    setJobTitle('');
     setError('');
     setSuccess('');
   }
@@ -60,7 +58,6 @@ export default function InviteContributorButton() {
     const formData = new FormData();
     formData.set('email', email.trim());
     formData.set('fullName', fullName.trim());
-    formData.set('jobTitle', jobTitle.trim());
 
     try {
       const response = await fetch('/admin/api/invite-contributor', {
@@ -77,10 +74,12 @@ export default function InviteContributorButton() {
         return;
       }
 
-      setSuccess(data?.message || 'Invite sent.');
+      setSuccess(
+        data?.message ||
+          'Invite sent. They will receive an email to create their password.'
+      );
       setEmail('');
       setFullName('');
-      setJobTitle('');
     } catch {
       setError('Network error while sending invite.');
     } finally {
@@ -104,7 +103,7 @@ export default function InviteContributorButton() {
         }}
       >
         <UserPlus size={20} strokeWidth={1.75} />
-        Invite contributor
+        Create user
       </button>
 
       {open ? (
@@ -122,10 +121,10 @@ export default function InviteContributorButton() {
             onSubmit={(event) => void handleSubmit(event)}
             onClick={(event) => event.stopPropagation()}
           >
-            <h2 className={styles.modalTitle}>Invite contributor</h2>
+            <h2 className={styles.modalTitle}>Create user</h2>
             <p className={styles.modalText}>
-              Send an email invite so a contributor can set their password and
-              start writing blog posts.
+              Enter the contributor&apos;s name and email. They will receive a
+              link to create their password and join the blog team.
             </p>
 
             {error ? (
@@ -138,6 +137,22 @@ export default function InviteContributorButton() {
             ) : null}
 
             <div className={styles.inviteModalFields}>
+              <div>
+                <label htmlFor="invite-full-name" className={styles.label}>
+                  Full name
+                </label>
+                <input
+                  id="invite-full-name"
+                  name="fullName"
+                  className={styles.field}
+                  placeholder="Dr. Yifeng Tian"
+                  value={fullName}
+                  onChange={(event) => setFullName(event.target.value)}
+                  autoComplete="name"
+                  required
+                />
+              </div>
+
               <div>
                 <label htmlFor="invite-email" className={styles.label}>
                   Email
@@ -152,35 +167,6 @@ export default function InviteContributorButton() {
                   onChange={(event) => setEmail(event.target.value)}
                   required
                   autoComplete="email"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="invite-full-name" className={styles.label}>
-                  Full name
-                </label>
-                <input
-                  id="invite-full-name"
-                  name="fullName"
-                  className={styles.field}
-                  placeholder="Dr. Yifeng Tian"
-                  value={fullName}
-                  onChange={(event) => setFullName(event.target.value)}
-                  autoComplete="name"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="invite-job-title" className={styles.label}>
-                  Job title
-                </label>
-                <input
-                  id="invite-job-title"
-                  name="jobTitle"
-                  className={styles.field}
-                  placeholder="Head of Research and Development"
-                  value={jobTitle}
-                  onChange={(event) => setJobTitle(event.target.value)}
                 />
               </div>
             </div>
@@ -205,7 +191,7 @@ export default function InviteContributorButton() {
                     Sending…
                   </>
                 ) : (
-                  'Send invite'
+                  'Invite to join'
                 )}
               </button>
             </div>

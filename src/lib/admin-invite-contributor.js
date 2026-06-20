@@ -74,20 +74,20 @@ function buildInviteEmailHtml({
     <table role="presentation" width="100%" style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #d8e0ef;border-radius:12px;border-collapse:collapse;border-spacing:0;">
       <tr>
         <td style="padding:28px 28px 8px;">
-          <p style="margin:0 0 12px;font-size:18px;font-weight:700;">You are invited to InfraFund</p>
+          <p style="margin:0 0 12px;font-size:18px;font-weight:700;">Welcome to InfraFund</p>
           <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">
             Hi ${escapeHtml(greetingName)},
           </p>
           <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">
-            ${escapeHtml(inviterName)} invited you to join the InfraFund blog as a content contributor.
-            Use the button below to set your password and access the admin portal.
+            ${escapeHtml(inviterName)} invited you to join the InfraFund blog team as a contributor.
+            Click below to create your password and access the admin portal.
           </p>
         </td>
       </tr>
       <tr>
         <td style="padding:0 28px 24px;">
           <a href="${inviteUrl}" style="display:inline-block;padding:12px 18px;border-radius:10px;background:#24ff8e;color:#032514;font-size:15px;font-weight:700;text-decoration:none;">
-            Set your password
+            Join InfraFund
           </a>
         </td>
       </tr>
@@ -171,6 +171,10 @@ async function inviteContributor(input) {
     return { ok: false, error: 'Email is required.' };
   }
 
+  if (!fullName) {
+    return { ok: false, error: 'Full name is required.' };
+  }
+
   if (!isValidEmail(email)) {
     return { ok: false, error: 'Enter a valid email address.' };
   }
@@ -248,7 +252,7 @@ async function inviteContributor(input) {
 
   await payload.sendEmail({
     to: email,
-    subject: 'You are invited to contribute on InfraFund',
+    subject: 'You are invited to join InfraFund',
     html: buildInviteEmailHtml({
       payload,
       token,

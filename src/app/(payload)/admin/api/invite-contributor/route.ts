@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     email: result.email,
     resent: result.resent,
     message: result.resent
-      ? `Invite resent to ${result.email}.`
-      : `Invite sent to ${result.email}.`,
+      ? `Invite resent to ${result.email}. They can use the email link to create their password.`
+      : `Invite sent to ${result.email}. They will receive an email to create their password.`,
   });
 }

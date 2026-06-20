@@ -1,7 +1,7 @@
 'use client';
 
 import InfraFundLogo from '@/../public/svg/infrafund.svg';
-import { Eye, EyeOff, Loader2, Mail } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Mail, UserRound } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -11,6 +11,7 @@ import styles from '../reset/set-password.module.css';
 type SetPasswordFormProps = {
   token: string;
   email?: string;
+  fullName?: string;
   invalid?: boolean;
   invalidMessage?: string;
 };
@@ -18,6 +19,7 @@ type SetPasswordFormProps = {
 export default function SetPasswordForm({
   token,
   email,
+  fullName,
   invalid = false,
   invalidMessage,
 }: SetPasswordFormProps) {
@@ -29,6 +31,8 @@ export default function SetPasswordForm({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(invalid ? invalidMessage || '' : '');
   const [success, setSuccess] = useState('');
+
+  const displayName = fullName?.trim() || email || 'there';
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -86,14 +90,27 @@ export default function SetPasswordForm({
         </div>
 
         <div className={styles.card}>
-          <h1 className={styles.title}>
-            {invalid ? 'Invite link expired' : 'Create your password'}
-          </h1>
-          <p className={styles.subtitle}>
-            {invalid
-              ? 'This invite link is no longer valid. Ask your admin to send a new invite, or use forgot password if you already have an account.'
-              : 'Choose a secure password to finish setting up your contributor account.'}
-          </p>
+          {!invalid ? (
+            <div className={styles.welcomeBanner}>
+              <p className={styles.welcomeEyebrow}>Welcome to InfraFund</p>
+              <h1 className={styles.welcomeTitle}>
+                Hi {displayName}, glad you are here.
+              </h1>
+              <p className={styles.welcomeText}>
+                You have been invited to join our blog team as a contributor.
+                Create your password below to finish setting up your account.
+              </p>
+            </div>
+          ) : (
+            <>
+              <h1 className={styles.title}>Invite link expired</h1>
+              <p className={styles.subtitle}>
+                This invite link is no longer valid. Ask your admin to send a
+                new invite, or use forgot password if you already have an
+                account.
+              </p>
+            </>
+          )}
 
           {error ? (
             <p className={`${styles.alert} ${styles.alertError}`}>{error}</p>
@@ -106,12 +123,20 @@ export default function SetPasswordForm({
 
           {!invalid ? (
             <>
-              {email ? (
-                <div className={styles.emailBadge}>
-                  <Mail size={16} />
-                  {email}
-                </div>
-              ) : null}
+              <div className={styles.accountDetails}>
+                {fullName ? (
+                  <div className={styles.detailBadge}>
+                    <UserRound size={16} />
+                    {fullName}
+                  </div>
+                ) : null}
+                {email ? (
+                  <div className={styles.detailBadge}>
+                    <Mail size={16} />
+                    {email}
+                  </div>
+                ) : null}
+              </div>
 
               <form
                 className={styles.form}
@@ -119,8 +144,9 @@ export default function SetPasswordForm({
               >
                 <div>
                   <label htmlFor="password" className={styles.label}>
-                    Password
+                    Password <span className={styles.required}>*</span>
                   </label>
+                  <p className={styles.fieldHint}>Use at least 8 characters.</p>
                   <div className={styles.passwordWrap}>
                     <input
                       id="password"
@@ -148,7 +174,7 @@ export default function SetPasswordForm({
 
                 <div>
                   <label htmlFor="confirmPassword" className={styles.label}>
-                    Confirm password
+                    Confirm password <span className={styles.required}>*</span>
                   </label>
                   <div className={styles.passwordWrap}>
                     <input
@@ -191,10 +217,10 @@ export default function SetPasswordForm({
                   {submitting ? (
                     <>
                       <Loader2 size={16} className={styles.spinIcon} />
-                      Saving password…
+                      Creating account…
                     </>
                   ) : (
-                    'Create password'
+                    'Create password and join'
                   )}
                 </button>
               </form>
