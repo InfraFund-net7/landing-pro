@@ -23,9 +23,7 @@ export default async function CategoriesPage() {
       emptyMessage="No categories yet. Add categories when creating or editing a post."
       userName={displayName}
       userInitial={userInitial}
-      buildItemHref={(category) =>
-        `/admin/post-management?category=${encodeURIComponent(category)}`
-      }
+      linkMode="category"
     />
   );
 }

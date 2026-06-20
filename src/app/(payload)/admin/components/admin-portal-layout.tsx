@@ -1,6 +1,8 @@
 'use client';
 
 import AdminHeaderActions from '@/app/(payload)/admin/components/admin-header-actions';
+import InfraFundLogo from '@/../public/svg/infrafund.svg';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -65,23 +67,6 @@ const blogNavItems: BlogNavItem[] = [
   },
 ];
 
-function BrandMark() {
-  return (
-    <svg
-      className={styles.brandMark}
-      width="22"
-      height="22"
-      viewBox="0 0 22 22"
-      aria-hidden
-    >
-      <path fill="currentColor" d="M11 1.5 13.2 7 11 5.5 8.8 7Z" />
-      <path fill="currentColor" d="M11 20.5 13.2 15 11 16.5 8.8 15Z" />
-      <path fill="currentColor" d="M1.5 11 7 13.2 5.5 11 7 8.8Z" />
-      <path fill="currentColor" d="M20.5 11 15 13.2 16.5 11 15 8.8Z" />
-    </svg>
-  );
-}
-
 export default function AdminPortalLayout({
   userName,
   userInitial,
@@ -95,10 +80,17 @@ export default function AdminPortalLayout({
     <div className={styles.page}>
       <div className={styles.shell}>
         <aside className={styles.sidebar}>
-          <div className={styles.sidebarBrand}>
-            <BrandMark />
-            <span className={styles.sidebarBrandText}>{userName}</span>
-          </div>
+          <Link href="/" className={styles.sidebarBrand}>
+            <Image
+              src={InfraFundLogo}
+              alt="InfraFund"
+              className={styles.sidebarLogo}
+              priority
+            />
+            <span className={styles.sidebarTagline}>
+              Fast Financing Infrastructure
+            </span>
+          </Link>
 
           <nav className={styles.nav}>
             <Link

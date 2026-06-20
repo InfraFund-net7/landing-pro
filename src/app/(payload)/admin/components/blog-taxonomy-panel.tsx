@@ -11,8 +11,19 @@ type BlogTaxonomyPanelProps = {
   emptyMessage: string;
   userName: string;
   userInitial: string;
-  buildItemHref?: (item: string) => string;
+  linkMode?: 'category';
 };
+
+function buildItemHref(
+  linkMode: BlogTaxonomyPanelProps['linkMode'],
+  item: string
+) {
+  if (linkMode === 'category') {
+    return `/admin/post-management?category=${encodeURIComponent(item)}`;
+  }
+
+  return null;
+}
 
 export default function BlogTaxonomyPanel({
   title,
@@ -21,7 +32,7 @@ export default function BlogTaxonomyPanel({
   emptyMessage,
   userName,
   userInitial,
-  buildItemHref,
+  linkMode,
 }: BlogTaxonomyPanelProps) {
   return (
     <AdminPortalLayout userName={userName} userInitial={userInitial}>
@@ -39,20 +50,21 @@ export default function BlogTaxonomyPanel({
           <p className={styles.fieldHint}>{emptyMessage}</p>
         ) : (
           <ul className={styles.taxonomyList}>
-            {items.map((item) => (
-              <li key={item}>
-                {buildItemHref ? (
-                  <Link
-                    href={buildItemHref(item)}
-                    className={styles.taxonomyItem}
-                  >
-                    {item}
-                  </Link>
-                ) : (
-                  <span className={styles.taxonomyItemStatic}>{item}</span>
-                )}
-              </li>
-            ))}
+            {items.map((item) => {
+              const href = buildItemHref(linkMode, item);
+
+              return (
+                <li key={item}>
+                  {href ? (
+                    <Link href={href} className={styles.taxonomyItem}>
+                      {item}
+                    </Link>
+                  ) : (
+                    <span className={styles.taxonomyItemStatic}>{item}</span>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>
