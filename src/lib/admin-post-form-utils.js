@@ -49,7 +49,7 @@ export function buildPostSaveBody({
   categoriesRaw,
   tagsRaw,
   existingPublishedAt,
-  seoSummary,
+  seoSummary = '',
 }) {
   const resolvedSlug = slug.trim() ? slugifyPost(slug) : slugifyPost(title);
   const published = intent === 'published';
@@ -90,7 +90,7 @@ export function buildPreviewBlogFromEditor({
   categoriesRaw,
   tagsRaw,
   postId,
-  seoSummary,
+  seoSummary = '',
 }) {
   const resolvedSlug = slug.trim() ? slugifyPost(slug) : slugifyPost(title);
   const categories = parseCommaSeparatedList(categoriesRaw);

@@ -35,9 +35,8 @@ export async function saveComposeDraftAsPost(
     categoriesRaw: draft.categories.join(', '),
     tagsRaw: draft.tags.join(', '),
     existingPublishedAt: '',
+    seoSummary: draft.description,
   });
-
-  data.description = draft.description;
 
   const doc = await payload.create({
     collection: 'posts',
