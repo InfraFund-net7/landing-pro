@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import type { CSSProperties } from 'react';
 
 const adminNavLinkStyle: CSSProperties = {
@@ -16,12 +15,19 @@ type AdminSignOutLinkProps = {
 
 export default function AdminSignOutLink({ style }: AdminSignOutLinkProps) {
   return (
-    <Link
-      href="/admin/logout"
-      prefetch={false}
-      style={{ ...adminNavLinkStyle, ...style }}
-    >
-      Sign out
-    </Link>
+    <form action="/admin/logout" method="get" style={{ display: 'inline' }}>
+      <button
+        type="submit"
+        style={{
+          ...adminNavLinkStyle,
+          ...style,
+          background: 'transparent',
+          cursor: 'pointer',
+          font: 'inherit',
+        }}
+      >
+        Sign out
+      </button>
+    </form>
   );
 }

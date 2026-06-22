@@ -3,22 +3,25 @@ import { logout } from '@payloadcms/next/auth';
 import { clearPayloadAuthCookies } from '@/lib/payload-clear-auth';
 import { NextResponse } from 'next/server';
 
-async function signOutPayloadAdmin() {
+async function signOutPayloadAdmin(request: Request) {
   try {
     await logout({ allSessions: true, config });
   } catch {
     // Still clear cookies when logoutOperation fails (e.g. unauthorized session).
   }
 
-  await clearPayloadAuthCookies();
+  const loginUrl = new URL('/admin/login', request.url);
+  const response = NextResponse.redirect(loginUrl);
+  response.headers.set('Cache-Control', 'no-store');
+
+  await clearPayloadAuthCookies(response);
+  return response;
 }
 
 export async function GET(request: Request) {
-  await signOutPayloadAdmin();
-  return NextResponse.redirect(new URL('/admin/login', request.url));
+  return signOutPayloadAdmin(request);
 }
 
 export async function POST(request: Request) {
-  await signOutPayloadAdmin();
-  return NextResponse.redirect(new URL('/admin/login', request.url));
+  return signOutPayloadAdmin(request);
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { Link, useConfig, useTranslation } from '@payloadcms/ui';
+import { useConfig, useTranslation } from '@payloadcms/ui';
 import { formatAdminURL } from 'payload/shared';
 
 type PayloadSignOutButtonProps = {
@@ -18,17 +18,19 @@ export function PayloadSignOutButton({
     },
     routes: { admin: adminRoute },
   } = config;
+  const logoutHref = formatAdminURL({ adminRoute, path: logoutRoute });
 
   return (
-    <Link
-      aria-label={t('authentication:logOut')}
-      className="nav__log-out nav__sign-out-link"
-      href={formatAdminURL({ adminRoute, path: logoutRoute })}
-      prefetch={false}
-      tabIndex={tabIndex}
-      title={t('authentication:logOut')}
-    >
-      {t('authentication:logOut')}
-    </Link>
+    <form action={logoutHref} method="get" style={{ display: 'inline' }}>
+      <button
+        type="submit"
+        aria-label={t('authentication:logOut')}
+        className="nav__log-out nav__sign-out-link"
+        tabIndex={tabIndex}
+        title={t('authentication:logOut')}
+      >
+        {t('authentication:logOut')}
+      </button>
+    </form>
   );
 }
