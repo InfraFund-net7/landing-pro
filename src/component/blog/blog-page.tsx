@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { cmsImageNeedsUnoptimized } from '@/lib/cms-next-image';
 import type { RefObject } from 'react';
+import { BlogCategoryPill } from '@/component/blog/blog-category-pills';
 import BlogComments from './blog-comments';
 import BlogContents from './blog-contents';
 import CmsBlogContent from './cms-blog-content';
@@ -24,6 +25,11 @@ export default function BlogPage({
   layoutOffset,
 }: BlogPageProps) {
   const pagePadding = 'py-[175px]';
+  const categories = blog.categories ?? (blog.category ? [blog.category] : []);
+  const uniqueCategories = [...new Set(categories.filter(Boolean))];
+  const uniqueTags = [
+    ...new Set((blog.tags ?? []).map((tag) => tag.replace(/^#/, '').trim())),
+  ].filter(Boolean);
 
   return (
     <div
@@ -31,19 +37,10 @@ export default function BlogPage({
     >
       <div className="w-full flex flex-col gap-8 md:gap-12">
         <div className="w-full flex flex-col lg:flex-row justify-center items-center lg:items-start gap-8 lg:gap-6">
-          <div className="w-full lg:w-fit h-auto lg:h-[311px] flex flex-col justify-between items-center lg:items-start text-center lg:text-left gap-6">
+          <div className="w-full lg:flex-1 flex flex-col justify-between items-center lg:items-start text-center lg:text-left gap-6 lg:min-h-[311px]">
             <h1 className="text-[32px] sm:text-[40px] md:text-[49px] text-white font-medium leading-tight">
               {blog.title}
             </h1>
-
-            {blog.categories?.length || blog.tags?.length ? (
-              <PostTaxonomy
-                categories={
-                  blog.categories ?? (blog.category ? [blog.category] : [])
-                }
-                tags={blog.tags ?? []}
-              />
-            ) : null}
 
             <div className="w-full flex justify-center sm:justify-start">
               <div className="flex justify-center sm:justify-start items-start gap-3 w-fit">
@@ -66,11 +63,6 @@ export default function BlogPage({
                       {blog.authorTitle}
                     </p>
                   ) : null}
-                  <AuthorSocialLinks
-                    linkedinUrl={blog.authorLinkedInUrl}
-                    xUrl={blog.authorXUrl}
-                    authorName={blog.author}
-                  />
                   <div className="flex items-center justify-center sm:justify-start gap-2 text-[#8a9bb8] pt-0.5">
                     <span>{blog.date}</span>
                     <div className="w-[1px] h-4 bg-[#4D4D4D]" />
@@ -79,6 +71,23 @@ export default function BlogPage({
                 </div>
               </div>
             </div>
+
+            {uniqueCategories.length > 0 ||
+            blog.authorLinkedInUrl ||
+            blog.authorXUrl ? (
+              <div className="mt-auto flex w-full flex-wrap items-center justify-center gap-4 lg:justify-between">
+                <div className="flex flex-wrap items-center justify-center gap-2 lg:justify-start">
+                  {uniqueCategories.map((category) => (
+                    <BlogCategoryPill key={category} category={category} />
+                  ))}
+                </div>
+                <AuthorSocialLinks
+                  linkedinUrl={blog.authorLinkedInUrl}
+                  xUrl={blog.authorXUrl}
+                  authorName={blog.author}
+                />
+              </div>
+            ) : null}
           </div>
 
           {blog.image && (
@@ -88,7 +97,7 @@ export default function BlogPage({
               height={311}
               alt={blog.title}
               unoptimized={cmsImageNeedsUnoptimized(blog.image)}
-              className="rounded-xl w-full max-w-[511px] h-auto"
+              className="rounded-xl w-full max-w-[511px] h-auto shrink-0"
             />
           )}
         </div>
@@ -108,6 +117,18 @@ export default function BlogPage({
       ) : (
         <BlogContents />
       )}
+      {uniqueTags.length > 0 ? (
+        <div className="flex w-full flex-wrap items-center justify-start gap-2">
+          {uniqueTags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full border border-[#1E2B47] bg-[#0D1425] px-3 py-1.5 text-xs font-medium text-[#A7B7D9]"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      ) : null}
       <hr className="w-full h-[1px] bg-[#DCDCE0]" />
       {previewMode ? (
         <PreviewCommentsPlaceholder />
@@ -134,10 +155,10 @@ function AuthorSocialLinks({
   }
 
   const iconButtonClass =
-    'inline-flex h-9 w-9 items-center justify-center rounded-[10px] transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#24FF8E]';
+    'inline-flex h-10 w-10 items-center justify-center rounded-full transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#24FF8E]';
 
   return (
-    <div className="flex items-center gap-2.5 pt-1">
+    <div className="flex items-center justify-center gap-3 lg:justify-end">
       {linkedinUrl ? (
         <a
           href={linkedinUrl}
@@ -193,56 +214,5 @@ function PreviewCommentsPlaceholder() {
         Comments are hidden in preview and appear after the post is published.
       </p>
     </section>
-  );
-}
-
-function PostTaxonomy({
-  categories,
-  tags,
-}: {
-  categories: string[];
-  tags: string[];
-}) {
-  const uniqueCategories = [...new Set(categories.filter(Boolean))];
-  const uniqueTags = [...new Set(tags.filter(Boolean))];
-
-  if (uniqueCategories.length === 0 && uniqueTags.length === 0) {
-    return null;
-  }
-
-  return (
-    <div className="flex w-full flex-col gap-3">
-      {uniqueCategories.length > 0 ? (
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#5a6b88]">
-            Categories
-          </span>
-          {uniqueCategories.map((category) => (
-            <span
-              key={category}
-              className="rounded-full border border-[#2E4778] bg-[#102247]/50 px-3 py-1 text-xs font-medium text-[#93C5FD]"
-            >
-              {category}
-            </span>
-          ))}
-        </div>
-      ) : null}
-
-      {uniqueTags.length > 0 ? (
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#5a6b88]">
-            Tags
-          </span>
-          {uniqueTags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full border border-[#1E2B47] bg-[#0D1425] px-2.5 py-1 text-[11px] font-medium text-[#A7B7D9]"
-            >
-              #{tag.replace(/^#/, '')}
-            </span>
-          ))}
-        </div>
-      ) : null}
-    </div>
   );
 }

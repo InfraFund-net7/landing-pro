@@ -1,6 +1,8 @@
 import { Search } from 'lucide-react';
 import React from 'react';
 import BlogCard from './blog-card';
+import BlogCategoryPills from './blog-category-pills';
+import { DEFAULT_BLOG_CATEGORIES } from '@/constants/blogCategories';
 import type { BlogListItem } from '@/lib/cms-posts';
 import type { CmsSitePage } from '@/lib/cms-site-pages';
 
@@ -12,9 +14,15 @@ type BlogProps = {
 export default function Blog({ cmsPosts = [], cmsPage = null }: BlogProps) {
   const heading = cmsPage?.hero?.heading || cmsPage?.title || 'Insight';
   const subheading = cmsPage?.hero?.subheading || '';
-  const categoryItems =
+  const cmsCategoryItems =
     cmsPage?.blocks.find((block) => block.blockType === 'feature-grid')
       ?.items ?? [];
+  const categoryLabels: string[] =
+    cmsCategoryItems.length > 0
+      ? cmsCategoryItems
+          .map((item) => String(item.title ?? '').trim())
+          .filter(Boolean)
+      : [...DEFAULT_BLOG_CATEGORIES];
   return (
     <div className="w-full min-h-screen flex flex-col gap-16 md:gap-24 justify-center items-center px-4 sm:px-8 md:px-[90px] py-[175px]">
       <div
@@ -36,26 +44,17 @@ export default function Blog({ cmsPosts = [], cmsPage = null }: BlogProps) {
             </p>
           ) : null}
 
-          <div className="w-full p-3 sm:p-4 flex justify-start items-center bg-[#EEF2F0] rounded-2xl text-black gap-2">
-            <Search size={20} className="cursor-pointer" />
+          <div className="flex w-full items-center gap-2 rounded-full bg-[#EEF2F0] px-4 py-3 text-black sm:px-5 sm:py-4">
+            <Search
+              size={20}
+              className="shrink-0 cursor-pointer text-[#5D5D5D]"
+            />
             <input
-              className="outline-none bg-transparent w-full text-sm sm:text-base"
+              className="w-full bg-transparent text-sm outline-none placeholder:text-[#5D5D5D]/80 sm:text-base"
               placeholder="Search"
             />
           </div>
-          <div className="flex flex-wrap justify-center items-center md:justify-center gap-4 w-full ">
-            {categoryItems.map((item, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-1 py-2 px-4 rounded-[51px] border w-fit h-fit"
-                style={{ borderColor: '#5D5D5D' }}
-              >
-                <span className="text-sm font-medium text-white">
-                  {item.title}
-                </span>
-              </div>
-            ))}
-          </div>
+          <BlogCategoryPills categories={categoryLabels} />
         </div>
         <div
           className="hidden md:block w-[1000px] h-[588px] rounded-full absolute -z-10 bottom-[10%] left-1/2 -translate-x-1/2"

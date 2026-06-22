@@ -92,9 +92,6 @@ export default function AdminPortalLayout({
               className={styles.sidebarLogo}
               priority
             />
-            <span className={styles.sidebarTagline}>
-              Fast Financing Infrastructure
-            </span>
           </Link>
 
           <nav className={styles.nav}>
