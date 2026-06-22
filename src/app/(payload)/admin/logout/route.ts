@@ -10,11 +10,14 @@ async function signOutPayloadAdmin(request: Request) {
     // Still clear cookies when logoutOperation fails (e.g. unauthorized session).
   }
 
-  const loginUrl = new URL('/admin/login', request.url);
+  const requestUrl = new URL(request.url);
+  const loginUrl = new URL('/admin/login', requestUrl);
+  loginUrl.searchParams.set('signedOut', '1');
+
   const response = NextResponse.redirect(loginUrl);
   response.headers.set('Cache-Control', 'no-store');
 
-  await clearPayloadAuthCookies(response);
+  await clearPayloadAuthCookies(response, requestUrl.hostname);
   return response;
 }
 

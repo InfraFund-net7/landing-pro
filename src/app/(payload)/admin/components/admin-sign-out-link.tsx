@@ -1,3 +1,4 @@
+import AdminSignOutButton from '@/app/(payload)/admin/components/admin-sign-out-button';
 import type { CSSProperties } from 'react';
 
 const adminNavLinkStyle: CSSProperties = {
@@ -15,19 +16,16 @@ type AdminSignOutLinkProps = {
 
 export default function AdminSignOutLink({ style }: AdminSignOutLinkProps) {
   return (
-    <form action="/admin/logout" method="get" style={{ display: 'inline' }}>
-      <button
-        type="submit"
-        style={{
-          ...adminNavLinkStyle,
-          ...style,
-          background: 'transparent',
-          cursor: 'pointer',
-          font: 'inherit',
-        }}
-      >
-        Sign out
-      </button>
-    </form>
+    <AdminSignOutButton
+      style={{
+        ...adminNavLinkStyle,
+        ...style,
+        background: 'transparent',
+        cursor: 'pointer',
+        font: 'inherit',
+      }}
+    >
+      Sign out
+    </AdminSignOutButton>
   );
 }

@@ -16,6 +16,7 @@ import * as qs from 'qs-esm';
 import React from 'react';
 import { probeNeonHasPayloadUser } from './neon-user-probe.js';
 import { markVercelKnownHasUser } from './payload-vercel-known-user.js';
+import { clearPayloadAuthCookies } from './payload-clear-auth';
 
 type AdminPageProps = {
   config: typeof config;
@@ -31,7 +32,13 @@ async function renderLoginView(props: AdminPageProps) {
   const params = await props.params;
   const segments = ['login'];
   const searchParams = await props.searchParams;
+  const signedOut = searchParams?.signedOut === '1';
   const adminRoute = cfg.routes.admin;
+
+  if (signedOut) {
+    await clearPayloadAuthCookies();
+  }
+
   const currentRoute = formatAdminURL({
     adminRoute,
     path: `/${segments.join('/')}`,
@@ -54,7 +61,7 @@ async function renderLoginView(props: AdminPageProps) {
     },
   });
 
-  if (req.user) {
+  if (req.user && !signedOut) {
     redirect(adminRoute);
   }
 
