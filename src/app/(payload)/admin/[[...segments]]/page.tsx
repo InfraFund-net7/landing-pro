@@ -7,8 +7,10 @@ import { generatePageMetadata } from '@payloadcms/next/views';
 import { redirect } from 'next/navigation';
 import { formatAdminURL } from 'payload/shared';
 import { probeNeonHasPayloadUser } from '@/lib/neon-user-probe.js';
+import { getDefaultAdminLandingPath } from '@/lib/admin-default-route.js';
 import { payloadAdminRootPage } from '@/lib/payload-admin-root.js';
 import { importMap } from '../importMap';
+import { initReq } from 'payload-init-req';
 
 type Args = {
   params: Promise<{
@@ -71,7 +73,13 @@ const Page = async ({ params, searchParams }: Args) => {
       }
     }
 
-    redirect('/admin/create-post');
+    const { req } = await initReq({
+      configPromise: config,
+      importMap,
+      key: 'adminRootRedirect',
+    });
+
+    redirect(getDefaultAdminLandingPath(req.user));
   }
 
   return payloadAdminRootPage({

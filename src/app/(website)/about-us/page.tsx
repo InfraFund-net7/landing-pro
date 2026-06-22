@@ -2,8 +2,9 @@ import React from 'react';
 import { Metadata } from 'next';
 import AboutUs from '@/component/about-us/about-us';
 import CmsSitePage from '@/component/cms-site-page';
+import { resolveAboutUsContributorsContent } from '@/lib/about-us-cms';
 import {
-  fetchSitePageBySlug,
+  fetchAboutUsSitePage,
   isCmsPageReplacementEnabled,
 } from '@/lib/cms-site-pages';
 
@@ -56,9 +57,12 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const cmsPage = await fetchSitePageBySlug('about-us');
+  const cmsPage = await fetchAboutUsSitePage();
   if (isCmsPageReplacementEnabled && cmsPage?.replaceExistingPage) {
     return <CmsSitePage page={cmsPage} />;
   }
-  return <AboutUs />;
+
+  const contributorsContent = resolveAboutUsContributorsContent(cmsPage);
+
+  return <AboutUs contributorsContent={contributorsContent} />;
 }

@@ -3,6 +3,7 @@ import { getPayload } from 'payload';
 import { cmsMediaFromRelation } from '@/lib/cms-media-url';
 import {
   isCmsPageReplacementEnabled,
+  shouldFetchAboutUsFromCms,
   shouldFetchSitePagesFromCms,
 } from '@/lib/cms-runtime';
 import { skipPayloadFetchAtBuild } from '@/lib/skip-payload-fetch-at-build';
@@ -118,6 +119,17 @@ export async function fetchSitePageBySlug(
   slug: string
 ): Promise<CmsSitePage | null> {
   if (!shouldFetchSitePagesFromCms()) return null;
+  return fetchSitePageBySlugInternal(slug);
+}
+
+export async function fetchAboutUsSitePage(): Promise<CmsSitePage | null> {
+  if (!shouldFetchAboutUsFromCms()) return null;
+  return fetchSitePageBySlugInternal('about-us');
+}
+
+async function fetchSitePageBySlugInternal(
+  slug: string
+): Promise<CmsSitePage | null> {
   if (skipPayloadFetchAtBuild()) return null;
   try {
     const payload = (await getPayload({

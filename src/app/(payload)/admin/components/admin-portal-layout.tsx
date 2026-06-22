@@ -9,11 +9,13 @@ import {
   Box,
   Folder,
   Home,
+  LayoutGrid,
   MessageSquare,
   PenLine,
   Settings,
   Tag,
   UserPlus,
+  Users,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
@@ -80,6 +82,12 @@ export default function AdminPortalLayout({
     pathname === '/admin/create-post' || pathname === '/admin';
   const isAccountActive = pathname.startsWith('/admin/account');
   const isCreateUserActive = pathname.startsWith('/admin/create-user');
+  const isAboutUsActive = pathname.startsWith('/admin/about-us');
+  const isPayloadCmsActive =
+    pathname.startsWith('/admin/globals') ||
+    pathname.startsWith('/admin/collections/site-pages') ||
+    pathname.startsWith('/admin/collections/media') ||
+    pathname.startsWith('/admin/collections/compose-schedules');
 
   return (
     <div className={styles.page}>
@@ -127,13 +135,29 @@ export default function AdminPortalLayout({
             </div>
 
             {isMasterAdmin ? (
-              <Link
-                href="/admin/create-user"
-                className={`${styles.navLink} ${styles.navLinkSpaced} ${isCreateUserActive ? styles.navLinkActive : ''}`}
-              >
-                <UserPlus size={20} strokeWidth={1.75} />
-                Create user
-              </Link>
+              <>
+                <Link
+                  href="/admin/globals/home-page"
+                  className={`${styles.navLink} ${styles.navLinkSpaced} ${isPayloadCmsActive ? styles.navLinkActive : ''}`}
+                >
+                  <LayoutGrid size={20} strokeWidth={1.75} />
+                  Website CMS
+                </Link>
+                <Link
+                  href="/admin/about-us"
+                  className={`${styles.navLink} ${isAboutUsActive ? styles.navLinkActive : ''}`}
+                >
+                  <Users size={20} strokeWidth={1.75} />
+                  About Us
+                </Link>
+                <Link
+                  href="/admin/create-user"
+                  className={`${styles.navLink} ${isCreateUserActive ? styles.navLinkActive : ''}`}
+                >
+                  <UserPlus size={20} strokeWidth={1.75} />
+                  Create user
+                </Link>
+              </>
             ) : null}
 
             <Link

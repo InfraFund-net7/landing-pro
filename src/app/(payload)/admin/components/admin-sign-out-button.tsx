@@ -19,21 +19,9 @@ export default function AdminSignOutButton({
 }: AdminSignOutButtonProps) {
   const [isSigningOut, setIsSigningOut] = useState(false);
 
-  async function handleSignOut() {
+  function handleSignOut() {
     if (isSigningOut) return;
-
     setIsSigningOut(true);
-
-    try {
-      await fetch('/cms/api/users/logout?allSessions=true', {
-        method: 'POST',
-        credentials: 'include',
-        cache: 'no-store',
-      });
-    } catch {
-      // Continue to the server logout route even if the API call fails.
-    }
-
     window.location.assign('/admin/logout');
   }
 
@@ -46,7 +34,7 @@ export default function AdminSignOutButton({
       title={title}
       aria-label={ariaLabel}
       disabled={isSigningOut}
-      onClick={() => void handleSignOut()}
+      onClick={handleSignOut}
     >
       {isSigningOut ? 'Signing out…' : children}
     </button>
