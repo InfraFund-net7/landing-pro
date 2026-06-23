@@ -60,8 +60,8 @@ export default function ContributorsSection({ contributors, linkedin }: Props) {
   return (
     <section className="w-full px-4 py-8">
       <div className="hidden sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {contributors.map((item, index) => (
-          <ContributorCard key={index} item={item} linkedin={linkedin} />
+        {contributors.map((item) => (
+          <ContributorCard key={item.name} item={item} linkedin={linkedin} />
         ))}
       </div>
       <div
@@ -147,20 +147,22 @@ const ContributorCard = ({
 
         <div className="text-center w-full min-h-[60px] flex flex-col justify-start">
           <div className="flex justify-center items-center gap-2">
-            <a
-              href={item.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Open ${item.name} on LinkedIn`}
-              className="flex-shrink-0"
-            >
-              <Image
-                src={linkedin || '/placeholder.svg'}
-                alt="linkedin"
-                width={20}
-                height={20}
-              />
-            </a>
+            {item.linkedin?.trim() ? (
+              <a
+                href={item.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Open ${item.name} on LinkedIn`}
+                className="flex-shrink-0"
+              >
+                <Image
+                  src={linkedin || '/placeholder.svg'}
+                  alt="linkedin"
+                  width={20}
+                  height={20}
+                />
+              </a>
+            ) : null}
             <h3 className="text-sm sm:text-base text-white font-normal truncate max-w-[120px] sm:max-w-[160px] text-foreground">
               {item.name}
             </h3>
@@ -196,20 +198,22 @@ const ContributorCard = ({
             {item.description}
           </p>
 
-          <a
-            href={item.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm hover:underline text-[#24FF8E]"
-          >
-            <Image
-              src={linkedin || '/placeholder.svg'}
-              alt="linkedin"
-              width={20}
-              height={20}
-            />
-            View LinkedIn Profile
-          </a>
+          {item.linkedin?.trim() ? (
+            <a
+              href={item.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm hover:underline text-[#24FF8E]"
+            >
+              <Image
+                src={linkedin || '/placeholder.svg'}
+                alt="linkedin"
+                width={20}
+                height={20}
+              />
+              View LinkedIn Profile
+            </a>
+          ) : null}
         </div>
       </Modal>
     </>

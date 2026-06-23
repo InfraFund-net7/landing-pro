@@ -61,41 +61,79 @@ export function getDefaultAboutUsContributorsContent(): AboutUsContributorsConte
   };
 }
 
-function getContributorsBlockFromPage(
-  page: CmsSitePage | null | undefined
-): AboutUsContributorsContent | null {
-  const block = page?.blocks.find(
-    (entry) => entry.blockType === 'contributors'
-  );
-  if (!block?.items?.length) {
+function normalizeContributorName(name: string): string {
+  return name.trim().toLowerCase();
+}
+
+function dedupeContributorsByName(
+  contributors: AboutUsContributor[]
+): AboutUsContributor[] {
+  const byName = new Map<string, AboutUsContributor>();
+
+  for (const contributor of contributors) {
+    const key = normalizeContributorName(contributor.name);
+    if (!key) continue;
+    byName.set(key, contributor);
+  }
+
+  return [...byName.values()];
+}
+
+function mapBlockItemToContributor(
+  item: NonNullable<NonNullable<CmsSitePage['blocks'][number]['items']>[number]>
+): AboutUsContributor | null {
+  const imagePath = item.imagePath?.trim() || item.image?.trim() || '';
+  if (!item.name?.trim()) {
     return null;
   }
 
-  const contributors = block.items.reduce<AboutUsContributor[]>((acc, item) => {
-    const imagePath = item.imagePath?.trim() || item.image?.trim() || '';
-    if (!item.name?.trim()) {
-      return acc;
-    }
+  return {
+    name: item.name.trim(),
+    role: item.role?.trim() ?? '',
+    description: item.description?.trim() ?? '',
+    linkedin: item.linkedin?.trim() ?? '',
+    imagePath,
+    ...(item.image?.trim() ? { imageUrl: item.image.trim() } : {}),
+  };
+}
 
-    acc.push({
-      name: item.name.trim(),
-      role: item.role?.trim() ?? '',
-      description: item.description?.trim() ?? '',
-      linkedin: item.linkedin?.trim() ?? '',
-      imagePath,
-      ...(item.image?.trim() ? { imageUrl: item.image.trim() } : {}),
-    });
+function getContributorsBlocksFromPage(
+  page: CmsSitePage | null | undefined
+): NonNullable<CmsSitePage['blocks'][number]>[] {
+  return (page?.blocks ?? []).filter(
+    (block) => block.blockType === 'contributors'
+  );
+}
 
-    return acc;
-  }, []);
+function getContributorsBlockFromPage(
+  page: CmsSitePage | null | undefined
+): AboutUsContributorsContent | null {
+  const contributorBlocks = getContributorsBlocksFromPage(page);
+  if (contributorBlocks.length === 0) {
+    return null;
+  }
+
+  const contributors = dedupeContributorsByName(
+    contributorBlocks.flatMap((block) =>
+      (block.items ?? []).reduce<AboutUsContributor[]>((acc, item) => {
+        const contributor = mapBlockItemToContributor(item);
+        if (contributor) {
+          acc.push(contributor);
+        }
+        return acc;
+      }, [])
+    )
+  );
 
   if (contributors.length === 0) {
     return null;
   }
 
+  const primaryBlock = contributorBlocks[contributorBlocks.length - 1];
+
   return {
-    title: block.title?.trim() || DEFAULT_TITLE,
-    subtitle: block.subtitle?.trim() || DEFAULT_SUBTITLE,
+    title: primaryBlock.title?.trim() || DEFAULT_TITLE,
+    subtitle: primaryBlock.subtitle?.trim() || DEFAULT_SUBTITLE,
     contributors,
   };
 }

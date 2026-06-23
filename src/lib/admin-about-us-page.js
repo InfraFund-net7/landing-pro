@@ -1,6 +1,25 @@
 import { getDefaultAboutUsContributorsContent } from '@/lib/about-us-cms';
+import { revalidateMarketingPath } from '@/lib/revalidate-marketing-path.js';
 
 const ABOUT_US_SLUG = 'about-us';
+
+function normalizeContributorName(name) {
+  return String(name || '')
+    .trim()
+    .toLowerCase();
+}
+
+function dedupeContributorsByName(contributors) {
+  const byName = new Map();
+
+  for (const contributor of contributors) {
+    const key = normalizeContributorName(contributor.name);
+    if (!key) continue;
+    byName.set(key, contributor);
+  }
+
+  return [...byName.values()];
+}
 
 /**
  * @param {import('payload').Payload} payload
@@ -16,6 +35,17 @@ async function findAboutUsPageDoc(payload) {
   });
 
   return docs[0] ?? null;
+}
+
+/**
+ * @param {unknown} blocks
+ */
+function getContributorsBlocks(blocks) {
+  if (!Array.isArray(blocks)) {
+    return [];
+  }
+
+  return blocks.filter((block) => block?.blockType === 'contributors');
 }
 
 /**
@@ -42,40 +72,44 @@ export async function fetchAboutUsContributorsForAdmin(payload) {
   }
 
   const blockIndex = findContributorsBlockIndex(doc.blocks);
+  const contributorBlocks = getContributorsBlocks(doc.blocks);
   const block =
     blockIndex >= 0 && Array.isArray(doc.blocks)
       ? doc.blocks[blockIndex]
-      : null;
+      : (contributorBlocks[contributorBlocks.length - 1] ?? null);
 
-  if (!block?.items?.length) {
+  if (!contributorBlocks.length || !block?.items?.length) {
     return {
       ...getDefaultAboutUsContributorsContent(),
       seeded: true,
     };
   }
 
-  const contributors = block.items
-    .map((item) => {
-      const imagePath = String(item?.imagePath || '').trim();
-      const imageUrl =
-        typeof item?.image === 'object' && item.image?.url
-          ? String(item.image.url).trim()
-          : '';
+  const contributors = dedupeContributorsByName(
+    contributorBlocks
+      .flatMap((entry) => entry.items ?? [])
+      .map((item) => {
+        const imagePath = String(item?.imagePath || '').trim();
+        const imageUrl =
+          typeof item?.image === 'object' && item.image?.url
+            ? String(item.image.url).trim()
+            : '';
 
-      if (!String(item?.name || '').trim()) {
-        return null;
-      }
+        if (!String(item?.name || '').trim()) {
+          return null;
+        }
 
-      return {
-        name: String(item.name).trim(),
-        role: String(item.role || '').trim(),
-        description: String(item.description || '').trim(),
-        linkedin: String(item.linkedin || '').trim(),
-        imagePath: imagePath || imageUrl,
-        imageUrl: imageUrl || undefined,
-      };
-    })
-    .filter(Boolean);
+        return {
+          name: String(item.name).trim(),
+          role: String(item.role || '').trim(),
+          description: String(item.description || '').trim(),
+          linkedin: String(item.linkedin || '').trim(),
+          imagePath: imagePath || imageUrl,
+          imageUrl: imageUrl || undefined,
+        };
+      })
+      .filter(Boolean)
+  );
 
   if (contributors.length === 0) {
     return {
@@ -153,17 +187,11 @@ export async function saveAboutUsContributorsForAdmin(payload, user, data) {
   const existing = await findAboutUsPageDoc(payload);
 
   if (existing) {
-    const blocks = Array.isArray(existing.blocks) ? [...existing.blocks] : [];
-    const blockIndex = findContributorsBlockIndex(blocks);
+    const blocks = Array.isArray(existing.blocks)
+      ? existing.blocks.filter((block) => block?.blockType !== 'contributors')
+      : [];
 
-    if (blockIndex >= 0) {
-      blocks[blockIndex] = {
-        ...blocks[blockIndex],
-        ...contributorsBlock,
-      };
-    } else {
-      blocks.push(contributorsBlock);
-    }
+    blocks.push(contributorsBlock);
 
     await payload.update({
       collection: 'site-pages',
@@ -172,6 +200,8 @@ export async function saveAboutUsContributorsForAdmin(payload, user, data) {
       user,
       overrideAccess: false,
     });
+
+    await revalidateMarketingPath('/about-us');
 
     return { ok: true };
   }
@@ -187,6 +217,8 @@ export async function saveAboutUsContributorsForAdmin(payload, user, data) {
     user,
     overrideAccess: false,
   });
+
+  await revalidateMarketingPath('/about-us');
 
   return { ok: true };
 }

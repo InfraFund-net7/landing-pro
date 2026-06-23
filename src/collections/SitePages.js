@@ -1,5 +1,6 @@
 import { siteContentReadAccess } from '../access/collection-access.js';
 import { isMasterAdmin } from '../access/roles.js';
+import { revalidateMarketingPath } from '../lib/revalidate-marketing-path.js';
 
 /** @type {import('payload').CollectionConfig} */
 export const SitePages = {
@@ -11,6 +12,15 @@ export const SitePages = {
     hidden: ({ user }) => !isMasterAdmin(user),
   },
   access: siteContentReadAccess,
+  hooks: {
+    afterChange: [
+      ({ doc }) => {
+        if (doc?.slug === 'about-us') {
+          void revalidateMarketingPath('/about-us');
+        }
+      },
+    ],
+  },
   fields: [
     {
       name: 'title',
