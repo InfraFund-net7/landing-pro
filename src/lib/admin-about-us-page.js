@@ -1,4 +1,7 @@
-import { getDefaultAboutUsContributorsContent } from '@/lib/about-us-cms';
+import {
+  getDefaultAboutUsContributorsContent,
+  normalizeContributorImageForStorage,
+} from '@/lib/about-us-cms';
 import { revalidateMarketingPath } from '@/lib/revalidate-marketing-path.js';
 
 const ABOUT_US_SLUG = 'about-us';
@@ -74,20 +77,24 @@ export async function fetchAboutUsContributorsForAdmin(payload) {
   const blockIndex = findContributorsBlockIndex(doc.blocks);
   const contributorBlocks = getContributorsBlocks(doc.blocks);
   const block =
-    blockIndex >= 0 && Array.isArray(doc.blocks)
-      ? doc.blocks[blockIndex]
-      : (contributorBlocks[contributorBlocks.length - 1] ?? null);
+    contributorBlocks.length > 0
+      ? contributorBlocks[contributorBlocks.length - 1]
+      : blockIndex >= 0 && Array.isArray(doc.blocks)
+        ? doc.blocks[blockIndex]
+        : null;
 
-  if (!contributorBlocks.length || !block?.items?.length) {
+  if (!block?.items?.length) {
     return {
-      ...getDefaultAboutUsContributorsContent(),
+      title: 'InfraFund Contributors',
+      subtitle:
+        'A world-class team built to bridge the worlds of traditional infrastructure and decentralized finance',
+      contributors: [],
       seeded: true,
     };
   }
 
   const contributors = dedupeContributorsByName(
-    contributorBlocks
-      .flatMap((entry) => entry.items ?? [])
+    (block.items ?? [])
       .map((item) => {
         const imagePath = String(item?.imagePath || '').trim();
         const imageUrl =
@@ -113,7 +120,12 @@ export async function fetchAboutUsContributorsForAdmin(payload) {
 
   if (contributors.length === 0) {
     return {
-      ...getDefaultAboutUsContributorsContent(),
+      title: String(block.title || 'InfraFund Contributors').trim(),
+      subtitle: String(
+        block.subtitle ||
+          'A world-class team built to bridge the worlds of traditional infrastructure and decentralized finance'
+      ).trim(),
+      contributors: [],
       seeded: true,
     };
   }
@@ -167,15 +179,24 @@ export async function saveAboutUsContributorsForAdmin(payload, user, data) {
     }
   }
 
-  const contributorItems = contributors.map((contributor) => ({
-    name: String(contributor.name).trim(),
-    role: String(contributor.role).trim(),
-    description: String(contributor.description || '').trim(),
-    linkedin: String(contributor.linkedin || '').trim(),
-    imagePath: String(
+  const contributorItems = contributors.map((contributor) => {
+    const name = String(contributor.name).trim();
+    const imagePath = String(
       contributor.imagePath || contributor.imageUrl || ''
-    ).trim(),
-  }));
+    ).trim();
+
+    return {
+      name,
+      role: String(contributor.role).trim(),
+      description: String(contributor.description || '').trim(),
+      linkedin: String(contributor.linkedin || '').trim(),
+      imagePath: normalizeContributorImageForStorage(
+        name,
+        imagePath,
+        contributor.imageUrl
+      ),
+    };
+  });
 
   const contributorsBlock = {
     blockType: 'contributors',
@@ -196,7 +217,7 @@ export async function saveAboutUsContributorsForAdmin(payload, user, data) {
     await payload.update({
       collection: 'site-pages',
       id: existing.id,
-      data: { blocks },
+      data: { blocks, replaceExistingPage: false },
       user,
       overrideAccess: false,
     });

@@ -29,7 +29,7 @@ const DEFAULT_TITLE = 'InfraFund Contributors';
 const DEFAULT_SUBTITLE =
   'A world-class team built to bridge the worlds of traditional infrastructure and decentralized finance';
 
-const STATIC_IMAGE_PATHS: Record<string, string> = {
+const CONTRIBUTOR_STATIC_IMAGE_PATHS: Record<string, string> = {
   'Iman Alibeigi': '/image/contributors/Iman-Alibeigi.png',
   'Sven Meyer': '/image/contributors/Sven-Meyer.png',
   'Prof. Akbar Javadi': '/image/contributors/Akbar-Javadi.png',
@@ -56,7 +56,7 @@ export function getDefaultAboutUsContributorsContent(): AboutUsContributorsConte
       role: contributor.role,
       description: contributor.description,
       linkedin: contributor.linkedin,
-      imagePath: STATIC_IMAGE_PATHS[contributor.name] ?? '',
+      imagePath: CONTRIBUTOR_STATIC_IMAGE_PATHS[contributor.name] ?? '',
     })),
   };
 }
@@ -105,6 +105,49 @@ function getContributorsBlocksFromPage(
   );
 }
 
+function resolveContributorImageSrc(
+  contributor: Pick<AboutUsContributor, 'name' | 'imagePath' | 'imageUrl'>
+): string {
+  const staticPath = CONTRIBUTOR_STATIC_IMAGE_PATHS[contributor.name.trim()];
+  if (staticPath) {
+    return staticPath;
+  }
+
+  const path = contributor.imagePath?.trim() ?? '';
+  if (path.startsWith('/image/')) {
+    return path;
+  }
+
+  const remote = contributor.imageUrl?.trim() ?? '';
+  if (remote && !remote.includes('/cms/api/media/file/')) {
+    return remote;
+  }
+
+  if (path && !path.includes('/cms/api/media/file/')) {
+    return path;
+  }
+
+  return remote || path || '/placeholder.svg';
+}
+
+export function normalizeContributorImageForStorage(
+  name: string,
+  imagePath: string,
+  imageUrl?: string
+): string {
+  const staticPath = CONTRIBUTOR_STATIC_IMAGE_PATHS[name.trim()];
+  if (staticPath) {
+    return staticPath;
+  }
+
+  const path = imagePath.trim() || imageUrl?.trim() || '';
+  if (path.startsWith('/image/')) {
+    return path;
+  }
+
+  return path;
+}
+
 function getContributorsBlockFromPage(
   page: CmsSitePage | null | undefined
 ): AboutUsContributorsContent | null {
@@ -113,23 +156,20 @@ function getContributorsBlockFromPage(
     return null;
   }
 
+  const primaryBlock = contributorBlocks[contributorBlocks.length - 1];
   const contributors = dedupeContributorsByName(
-    contributorBlocks.flatMap((block) =>
-      (block.items ?? []).reduce<AboutUsContributor[]>((acc, item) => {
-        const contributor = mapBlockItemToContributor(item);
-        if (contributor) {
-          acc.push(contributor);
-        }
-        return acc;
-      }, [])
-    )
+    (primaryBlock.items ?? []).reduce<AboutUsContributor[]>((acc, item) => {
+      const contributor = mapBlockItemToContributor(item);
+      if (contributor) {
+        acc.push(contributor);
+      }
+      return acc;
+    }, [])
   );
 
   if (contributors.length === 0) {
     return null;
   }
-
-  const primaryBlock = contributorBlocks[contributorBlocks.length - 1];
 
   return {
     title: primaryBlock.title?.trim() || DEFAULT_TITLE,
@@ -141,12 +181,8 @@ function getContributorsBlockFromPage(
 export function toDisplayContributors(
   content: AboutUsContributorsContent | null | undefined
 ): AboutUsDisplayContributor[] {
-  const source = content?.contributors?.length
-    ? content.contributors
-    : getDefaultAboutUsContributorsContent().contributors;
-
-  return source.map((contributor) => ({
-    img: contributor.imageUrl || contributor.imagePath,
+  return (content?.contributors ?? []).map((contributor) => ({
+    img: resolveContributorImageSrc(contributor),
     name: contributor.name,
     role: contributor.role,
     description: contributor.description,
@@ -157,7 +193,15 @@ export function toDisplayContributors(
 export function resolveAboutUsContributorsContent(
   page: CmsSitePage | null | undefined
 ): AboutUsContributorsContent {
+  if (!page) {
+    return getDefaultAboutUsContributorsContent();
+  }
+
   return (
-    getContributorsBlockFromPage(page) ?? getDefaultAboutUsContributorsContent()
+    getContributorsBlockFromPage(page) ?? {
+      title: DEFAULT_TITLE,
+      subtitle: DEFAULT_SUBTITLE,
+      contributors: [],
+    }
   );
 }

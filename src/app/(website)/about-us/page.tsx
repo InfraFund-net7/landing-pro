@@ -1,19 +1,18 @@
 import React from 'react';
 import { Metadata } from 'next';
 import AboutUs from '@/component/about-us/about-us';
-import CmsSitePage from '@/component/cms-site-page';
 import { resolveAboutUsContributorsContent } from '@/lib/about-us-cms';
-import {
-  fetchAboutUsSitePage,
-  isCmsPageReplacementEnabled,
-} from '@/lib/cms-site-pages';
+import { fetchAboutUsSitePage } from '@/lib/cms-site-pages';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://infrafund.io';
+
+/** Contributor list is CMS-managed; avoid stale ISR from the parent layout. */
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'About Us | InfraFund - Building the Future of Sustainable Finance',
   description:
-    "Learn about InfraFund's mission to revolutionize green finance through blockchain technology. Meet our team, explore our story, and see how we’re making sustainable investment accessible worldwide.",
+    "Learn about InfraFund's mission to revolutionize green finance through blockchain technology. Meet our team, explore our story, and see how we're making sustainable investment accessible worldwide.",
   keywords: [
     'InfraFund',
     'About InfraFund',
@@ -44,7 +43,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'About InfraFund - Building a Greener Financial Future',
     description:
-      'Explore InfraFund’s story and meet the team pioneering blockchain-based sustainability investments.',
+      "Explore InfraFund's story and meet the team pioneering blockchain-based sustainability investments.",
     images: [`${siteUrl}/image/our-story.jpg`],
   },
   alternates: {
@@ -58,10 +57,6 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const cmsPage = await fetchAboutUsSitePage();
-  if (isCmsPageReplacementEnabled && cmsPage?.replaceExistingPage) {
-    return <CmsSitePage page={cmsPage} />;
-  }
-
   const contributorsContent = resolveAboutUsContributorsContent(cmsPage);
 
   return <AboutUs contributorsContent={contributorsContent} />;

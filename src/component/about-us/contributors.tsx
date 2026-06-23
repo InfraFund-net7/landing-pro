@@ -3,6 +3,7 @@
 import Image, { type StaticImageData } from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 import { Modal } from '../ui/modal';
+import { cmsImageNeedsUnoptimized } from '@/lib/cms-next-image';
 // Contributors section
 
 interface Contributor {
@@ -60,8 +61,13 @@ export default function ContributorsSection({ contributors, linkedin }: Props) {
   return (
     <section className="w-full px-4 py-8">
       <div className="hidden sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {contributors.map((item) => (
-          <ContributorCard key={item.name} item={item} linkedin={linkedin} />
+        {contributors.map((item, index) => (
+          <ContributorCard
+            key={item.name}
+            item={item}
+            linkedin={linkedin}
+            priority={index < 5}
+          />
         ))}
       </div>
       <div
@@ -104,9 +110,11 @@ export default function ContributorsSection({ contributors, linkedin }: Props) {
 const ContributorCard = ({
   item,
   linkedin,
+  priority = false,
 }: {
   item: Contributor;
   linkedin: string;
+  priority?: boolean;
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -125,6 +133,9 @@ const ContributorCard = ({
             src={item.img || '/placeholder.svg'}
             width={190}
             height={190}
+            sizes="(max-width: 640px) 50vw, 190px"
+            unoptimized={cmsImageNeedsUnoptimized(item.img)}
+            priority={priority}
             className="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300 ease-in-out"
             alt={item.name}
           />
@@ -185,6 +196,8 @@ const ContributorCard = ({
               src={item.img || '/placeholder.svg'}
               width={128}
               height={128}
+              sizes="128px"
+              unoptimized={cmsImageNeedsUnoptimized(item.img)}
               className="w-full h-full object-contain"
               alt={item.name}
             />
