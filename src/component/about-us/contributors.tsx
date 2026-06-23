@@ -3,7 +3,7 @@
 import Image, { type StaticImageData } from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 import { Modal } from '../ui/modal';
-import { cmsImageNeedsUnoptimized } from '@/lib/cms-next-image';
+import { contributorImageProps } from '@/lib/cms-next-image';
 // Contributors section
 
 interface Contributor {
@@ -66,7 +66,7 @@ export default function ContributorsSection({ contributors, linkedin }: Props) {
             key={item.name}
             item={item}
             linkedin={linkedin}
-            priority={index < 5}
+            priority={index < 10}
           />
         ))}
       </div>
@@ -81,7 +81,12 @@ export default function ContributorsSection({ contributors, linkedin }: Props) {
               className="flex-shrink-0 w-full snap-center grid grid-cols-2 gap-4"
             >
               {group.map((item, index) => (
-                <ContributorCard key={index} item={item} linkedin={linkedin} />
+                <ContributorCard
+                  key={item.name}
+                  item={item}
+                  linkedin={linkedin}
+                  priority={groupIndex === 0 && index < 4}
+                />
               ))}
             </div>
           ))}
@@ -117,6 +122,7 @@ const ContributorCard = ({
   priority?: boolean;
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const photo = contributorImageProps(item.img || '/placeholder.svg');
 
   return (
     <>
@@ -130,11 +136,10 @@ const ContributorCard = ({
           }}
         >
           <Image
-            src={item.img || '/placeholder.svg'}
+            {...photo}
             width={190}
             height={190}
             sizes="(max-width: 640px) 50vw, 190px"
-            unoptimized={cmsImageNeedsUnoptimized(item.img)}
             priority={priority}
             className="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300 ease-in-out"
             alt={item.name}
@@ -193,11 +198,10 @@ const ContributorCard = ({
         <div className="flex flex-col items-center gap-4 mt-4">
           <div className="relative w-32 h-32 rounded-2xl overflow-hidden">
             <Image
-              src={item.img || '/placeholder.svg'}
+              {...photo}
               width={128}
               height={128}
               sizes="128px"
-              unoptimized={cmsImageNeedsUnoptimized(item.img)}
               className="w-full h-full object-contain"
               alt={item.name}
             />

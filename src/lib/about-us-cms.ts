@@ -47,6 +47,9 @@ const CONTRIBUTOR_STATIC_IMAGE_PATHS: Record<string, string> = {
   'Shervin Mansouri': '/image/contributors/Shervin-Mansouri.png',
 };
 
+const CONTRIBUTOR_STATIC_IMAGES: Record<string, StaticImageData> =
+  Object.fromEntries(staticContributors.map((c) => [c.name, c.img]));
+
 export function getDefaultAboutUsContributorsContent(): AboutUsContributorsContent {
   return {
     title: DEFAULT_TITLE,
@@ -107,8 +110,14 @@ function getContributorsBlocksFromPage(
 
 function resolveContributorImageSrc(
   contributor: Pick<AboutUsContributor, 'name' | 'imagePath' | 'imageUrl'>
-): string {
-  const staticPath = CONTRIBUTOR_STATIC_IMAGE_PATHS[contributor.name.trim()];
+): string | StaticImageData {
+  const name = contributor.name.trim();
+  const bundled = CONTRIBUTOR_STATIC_IMAGES[name];
+  if (bundled) {
+    return bundled;
+  }
+
+  const staticPath = CONTRIBUTOR_STATIC_IMAGE_PATHS[name];
   if (staticPath) {
     return staticPath;
   }
@@ -181,13 +190,27 @@ function getContributorsBlockFromPage(
 export function toDisplayContributors(
   content: AboutUsContributorsContent | null | undefined
 ): AboutUsDisplayContributor[] {
-  return (content?.contributors ?? []).map((contributor) => ({
-    img: resolveContributorImageSrc(contributor),
-    name: contributor.name,
-    role: contributor.role,
-    description: contributor.description,
-    linkedin: contributor.linkedin,
-  }));
+  const seen = new Set<string>();
+
+  return (content?.contributors ?? []).reduce<AboutUsDisplayContributor[]>(
+    (acc, contributor) => {
+      const key = normalizeContributorName(contributor.name);
+      if (!key || seen.has(key)) {
+        return acc;
+      }
+      seen.add(key);
+
+      acc.push({
+        img: resolveContributorImageSrc(contributor),
+        name: contributor.name,
+        role: contributor.role,
+        description: contributor.description,
+        linkedin: contributor.linkedin,
+      });
+      return acc;
+    },
+    []
+  );
 }
 
 export function resolveAboutUsContributorsContent(
