@@ -81,7 +81,7 @@ export default function CreateUserPanel() {
               id="create-user-full-name"
               name="fullName"
               className={styles.field}
-              placeholder="Dr. Yifeng Tian"
+              placeholder="Full Name"
               value={fullName}
               onChange={(event) => setFullName(event.target.value)}
               autoComplete="name"
