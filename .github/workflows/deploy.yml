@@ -16,10 +16,14 @@ jobs:
 
       - name: Execute Remote Deployment via SSH
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          COMPOSE_MODEL: ${{ vars.COMPOSE_MODEL }}
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: OPENAI_API_KEY,COMPOSE_MODEL
           script: |
             cd /home/${{ secrets.VM_USERNAME }}/landing-pro
 
@@ -40,11 +44,18 @@ jobs:
             pip install --upgrade pip
             pip install -r ai-agent/requirements.txt
 
-            if [ ! -f ai-agent/.env ]; then
-              echo "ERROR: Missing ai-agent/.env on the VM."
-              echo "Create it from ai-agent/.env.example and set OPENAI_API_KEY, then re-run deploy."
+            if [ -z "${OPENAI_API_KEY:-}" ]; then
+              echo "ERROR: Add OPENAI_API_KEY to GitHub repository secrets."
               exit 1
             fi
+
+            MODEL="${COMPOSE_MODEL:-gpt-4.1-mini}"
+            umask 077
+            printf '%s\n' \
+              "OPENAI_API_KEY=${OPENAI_API_KEY}" \
+              "COMPOSE_MODEL=${MODEL}" \
+              "AGENT_PORT=8080" \
+              > ai-agent/.env
 
             REPO_ROOT="/home/${{ secrets.VM_USERNAME }}/landing-pro"
             sed "s|@DEPLOY_USER@|${{ secrets.VM_USERNAME }}|g; s|@REPO_ROOT@|${REPO_ROOT}|g" \
