@@ -4,6 +4,7 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "installCommand": "npm ci",
+  "ignoreCommand": "bash .github/scripts/vercel-ignore-build.sh",
   "crons": [
     {
       "path": "/api/cron/compose-schedules",
