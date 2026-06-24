@@ -1,0 +1,15 @@
+[Unit]
+Description=InfraFund LangGraph content agent API
+After=network.target
+
+[Service]
+Type=simple
+User=@DEPLOY_USER@
+WorkingDirectory=@REPO_ROOT@/ai-agent
+EnvironmentFile=-@REPO_ROOT@/ai-agent/.env
+ExecStart=@REPO_ROOT@/venv/bin/uvicorn server:app --host 127.0.0.1 --port 8080
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
