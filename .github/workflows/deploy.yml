@@ -1,0 +1,52 @@
+name: Deploy LangGraph Agent to Azure VM
+
+# Trigger the workflow only when you push code to your specific branch
+on:
+  push:
+    branches:
+      - infrafund-agents # 👈 Change this to your exact working branch name (e.g., feature/agent-langgraph)
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository Code
+        uses: actions/checkout@v4
+
+      - name: Execute Remote Deployment via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/${{ secrets.VM_USERNAME }}/landing-pro
+
+            # 2. Fetch changes and switch cleanly to your branch
+            git fetch origin
+            git checkout ${{ github.ref_name }}
+            git pull origin ${{ github.ref_name }}
+
+            # 3. Activate the Python virtual environment and update your agent's dependencies
+            # (Assumes your venv folder is named 'venv'. Adjust if it's named 'env' or '.venv')
+            if [ -d "venv" ]; then
+              source venv/bin/activate
+            else
+              python3 -m venv venv
+              source venv/bin/activate
+            fi
+
+            pip install --upgrade pip
+            pip install -r ai-agent/requirements.txt
+
+            # 4. Safely restart your LangGraph background process
+            # If you use a systemd service (highly recommended for Python background agents):
+            # sudo systemctl restart langgraph-agent.service
+
+            sudo systemctl restart content-agent.service
+
+
+            # Alternative quick-check restart if you're just using raw background processes (temporary):
+            # pkill -f "python3 main.py" || true
+            # nohup venv/bin/python3 main.py > agent.log 2>&1 &
