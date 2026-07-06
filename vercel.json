@@ -15,6 +15,9 @@
     "src/app/(payload)/**/*": {
       "maxDuration": 60
     },
+    "src/app/(payload)/admin/api/compose-chat/**/*": {
+      "maxDuration": 300
+    },
     "src/app/api/cron/**/*": {
       "maxDuration": 300
     }

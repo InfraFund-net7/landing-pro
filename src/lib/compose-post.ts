@@ -13,15 +13,26 @@ export type ComposePostDraft = z.infer<typeof composePostDraftSchema>;
 
 export function extractLatestComposeDraft(
   messages: Array<{
-    parts: Array<{ type: string; state?: string; output?: unknown }>;
+    parts: Array<{
+      type: string;
+      state?: string;
+      output?: unknown;
+      toolName?: string;
+    }>;
   }>
 ): ComposePostDraft | null {
   let latest: ComposePostDraft | null = null;
 
   for (const message of messages) {
     for (const part of message.parts) {
-      if (part.type !== 'tool-updatePostDraft') continue;
-      if (part.state !== 'output-available') continue;
+      const isUpdateDraft =
+        (part.type === 'tool-updatePostDraft' ||
+          (part.type === 'dynamic-tool' &&
+            part.toolName === 'updatePostDraft')) &&
+        part.state === 'output-available';
+
+      if (!isUpdateDraft) continue;
+
       const parsed = composePostDraftSchema.safeParse(part.output);
       if (parsed.success) {
         latest = parsed.data;

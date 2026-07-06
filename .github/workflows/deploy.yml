@@ -18,12 +18,14 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
           COMPOSE_MODEL: ${{ vars.COMPOSE_MODEL }}
+          CONTENT_AGENT_API_KEY: ${{ secrets.CONTENT_AGENT_API_KEY }}
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: OPENAI_API_KEY,COMPOSE_MODEL
+          envs: OPENAI_API_KEY,TAVILY_API_KEY,COMPOSE_MODEL,CONTENT_AGENT_API_KEY
           script: |
             cd /home/${{ secrets.VM_USERNAME }}/landing-pro
 
@@ -49,12 +51,19 @@ jobs:
               exit 1
             fi
 
+            if [ -z "${TAVILY_API_KEY:-}" ]; then
+              echo "ERROR: Add TAVILY_API_KEY to GitHub repository secrets."
+              exit 1
+            fi
+
             MODEL="${COMPOSE_MODEL:-gpt-4.1-mini}"
             umask 077
             printf '%s\n' \
               "OPENAI_API_KEY=${OPENAI_API_KEY}" \
+              "TAVILY_API_KEY=${TAVILY_API_KEY}" \
               "COMPOSE_MODEL=${MODEL}" \
               "AGENT_PORT=8080" \
+              "CONTENT_AGENT_API_KEY=${CONTENT_AGENT_API_KEY:-}" \
               > ai-agent/.env
 
             REPO_ROOT="/home/${{ secrets.VM_USERNAME }}/landing-pro"
