@@ -191,7 +191,9 @@
     "shiki",
     "Shiki",
     "oxlint",
-    "cmdk"
+    "cmdk",
+    "Tavily",
+    "LangGraph"
   ],
   "ignorePaths": [
     "node_modules",

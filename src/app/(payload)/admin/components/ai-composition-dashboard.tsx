@@ -67,10 +67,10 @@ import { useEffect, useMemo, useState } from 'react';
 import styles from '../create-post/ai-composition.module.css';
 
 const suggestions = [
-  'Draft a post explaining tokenized infrastructure for first-time investors',
-  'Write about how climate data improves due diligence for green projects',
-  'Create an editorial on blockchain transparency in public infrastructure funding',
-  'Outline a thought-leadership piece on bridging Web3 builders and institutional capital',
+  'Find an SEO topic about tokenized infrastructure for climate investors',
+  'Research GEO angles for blockchain transparency in public infrastructure',
+  'Draft a 500+ word post on green bond trends with Tavily-backed facts',
+  'Propose a high-intent keyword topic for institutional RWA investing',
 ];
 
 type AiCompositionDashboardProps = {
@@ -78,6 +78,7 @@ type AiCompositionDashboardProps = {
   userInitial: string;
   isMasterAdmin?: boolean;
   modelLabel?: string;
+  usesLangGraphAgent?: boolean;
 };
 
 function getTextFromParts(parts: UIMessage['parts']): string {
@@ -99,6 +100,7 @@ export default function AiCompositionDashboard({
   userInitial,
   isMasterAdmin = false,
   modelLabel = 'gpt-4.1-mini',
+  usesLangGraphAgent = false,
 }: AiCompositionDashboardProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'compose' | 'schedules'>(
@@ -214,8 +216,9 @@ export default function AiCompositionDashboard({
               </p>
               <h1 className={styles.title}>Compose your next post</h1>
               <p className={styles.subtitle}>
-                Chat with the editorial agent on the left. Reasoning, tool
-                calls, and the live draft artifact update as the model works.
+                {usesLangGraphAgent
+                  ? 'LangGraph agent on Azure VM: discovers SEO/GEO topics, searches with Tavily, and builds a persistent 500+ word draft artifact.'
+                  : 'Chat with the editorial agent on the left. Reasoning, tool calls, and the live draft artifact update as the model works.'}
               </p>
             </div>
             <div className={styles.headerActions}>
@@ -251,7 +254,18 @@ export default function AiCompositionDashboard({
           {(error || saveError) && activeTab === 'compose' ? (
             <div className={styles.flashRow}>
               {error ? (
-                <p className={styles.flashError}>{error.message}</p>
+                <p className={styles.flashError}>
+                  {error.message}
+                  {!usesLangGraphAgent ? (
+                    <>
+                      {' '}
+                      Beta uses the Vercel AI gateway unless{' '}
+                      <code>CONTENT_AGENT_URL</code> is set on Preview. Merge
+                      the agent integration branch and point Preview at your VM
+                      to use LangGraph + Tavily.
+                    </>
+                  ) : null}
+                </p>
               ) : null}
               {saveError ? (
                 <p className={styles.flashError}>{saveError}</p>
@@ -393,12 +407,12 @@ function ComposeWelcomePanel() {
           <Sparkles size={22} />
         </div>
         <div>
-          <p className={styles.welcomeEyebrow}>Editorial agent</p>
-          <h2 className={styles.welcomeTitle}>Start with a topic</h2>
+          <p className={styles.welcomeEyebrow}>SEO / GEO editorial agent</p>
+          <h2 className={styles.welcomeTitle}>Start with a topic or seed</h2>
           <p className={styles.welcomeDescription}>
-            Describe the post you want — audience, angle, tone, or key points.
-            The agent will research, draft, and refine the live artifact on the
-            right.
+            Ask for an SEO-focused topic, competitor research, or a full draft.
+            The agent uses Tavily search, keeps thread memory, and updates the
+            live draft artifact on the right (minimum 500 words).
           </p>
         </div>
       </div>
@@ -407,18 +421,18 @@ function ComposeWelcomePanel() {
         <article className={styles.welcomeStep}>
           <Search size={16} />
           <div>
-            <p className={styles.stepTitle}>1. Research</p>
+            <p className={styles.stepTitle}>1. SEO topic discovery</p>
             <p className={styles.stepText}>
-              The agent gathers angles and talking points for your topic.
+              The agent proposes high-intent keywords and GEO-friendly angles.
             </p>
           </div>
         </article>
         <article className={styles.welcomeStep}>
           <Wrench size={16} />
           <div>
-            <p className={styles.stepTitle}>2. Tool calls</p>
+            <p className={styles.stepTitle}>2. Tavily web search</p>
             <p className={styles.stepText}>
-              You will see reasoning and tool activity as the draft is built.
+              Live search gathers facts, competitors, and trends for your brief.
             </p>
           </div>
         </article>
