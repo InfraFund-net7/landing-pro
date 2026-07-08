@@ -97,6 +97,28 @@ Also set manually (not from Neon): `PAYLOAD_PUBLIC_SERVER_URL`, `INFRA_CONTACT_F
 | `BLOG_SUMMARIZE_AZURE_API_KEY` | Azure OpenAI key for post **Summarize** in the manual editor |
 | `BLOG_SUMMARIZE_AZURE_BASE_URL` | Optional; defaults to `https://blog-post-news-resource.openai.azure.com/openai/v1` |
 | `BLOG_SUMMARIZE_MODEL` | Optional; defaults to `gpt-5.4-mini` |
+| `CONTENT_AGENT_URL` | `http://<azure-vm-public-ip>:8080` — LangGraph agent on the VM (see below) |
+| `CONTENT_AGENT_API_KEY` | Optional; must match `CONTENT_AGENT_API_KEY` in `ai-agent/.env` on the VM if set |
+| `AI_GATEWAY_API_KEY` | Fallback when `CONTENT_AGENT_URL` is unset (Vercel AI Gateway) |
+| `COMPOSE_MODEL` | Optional; defaults to `openai/gpt-4.1-mini` for gateway fallback |
+
+### LangGraph content agent (AI Composition on `/admin/create-post`)
+
+Beta uses the **LangGraph + Tavily** agent only when **`CONTENT_AGENT_URL`** is set on **Preview**. GitHub secrets for the VM deploy (`VM_HOST`, `OPENAI_API_KEY`, `TAVILY_API_KEY`) do **not** apply to Vercel — you must add Preview env vars separately.
+
+1. Confirm the agent is healthy on the VM:
+   ```bash
+   curl http://<VM_HOST>:8080/health
+   ```
+   Expect `{"status":"ok","agent":"langgraph-seo-geo"}`.
+2. Azure NSG: allow inbound **TCP 8080** from the internet (Vercel serverless calls the VM from outside your network).
+3. Vercel → **landing-pro** → **Settings** → **Environment Variables** → add for **Preview only**:
+   - `CONTENT_AGENT_URL` = `http://<VM_HOST>:8080` (same host as GitHub secret `VM_HOST`, no trailing slash)
+   - `CONTENT_AGENT_API_KEY` = same value as on the VM, if you enabled bearer auth
+4. **Redeploy** Preview (`develop` / `beta.infrafund.net`). Hard-refresh `/admin/create-post`.
+5. Verify: the model badge shows **LangGraph + Tavily SEO** (not `gpt-4.1-mini`). If it still shows `gpt-4.1-mini`, `CONTENT_AGENT_URL` is missing or the deployment predates the env change.
+
+Agent code deploys from branch **`infrafund-agents`** (GitHub Actions → Azure VM). CMS proxy code is on **`develop`** (Vercel Preview).
 
 Optional CMS: `CMS_REPLACE_EXISTING_PAGES`. Home page uses Payload when `DATABASE_URL` is set.
 

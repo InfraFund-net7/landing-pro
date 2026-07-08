@@ -259,10 +259,11 @@ export default function AiCompositionDashboard({
                   {!usesLangGraphAgent ? (
                     <>
                       {' '}
-                      Beta uses the Vercel AI gateway unless{' '}
-                      <code>CONTENT_AGENT_URL</code> is set on Preview. Merge
-                      the agent integration branch and point Preview at your VM
-                      to use LangGraph + Tavily.
+                      Set <code>CONTENT_AGENT_URL</code> (and matching{' '}
+                      <code>CONTENT_AGENT_API_KEY</code> if used on the VM) on
+                      Vercel <strong>Preview</strong>, then redeploy beta. The
+                      badge should show LangGraph + Tavily SEO when it is wired
+                      correctly.
                     </>
                   ) : null}
                 </p>

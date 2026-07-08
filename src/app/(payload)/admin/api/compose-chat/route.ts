@@ -175,5 +175,10 @@ export async function POST(request: Request) {
     stopWhen: stepCountIs(8),
   });
 
-  return result.toUIMessageStreamResponse();
+  return result.toUIMessageStreamResponse({
+    onError: (error) =>
+      error instanceof Error
+        ? error.message
+        : 'AI Gateway composition failed. Set CONTENT_AGENT_URL on Preview to use the LangGraph VM agent instead.',
+  });
 }
