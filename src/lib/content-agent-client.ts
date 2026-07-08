@@ -61,18 +61,29 @@ export async function callContentAgentChat({
       thread_id: threadId ?? undefined,
     }),
     cache: 'no-store',
+    signal: AbortSignal.timeout(280_000),
   });
 
-  const data = (await response.json()) as ContentAgentChatResult & {
-    detail?: string;
-  };
+  let data: ContentAgentChatResult & { detail?: string | { msg?: string } };
+  try {
+    data = (await response.json()) as ContentAgentChatResult & {
+      detail?: string | { msg?: string };
+    };
+  } catch {
+    throw new Error(
+      `Content agent returned a non-JSON response (HTTP ${response.status}). Check CONTENT_AGENT_URL and VM firewall.`
+    );
+  }
 
   if (!response.ok) {
-    throw new Error(
-      typeof data.detail === 'string'
-        ? data.detail
-        : 'Content agent request failed.'
-    );
+    const detail = data.detail;
+    const detailText =
+      typeof detail === 'string'
+        ? detail
+        : detail && typeof detail === 'object' && 'msg' in detail
+          ? String(detail.msg)
+          : `Content agent request failed (HTTP ${response.status}).`;
+    throw new Error(detailText);
   }
 
   return data;

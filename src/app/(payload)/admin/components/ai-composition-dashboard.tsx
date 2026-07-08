@@ -254,7 +254,18 @@ export default function AiCompositionDashboard({
           {(error || saveError) && activeTab === 'compose' ? (
             <div className={styles.flashRow}>
               {error ? (
-                <p className={styles.flashError}>{error.message}</p>
+                <p className={styles.flashError}>
+                  {error.message}
+                  {!usesLangGraphAgent ? (
+                    <>
+                      {' '}
+                      Beta uses the Vercel AI gateway unless{' '}
+                      <code>CONTENT_AGENT_URL</code> is set on Preview. Merge
+                      the agent integration branch and point Preview at your VM
+                      to use LangGraph + Tavily.
+                    </>
+                  ) : null}
+                </p>
               ) : null}
               {saveError ? (
                 <p className={styles.flashError}>{saveError}</p>

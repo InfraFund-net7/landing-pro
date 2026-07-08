@@ -52,9 +52,21 @@ async function streamFromContentAgent(
 
   const stream = createUIMessageStream({
     originalMessages: messages,
+    onError: (error) =>
+      error instanceof Error ? error.message : 'Content agent stream failed.',
     execute: ({ writer }) => {
+      writer.write({ type: 'start' });
+      writer.write({ type: 'start-step' });
+
       for (const event of agentResult.tool_events) {
         const toolCallId = event.toolCallId || generateId();
+
+        writer.write({
+          type: 'tool-input-start',
+          toolCallId,
+          toolName: event.toolName,
+          dynamic: true,
+        });
 
         writer.write({
           type: 'tool-input-available',
@@ -72,16 +84,23 @@ async function streamFromContentAgent(
         });
       }
 
-      if (agentResult.assistant_text) {
-        const textId = generateId();
-        writer.write({ type: 'text-start', id: textId });
-        writer.write({
-          type: 'text-delta',
-          id: textId,
-          delta: agentResult.assistant_text,
-        });
-        writer.write({ type: 'text-end', id: textId });
-      }
+      const assistantText =
+        agentResult.assistant_text.trim() ||
+        (agentResult.draft?.title
+          ? `Draft ready: ${agentResult.draft.title}`
+          : 'The content agent finished without a text summary.');
+
+      const textId = generateId();
+      writer.write({ type: 'text-start', id: textId });
+      writer.write({
+        type: 'text-delta',
+        id: textId,
+        delta: assistantText,
+      });
+      writer.write({ type: 'text-end', id: textId });
+
+      writer.write({ type: 'finish-step' });
+      writer.write({ type: 'finish', finishReason: 'stop' });
     },
   });
 
