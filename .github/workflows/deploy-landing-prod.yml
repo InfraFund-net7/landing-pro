@@ -1,0 +1,121 @@
+name: Deploy Landing App to Production VM
+
+# Only fires after a pull request is merged into main, or manually via Actions/gh CLI.
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository Code
+        uses: actions/checkout@v4
+
+      - name: Execute Remote Deployment via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          NEXT_PUBLIC_API_BASE_URL: ${{ secrets.PROD_API_BASE_URL }}
+          NEXT_PUBLIC_RECAPTCHA_SITE_KEY: ${{ secrets.GOOGLE_RECAPTCHA_SITE_KEY }}
+          NEXT_PUBLIC_DASH_LOGIN_URL: ${{ secrets.DASHBOARD_URL }}
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+          INFRA_CONTACT_FORM_SMTP_HOST: ${{ secrets.INFRA_CONTACT_FORM_SMTP_HOST }}
+          INFRA_CONTACT_FORM_SMTP_PORT: ${{ secrets.INFRA_CONTACT_FORM_SMTP_PORT }}
+          INFRA_CONTACT_FORM_SMTP_SENDER: ${{ secrets.INFRA_CONTACT_FORM_SMTP_SENDER }}
+          INFRA_CONTACT_FORM_SMTP_USERNAME: ${{ secrets.INFRA_CONTACT_FORM_SMTP_USERNAME }}
+          INFRA_CONTACT_FORM_SMTP_PASSWORD: ${{ secrets.INFRA_CONTACT_FORM_SMTP_PASSWORD }}
+          INFRA_CONTACT_FORM_SMTP_REQUIRE_TLS: ${{ secrets.INFRA_CONTACT_FORM_SMTP_REQUIRE_TLS }}
+          INFRA_CONTACT_FORM_RECEIVER: ${{ secrets.INFRA_CONTACT_FORM_RECEIVER }}
+        with:
+          host: ${{ secrets.PROD_VM_HOST }}
+          username: ${{ secrets.PROD_VM_USERNAME }}
+          key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+          envs: DATABASE_URL,PAYLOAD_SECRET,NEXT_PUBLIC_API_BASE_URL,NEXT_PUBLIC_RECAPTCHA_SITE_KEY,NEXT_PUBLIC_DASH_LOGIN_URL,BLOB_READ_WRITE_TOKEN,INFRA_CONTACT_FORM_SMTP_HOST,INFRA_CONTACT_FORM_SMTP_PORT,INFRA_CONTACT_FORM_SMTP_SENDER,INFRA_CONTACT_FORM_SMTP_USERNAME,INFRA_CONTACT_FORM_SMTP_PASSWORD,INFRA_CONTACT_FORM_SMTP_REQUIRE_TLS,INFRA_CONTACT_FORM_RECEIVER
+          script: |
+            REPO_DIR="/home/${{ secrets.PROD_VM_USERNAME }}/landing-web"
+
+            if [ ! -d "$REPO_DIR/.git" ]; then
+              git clone https://github.com/InfraFund-net7/landing-pro.git "$REPO_DIR"
+            fi
+            cd "$REPO_DIR"
+
+            git fetch origin
+            git checkout main
+            git reset --hard origin/main
+
+            if [ -z "${DATABASE_URL:-}" ]; then
+              echo "ERROR: Add DATABASE_URL to GitHub repository secrets."
+              exit 1
+            fi
+
+            case "$DATABASE_URL" in
+              *"@127.0.0.1:"*|*"@localhost:"*)
+                echo "ERROR: DATABASE_URL points to localhost, which is not reachable from inside the container." >&2
+                exit 1
+                ;;
+            esac
+
+            if [ -z "${PAYLOAD_SECRET:-}" ]; then
+              echo "ERROR: Add PAYLOAD_SECRET to GitHub repository secrets."
+              exit 1
+            fi
+
+            SECDIR="/tmp/landing-build-secrets-$$"
+            mkdir -p "$SECDIR"
+            chmod 700 "$SECDIR"
+            trap 'rm -rf "$SECDIR"' EXIT
+            umask 077
+            printf '%s' "$PAYLOAD_SECRET" > "$SECDIR/payload_secret"
+            printf '%s' "$DATABASE_URL" > "$SECDIR/database_url"
+
+            sudo DOCKER_BUILDKIT=1 docker build -f deployment/Dockerfile \
+              --secret id=payload_secret,src="$SECDIR/payload_secret" \
+              --secret id=database_url,src="$SECDIR/database_url" \
+              --build-arg NEXT_PUBLIC_API_BASE_URL="${NEXT_PUBLIC_API_BASE_URL:-}" \
+              --build-arg NEXT_PUBLIC_RECAPTCHA_SITE_KEY="${NEXT_PUBLIC_RECAPTCHA_SITE_KEY:-}" \
+              --build-arg NEXT_PUBLIC_DASH_LOGIN_URL="${NEXT_PUBLIC_DASH_LOGIN_URL:-}" \
+              -t landing-infrafund:prod .
+
+            rm -rf "$SECDIR"
+            trap - EXIT
+
+            sudo docker network create internal 2>/dev/null || true
+
+            printf '%s\n' \
+              "PAYLOAD_PUBLIC_SERVER_URL=https://infrafund.net" \
+              "NEXT_PUBLIC_SURVEY_COOKIE_DOMAIN=.infrafund.net" \
+              "BLOB_READ_WRITE_TOKEN=${BLOB_READ_WRITE_TOKEN:-}" \
+              "INFRA_CONTACT_FORM_SMTP_HOST=${INFRA_CONTACT_FORM_SMTP_HOST:-}" \
+              "INFRA_CONTACT_FORM_SMTP_PORT=${INFRA_CONTACT_FORM_SMTP_PORT:-}" \
+              "INFRA_CONTACT_FORM_SMTP_SENDER=${INFRA_CONTACT_FORM_SMTP_SENDER:-}" \
+              "INFRA_CONTACT_FORM_SMTP_USERNAME=${INFRA_CONTACT_FORM_SMTP_USERNAME:-}" \
+              "INFRA_CONTACT_FORM_SMTP_PASSWORD=${INFRA_CONTACT_FORM_SMTP_PASSWORD:-}" \
+              "INFRA_CONTACT_FORM_SMTP_REQUIRE_TLS=${INFRA_CONTACT_FORM_SMTP_REQUIRE_TLS:-}" \
+              "INFRA_CONTACT_FORM_RECEIVER=${INFRA_CONTACT_FORM_RECEIVER:-}" \
+              > deployment/.env.production
+
+            ENVIRONMENT=production \
+            API_URL="${NEXT_PUBLIC_API_BASE_URL:-}" \
+            PAYLOAD_SECRET="$PAYLOAD_SECRET" \
+            DATABASE_URL="$DATABASE_URL" \
+            LANDING_IMAGE=landing-infrafund:prod \
+            sudo -E docker compose -f deployment/docker-compose.deploy.yml up -d --force-recreate
+
+            for i in $(seq 1 15); do
+              if curl -sf http://127.0.0.1:3000/ > /dev/null; then
+                echo "landing app is healthy"
+                exit 0
+              fi
+              sleep 2
+            done
+
+            echo "ERROR: landing app did not become healthy after deploy"
+            sudo docker logs landing-app --tail 100
+            exit 1
