@@ -23,9 +23,10 @@ jobs:
             set -euo pipefail
             REPO_DIR="/home/$VM_USERNAME/landing-web"
             cd "$REPO_DIR"
-            git -c http.extraheader="AUTHORIZATION: bearer ${GITHUB_TOKEN}" fetch origin
+            AUTH_HEADER="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 -w0)"
+            git -c http.extraheader="$AUTH_HEADER" fetch origin
             git checkout develop
-            git -c http.extraheader="AUTHORIZATION: bearer ${GITHUB_TOKEN}" pull origin develop
+            git -c http.extraheader="$AUTH_HEADER" pull origin develop
 
             echo "--- bringing up infra-postgres on beta VM ---"
             sudo docker network create internal 2>/dev/null || true

@@ -44,9 +44,10 @@ jobs:
 
             # VM has no stored git credentials; authenticate this fetch/pull with the
             # workflow's short-lived GITHUB_TOKEN so deploys can't silently go stale.
-            git -c http.extraheader="AUTHORIZATION: bearer ${GITHUB_TOKEN}" fetch origin
+            AUTH_HEADER="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 -w0)"
+            git -c http.extraheader="$AUTH_HEADER" fetch origin
             git checkout develop
-            git -c http.extraheader="AUTHORIZATION: bearer ${GITHUB_TOKEN}" pull origin develop
+            git -c http.extraheader="$AUTH_HEADER" pull origin develop
 
             if [ -z "${DATABASE_URL:-}" ]; then
               echo "ERROR: Add DATABASE_URL to GitHub repository secrets."

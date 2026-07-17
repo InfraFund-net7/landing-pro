@@ -50,7 +50,8 @@ jobs:
 
             # VM has no stored git credentials; authenticate this fetch/reset with the
             # workflow's short-lived GITHUB_TOKEN so deploys can't silently go stale.
-            git -c http.extraheader="AUTHORIZATION: bearer ${GITHUB_TOKEN}" fetch origin
+            AUTH_HEADER="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 -w0)"
+            git -c http.extraheader="$AUTH_HEADER" fetch origin
             git checkout main
             git reset --hard origin/main
 
