@@ -1,0 +1,614 @@
+name: Provision Beta Postgres (temporary)
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH provision self-hosted Postgres for beta
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.DEV_POSTGRES_PASSWORD }}
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: POSTGRES_PASSWORD
+          command_timeout: 15m
+          script: |
+            set -euo pipefail
+            REPO_DIR="/home/${{ secrets.VM_USERNAME }}/landing-web"
+            cd "$REPO_DIR"
+
+            echo "--- bringing up infra-postgres on beta VM ---"
+            sudo docker network create internal 2>/dev/null || true
+            POSTGRES_PASSWORD="$POSTGRES_PASSWORD" sudo -E docker compose -f deployment/docker-compose.db.yml up -d
+
+            echo "--- waiting for postgres healthy ---"
+            for i in $(seq 1 30); do
+              status=$(sudo docker inspect --format='{{.State.Health.Status}}' infra-postgres 2>/dev/null || echo "starting")
+              if [ "$status" = "healthy" ]; then
+                echo "postgres is healthy"
+                break
+              fi
+              sleep 2
+            done
+
+            echo "--- applying prelude (uuidv7 shim) ---"
+            cat <<'PRELUDE_EOF' | sudo docker exec -i infra-postgres psql -U infra_app -d infrafund -v ON_ERROR_STOP=1
+            -- Self-hosted Postgres (no pg_uuidv7 extension available): implement uuidv7() in
+            -- pure SQL instead of the Neon-only extension used by backpro-neon-prelude.sql.
+            -- gen_random_uuid() is built into Postgres core since v13 (pgcrypto not required).
+            CREATE OR REPLACE FUNCTION public.uuidv7() RETURNS uuid
+              LANGUAGE sql
+              VOLATILE
+            AS $$
+              SELECT encode(
+                set_bit(
+                  set_bit(
+                    overlay(
+                      uuid_send(gen_random_uuid()) placing
+                        substring(int8send(floor(extract(epoch FROM clock_timestamp()) * 1000)::bigint) FROM 3)
+                        FROM 1 FOR 6
+                    ),
+                    52, 1
+                  ),
+                  53, 1
+                ),
+                'hex'
+              )::uuid;
+            $$;
+
+            PRELUDE_EOF
+
+            echo "--- applying backpro schema migrations ---"
+            cat <<'SQL_SCHEMA_EOF' | sudo docker exec -i infra-postgres psql -U infra_app -d infrafund -v ON_ERROR_STOP=1
+            BEGIN;
+
+            CREATE TABLE waitlist (
+                id UUID PRIMARY KEY DEFAULT uuidv7(),
+                email VARCHAR(255) NOT NULL UNIQUE,
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            );
+
+            CREATE INDEX idx_email ON waitlist (email);
+            CREATE INDEX idx_waitlist_created_at ON waitlist (created_at);
+
+            COMMIT;-- Contact status enum
+            CREATE TYPE contact_status AS ENUM (
+                'new',
+                'in_progress',
+                'answered',
+                'waiting_customer',
+                'resolved',
+                'closed',
+                'spam'
+            );
+
+            CREATE TABLE contact_forms (
+                id UUID PRIMARY KEY DEFAULT uuidv7(),
+                first_name VARCHAR(100) NOT NULL,
+                last_name VARCHAR(100) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                Subject VARCHAR(255) NOT NULL,
+                message TEXT NOT NULL,
+                status contact_status NOT NULL DEFAULT 'new',
+                ip TEXT,
+                user_agent TEXT,
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            );
+
+            CREATE INDEX idx_contact_forms_status ON contact_forms(status);
+            CREATE INDEX idx_contact_forms_created_at ON contact_forms(created_at);
+            CREATE INDEX idx_contact_forms_email ON contact_forms(email);BEGIN;
+
+            CREATE TABLE countries (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(80) NOT NULL,
+                iso VARCHAR(2) NOT NULL,
+                iso3 VARCHAR(3) DEFAULT NULL,
+                code smallint DEFAULT NULL,
+                phone_code int NOT NULL
+            );
+
+            CREATE INDEX idx_countries_name ON countries (name);
+            CREATE INDEX idx_countries_iso ON countries (iso);
+            CREATE INDEX idx_countries_iso3 ON countries (iso3);
+            CREATE INDEX idx_countries_code ON countries (code);
+            CREATE INDEX idx_countries_phone_code ON countries (phone_code);
+
+            INSERT INTO countries (name, iso,  iso3, code, phone_code) VALUES
+                ('Afghanistan','AF',  'AFG', 4, 93),
+                ('Albania','AL',   'ALB', 8, 355),
+                ('Algeria','DZ', 'DZA', 12, 213),
+                ('American Samoa','AS', 'ASM', 16, 1684),
+                ('Andorra','AD', 'AND', 20, 376),
+                ('Angola','AO', 'AGO', 24, 244),
+                ('Anguilla','AI', 'AIA', 660, 1264),
+                ('Antarctica','AQ', 'ATA', 10, 0),
+                ('Antigua and Barbuda','AG', 'ATG', 28, 1268),
+                ('Argentina','AR', 'ARG', 32, 54),
+                ('Armenia','AM', 'ARM', 51, 374),
+                ('Aruba','AW', 'ABW', 533, 297),
+                ('Australia','AU', 'AUS', 36, 61),
+                ('Austria','AT', 'AUT', 40, 43),
+                ('Azerbaijan','AZ', 'AZE', 31, 994),
+                ('Bahamas','BS', 'BHS', 44, 1242),
+                ('Bahrain','BH', 'BHR', 48, 973),
+                ('Bangladesh','BD', 'BGD', 50, 880),
+                ('Barbados','BB', 'BRB', 52, 1246),
+                ('Belarus','BY', 'BLR', 112, 375),
+                ('Belgium','BE', 'BEL', 56, 32),
+                ('Belize','BZ', 'BLZ', 84, 501),
+                ('Benin','BJ', 'BEN', 204, 229),
+                ('Bermuda','BM', 'BMU', 60, 1441),
+                ('Bhutan','BT', 'BTN', 64, 975),
+                ('Bolivia','BO', 'BOL', 68, 591),
+                ('Bosnia and Herzegovina','BA', 'BIH', 70, 387),
+                ('Botswana','BW', 'BWA', 72, 267),
+                ('Bouvet Island','BV', 'BVT', 74, 0),
+                ('Brazil','BR', 'BRA', 76, 55),
+                ('British Indian Ocean Territory','IO', 'IOT', 86, 246),
+                ('Brunei Darussalam','BN', 'BRN', 96, 673),
+                ('Bulgaria','BG', 'BGR', 100, 359),
+                ('Burkina Faso','BF', 'BFA', 854, 226),
+                ('Burundi','BI', 'BDI', 108, 257),
+                ('Cambodia','KH', 'KHM', 116, 855),
+                ('Cameroon','CM', 'CMR', 120, 237),
+                ('Canada','CA', 'CAN', 124, 1),
+                ('Cape Verde','CV', 'CPV', 132, 238),
+                ('Cayman Islands','KY', 'CYM', 136, 1345),
+                ('Central African Republic','CF', 'CAF', 140, 236),
+                ('Chad','TD', 'TCD', 148, 235),
+                ('Chile','CL', 'CHL', 152, 56),
+                ('China','CN', 'CHN', 156, 86),
+                ('Christmas Island','CX', 'CXR', 162, 61),
+                ('Cocos (Keeling) Islands','CC', NULL, NULL, 672),
+                ('Colombia','CO', 'COL', 170, 57),
+                ('Comoros','KM', 'COM', 174, 269),
+                ('Congo','CG', 'COG', 178, 242),
+                ('Congo, the Democratic Republic of the','CD', 'COD', 180, 243),
+                ('Cook Islands','CK', 'COK', 184, 682),
+                ('Costa Rica','CR', 'CRI', 188, 506),
+                ('Cote D''Ivoire','CI', 'CIV', 384, 225),
+                ('Croatia','HR', 'HRV', 191, 385),
+                ('Cuba','CU', 'CUB', 192, 53),
+                ('Cyprus','CY', 'CYP', 196, 357),
+                ('Czech Republic','CZ', 'CZE', 203, 420),
+                ('Denmark','DK', 'DNK', 208, 45),
+                ('Djibouti','DJ', 'DJI', 262, 253),
+                ('Dominica','DM', 'DMA', 212, 1767),
+                ('Dominican Republic','DO', 'DOM', 214, 1),
+                ('Ecuador','EC', 'ECU', 218, 593),
+                ('Egypt','EG', 'EGY', 818, 20),
+                ('El Salvador','SV', 'SLV', 222, 503),
+                ('Equatorial Guinea','GQ', 'GNQ', 226, 240),
+                ('Eritrea','ER', 'ERI', 232, 291),
+                ('Estonia','EE', 'EST', 233, 372),
+                ('Ethiopia','ET', 'ETH', 231, 251),
+                ('Falkland Islands (Malvinas)','FK', 'FLK', 238, 500),
+                ('Faroe Islands','FO', 'FRO', 234, 298),
+                ('Fiji','FJ', 'FJI', 242, 679),
+                ('Finland','FI', 'FIN', 246, 358),
+                ('France','FR', 'FRA', 250, 33),
+                ('French Guiana','GF', 'GUF', 254, 594),
+                ('French Polynesia','PF', 'PYF', 258, 689),
+                ('French Southern Territories','TF', 'ATF', 260, 0),
+                ('Gabon','GA', 'GAB', 266, 241),
+                ('Gambia','GM', 'GMB', 270, 220),
+                ('Georgia','GE', 'GEO', 268, 995),
+                ('Germany','DE', 'DEU', 276, 49),
+                ('Ghana','GH', 'GHA', 288, 233),
+                ('Gibraltar','GI', 'GIB', 292, 350),
+                ('Greece','GR', 'GRC', 300, 30),
+                ('Greenland','GL', 'GRL', 304, 299),
+                ('Grenada','GD', 'GRD', 308, 1473),
+                ('Guadeloupe','GP', 'GLP', 312, 590),
+                ('Guam','GU', 'GUM', 316, 1671),
+                ('Guatemala','GT', 'GTM', 320, 502),
+                ('Guinea','GN', 'GIN', 324, 224),
+                ('Guinea-Bissau','GW', 'GNB', 624, 245),
+                ('Guyana','GY', 'GUY', 328, 592),
+                ('Haiti','HT', 'HTI', 332, 509),
+                ('Heard Island and Mcdonald Islands','HM', 'HMD', 334, 0),
+                ('Holy See (Vatican City State)','VA', 'VAT', 336, 39),
+                ('Honduras','HN', 'HND', 340, 504),
+                ('Hong Kong','HK', 'HKG', 344, 852),
+                ('Hungary','HU', 'HUN', 348, 36),
+                ('Iceland','IS', 'ISL', 352, 354),
+                ('India','IN', 'IND', 356, 91),
+                ('Indonesia','ID', 'IDN', 360, 62),
+                ('Iran, Islamic Republic of','IR', 'IRN', 364, 98),
+                ('Iraq','IQ', 'IRQ', 368, 964),
+                ('Ireland','IE', 'IRL', 372, 353),
+                ('Israel','IL', 'ISR', 376, 972),
+                ('Italy','IT', 'ITA', 380, 39),
+                ('Jamaica','JM', 'JAM', 388, 1876),
+                ('Japan','JP', 'JPN', 392, 81),
+                ('Jordan','JO', 'JOR', 400, 962),
+                ('Kazakhstan','KZ', 'KAZ', 398, 7),
+                ('Kenya','KE', 'KEN', 404, 254),
+                ('Kiribati','KI', 'KIR', 296, 686),
+                ('Korea, Democratic People''s Republic of','KP', 'PRK', 408, 850),
+                ('Korea, Republic of','KR', 'KOR', 410, 82),
+                ('Kuwait','KW', 'KWT', 414, 965),
+                ('Kyrgyzstan','KG', 'KGZ', 417, 996),
+                ('Lao People''s Democratic Republic','LA', 'LAO', 418, 856),
+                ('Latvia','LV', 'LVA', 428, 371),
+                ('Lebanon','LB', 'LBN', 422, 961),
+                ('Lesotho','LS', 'LSO', 426, 266),
+                ('Liberia','LR', 'LBR', 430, 231),
+                ('Libyan Arab Jamahiriya','LY', 'LBY', 434, 218),
+                ('Liechtenstein','LI', 'LIE', 438, 423),
+                ('Lithuania','LT', 'LTU', 440, 370),
+                ('Luxembourg','LU', 'LUX', 442, 352),
+                ('Macao','MO', 'MAC', 446, 853),
+                ('North Macedonia','MK', 'MKD', 807, 389),
+                ('Madagascar','MG', 'MDG', 450, 261),
+                ('Malawi','MW', 'MWI', 454, 265),
+                ('Malaysia','MY', 'MYS', 458, 60),
+                ('Maldives','MV', 'MDV', 462, 960),
+                ('Mali','ML', 'MLI', 466, 223),
+                ('Malta','MT', 'MLT', 470, 356),
+                ('Marshall Islands','MH', 'MHL', 584, 692),
+                ('Martinique','MQ', 'MTQ', 474, 596),
+                ('Mauritania','MR', 'MRT', 478, 222),
+                ('Mauritius','MU', 'MUS', 480, 230),
+                ('Mayotte','YT', 'MYT', 175, 269),
+                ('Mexico','MX', 'MEX', 484, 52),
+                ('Micronesia, Federated States of','FM', 'FSM', 583, 691),
+                ('Moldova, Republic of','MD', 'MDA', 498, 373),
+                ('Monaco','MC', 'MCO', 492, 377),
+                ('Mongolia','MN', 'MNG', 496, 976),
+                ('Montserrat','MS', 'MSR', 500, 1664),
+                ('Morocco','MA', 'MAR', 504, 212),
+                ('Mozambique','MZ', 'MOZ', 508, 258),
+                ('Myanmar','MM', 'MMR', 104, 95),
+                ('Namibia','NA', 'NAM', 516, 264),
+                ('Nauru','NR', 'NRU', 520, 674),
+                ('Nepal','NP', 'NPL', 524, 977),
+                ('Netherlands','NL', 'NLD', 528, 31),
+                ('Netherlands Antilles','AN', 'ANT', 530, 599),
+                ('New Caledonia','NC', 'NCL', 540, 687),
+                ('New Zealand','NZ', 'NZL', 554, 64),
+                ('Nicaragua','NI', 'NIC', 558, 505),
+                ('Niger','NE', 'NER', 562, 227),
+                ('Nigeria','NG', 'NGA', 566, 234),
+                ('Niue','NU', 'NIU', 570, 683),
+                ('Norfolk Island','NF', 'NFK', 574, 672),
+                ('Northern Mariana Islands','MP', 'MNP', 580, 1670),
+                ('Norway','NO', 'NOR', 578, 47),
+                ('Oman','OM', 'OMN', 512, 968),
+                ('Pakistan','PK', 'PAK', 586, 92),
+                ('Palau','PW', 'PLW', 585, 680),
+                ('Palestinian Territory, Occupied','PS', NULL, NULL, 970),
+                ('Panama','PA', 'PAN', 591, 507),
+                ('Papua New Guinea','PG', 'PNG', 598, 675),
+                ('Paraguay','PY', 'PRY', 600, 595),
+                ('Peru','PE', 'PER', 604, 51),
+                ('Philippines','PH', 'PHL', 608, 63),
+                ('Pitcairn','PN', 'PCN', 612, 0),
+                ('Poland','PL', 'POL', 616, 48),
+                ('Portugal','PT', 'PRT', 620, 351),
+                ('Puerto Rico','PR', 'PRI', 630, 1787),
+                ('Qatar','QA', 'QAT', 634, 974),
+                ('Reunion','RE', 'REU', 638, 262),
+                ('Romania','RO', 'ROU', 642, 40),
+                ('Russian Federation','RU', 'RUS', 643, 7),
+                ('Rwanda','RW', 'RWA', 646, 250),
+                ('Saint Helena','SH', 'SHN', 654, 290),
+                ('Saint Kitts and Nevis','KN', 'KNA', 659, 1869),
+                ('Saint Lucia','LC', 'LCA', 662, 1758),
+                ('Saint Pierre and Miquelon','PM', 'SPM', 666, 508),
+                ('Saint Vincent and the Grenadines','VC', 'VCT', 670, 1784),
+                ('Samoa','WS', 'WSM', 882, 684),
+                ('San Marino','SM', 'SMR', 674, 378),
+                ('Sao Tome and Principe','ST', 'STP', 678, 239),
+                ('Saudi Arabia','SA', 'SAU', 682, 966),
+                ('Senegal','SN', 'SEN', 686, 221),
+                ('Serbia','RS', 'SRB', 688, 381),
+                ('Seychelles','SC', 'SYC', 690, 248),
+                ('Sierra Leone','SL', 'SLE', 694, 232),
+                ('Singapore','SG', 'SGP', 702, 65),
+                ('Slovakia','SK', 'SVK', 703, 421),
+                ('Slovenia','SI', 'SVN', 705, 386),
+                ('Solomon Islands','SB', 'SLB', 90, 677),
+                ('Somalia','SO', 'SOM', 706, 252),
+                ('South Africa','ZA', 'ZAF', 710, 27),
+                ('South Georgia and the South Sandwich Islands','GS', 'SGS', 239, 0),
+                ('Spain','ES', 'ESP', 724, 34),
+                ('Sri Lanka','LK', 'LKA', 144, 94),
+                ('Sudan','SD', 'SDN', 736, 249),
+                ('Suriname','SR', 'SUR', 740, 597),
+                ('Svalbard and Jan Mayen','SJ', 'SJM', 744, 47),
+                ('Swaziland','SZ', 'SWZ', 748, 268),
+                ('Sweden','SE', 'SWE', 752, 46),
+                ('Switzerland','CH', 'CHE', 756, 41),
+                ('Syrian Arab Republic','SY', 'SYR', 760, 963),
+                ('Taiwan, Province of China','TW', 'TWN', 158, 886),
+                ('Tajikistan','TJ', 'TJK', 762, 992),
+                ('Tanzania, United Republic of','TZ', 'TZA', 834, 255),
+                ('Thailand','TH', 'THA', 764, 66),
+                ('Timor-Leste','TL', 'TLS', 626, 670),
+                ('Togo','TG', 'TGO', 768, 228),
+                ('Tokelau','TK', 'TKL', 772, 690),
+                ('Tonga','TO', 'TON', 776, 676),
+                ('Trinidad and Tobago','TT', 'TTO', 780, 1868),
+                ('Tunisia','TN', 'TUN', 788, 216),
+                ('Türkiye, The Republic of','TR', 'TUR', 792, 90),
+                ('Turkmenistan','TM', 'TKM', 795, 993),
+                ('Turks and Caicos Islands','TC', 'TCA', 796, 1649),
+                ('Tuvalu','TV', 'TUV', 798, 688),
+                ('Uganda','UG', 'UGA', 800, 256),
+                ('Ukraine','UA', 'UKR', 804, 380),
+                ('United Arab Emirates','AE', 'ARE', 784, 971),
+                ('United Kingdom','GB', 'GBR', 826, 44),
+                ('United States','US', 'USA', 840, 1),
+                ('United States Minor Outlying Islands','UM', 'UMI', 581, 1),
+                ('Uruguay','UY', 'URY', 858, 598),
+                ('Uzbekistan','UZ', 'UZB', 860, 998),
+                ('Vanuatu','VU', 'VUT', 548, 678),
+                ('Venezuela','VE', 'VEN', 862, 58),
+                ('Viet Nam','VN', 'VNM', 704, 84),
+                ('Virgin Islands, British','VG', 'VGB', 92, 1284),
+                ('Virgin Islands, U.s.','VI', 'VIR', 850, 1340),
+                ('Wallis and Futuna','WF', 'WLF', 876, 681),
+                ('Western Sahara','EH', 'ESH', 732, 212),
+                ('Yemen','YE', 'YEM', 887, 967),
+                ('Zambia','ZM', 'ZMB', 894, 260),
+                ('Zimbabwe','ZW', 'ZWE', 716, 263),
+                ('Montenegro','ME', 'MNE', 499, 382),
+                ('Kosovo','XK', 'XKX', 0, 383),
+                ('Aland Islands','AX', 'ALA', 248, 358),
+                ('Bonaire, Sint Eustatius and Saba','BQ', 'BES', 535, 599),
+                ('Curacao','CW', 'CUW', 531, 599),
+                ('Guernsey','GG', 'GGY', 831, 44),
+                ('Isle of Man','IM', 'IMN', 833, 44),
+                ('Jersey','JE', 'JEY', 832, 44),
+                ('Saint Barthelemy','BL', 'BLM', 652, 590),
+                ('Saint Martin','MF', 'MAF', 663, 590),
+                ('Sint Maarten','SX', 'SXM', 534, 1),
+                ('South Sudan','SS', 'SSD', 728, 211);
+
+            COMMIT;CREATE TYPE non_resident_waitlist_type AS ENUM (
+                'individual',
+                'company'
+            );
+
+            CREATE TABLE non_resident_waitlists (
+                id UUID PRIMARY KEY DEFAULT uuidv7(),
+                first_name VARCHAR(100) NOT NULL,
+                last_name VARCHAR(100) NOT NULL,
+                company_name VARCHAR(255),
+                email VARCHAR(255) NOT NULL UNIQUE,
+                country_id SERIAL REFERENCES countries(id) ON DELETE SET NULL,
+                type non_resident_waitlist_type NOT NULL DEFAULT 'individual',
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            );
+
+            CREATE INDEX idx_non_resident_waitlists_type ON non_resident_waitlists(type);
+            CREATE INDEX idx_non_resident_waitlists_country_id ON non_resident_waitlists(country_id);
+            CREATE INDEX idx_non_resident_waitlists_created_at_id ON non_resident_waitlists(created_at DESC, id);BEGIN;
+
+            CREATE TYPE user_type AS ENUM ('individual', 'company');
+            CREATE TYPE user_role AS ENUM ('admin', 'moderator', 'support','project_owner', 'investor', 'contractor', 'governance');
+            CREATE TYPE user_status AS ENUM ('active', 'inactive', 'suspended', 'pending_kyc');
+
+            CREATE TABLE users (
+                id UUID PRIMARY KEY DEFAULT uuidv7(),
+                particle_id VARCHAR(255) UNIQUE NOT NULL,
+                email VARCHAR(255) UNIQUE,
+
+                first_name VARCHAR(100),
+                last_name VARCHAR(100),
+                phone_number VARCHAR(20) UNIQUE,
+                company_name VARCHAR(255),
+
+                -- Verification
+                kyc_verified BOOLEAN DEFAULT FALSE,
+                kyc_verified_at TIMESTAMP WITH TIME ZONE,
+                kyb_verified BOOLEAN DEFAULT FALSE,
+                kyb_verified_at TIMESTAMP WITH TIME ZONE,
+
+                -- User classification
+                type user_type NOT NULL,
+                role user_role NOT NULL DEFAULT 'investor',
+                status user_status NOT NULL DEFAULT 'pending_kyc',
+
+                -- GDPR
+                data_deletion_requested_at TIMESTAMP WITH TIME ZONE,
+                data_deletion_scheduled_at TIMESTAMP WITH TIME ZONE,
+
+                created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                deleted_at TIMESTAMP WITH TIME ZONE
+            );
+
+            CREATE INDEX idx_users_particle_id ON users(particle_id);
+            CREATE INDEX idx_users_email ON users(email);
+            CREATE INDEX idx_users_phone_number ON users(phone_number);
+            CREATE INDEX idx_users_type ON users(type);
+            CREATE INDEX idx_users_role ON users(role);
+            CREATE INDEX idx_users_status ON users(status);
+            CREATE INDEX idx_users_created_at ON users(created_at);
+            CREATE INDEX idx_users_updated_at ON users(updated_at);
+
+            CREATE TABLE wallets (
+                user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+                chain VARCHAR(100) NOT NULL,
+                public_address VARCHAR(255) UNIQUE NOT NULL,
+                created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+                PRIMARY KEY (user_id, chain, public_address)
+            );
+
+            CREATE INDEX idx_wallets_chain ON wallets(chain);
+            CREATE INDEX idx_wallets_public_address ON wallets(public_address);
+            CREATE INDEX idx_wallets_created_at ON wallets(created_at);
+
+            CREATE TABLE sessions (
+                id UUID PRIMARY KEY DEFAULT uuidv7(),
+                user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+
+                -- Opaque token hashed for security
+                refresh_token_hash BYTEA UNIQUE NOT NULL,
+
+                user_agent TEXT,
+                ip_address TEXT,
+                platform VARCHAR(50),      -- 'web', 'mobile', 'desktop'
+                browser VARCHAR(100),
+                device VARCHAR(100),
+
+                is_trusted BOOLEAN DEFAULT FALSE,  -- Device remembered?
+
+                created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                last_activity_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                activity_timeout_at TIMESTAMP WITH TIME ZONE NOT NULL,
+                absolute_expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+                revoked_at TIMESTAMP WITH TIME ZONE,
+                revoked_reason VARCHAR(100),
+                revoked_by_user_id UUID,
+
+                CONSTRAINT refresh_token_hash_not_empty
+                    CHECK (LENGTH(refresh_token_hash) > 0),
+
+                CONSTRAINT absolute_expires_after_created
+                    CHECK (absolute_expires_at > created_at),
+
+                CONSTRAINT activity_timeout_valid
+                    CHECK (activity_timeout_at > created_at),
+
+                -- Revocation consistency: Both fields must be set together
+                CONSTRAINT revocation_consistency
+                    CHECK (
+                        (revoked_at IS NULL AND revoked_reason IS NULL) OR
+                        (revoked_at IS NOT NULL AND revoked_reason IS NOT NULL)
+                    ),
+
+                CONSTRAINT refresh_token_hash_length CHECK (OCTET_LENGTH(refresh_token_hash) = 32)
+            );
+
+            -- Active sessions by user (most common query for showing user's devices)
+            CREATE INDEX idx_sessions_user_id_active
+                ON sessions(user_id)
+                WHERE revoked_at IS NULL;
+
+            -- The time check will now happen in the application query, which is standard practice.
+            CREATE INDEX idx_sessions_refresh_token_hash_active
+                ON sessions(refresh_token_hash)
+                WHERE revoked_at IS NULL;
+
+            -- For cleanup job to find sessions that timed out from inactivity.
+            CREATE INDEX idx_sessions_activity_timeout
+                ON sessions(activity_timeout_at)
+                WHERE revoked_at IS NULL;
+
+            -- For cleanup job to find sessions that passed their absolute expiry.
+            CREATE INDEX idx_sessions_absolute_expires
+                ON sessions(absolute_expires_at)
+                WHERE revoked_at IS NULL;
+
+            -- For audit/compliance: find all revoked sessions quickly.
+            CREATE INDEX idx_sessions_revoked_at
+                ON sessions(revoked_at DESC) -- Order by most recently revoked
+                WHERE revoked_at IS NOT NULL;
+
+            -- For audit/security: get a user's complete session history, newest first.
+            CREATE INDEX idx_sessions_user_created
+                ON sessions(user_id, created_at DESC);
+
+            CREATE TABLE account_lockouts (
+                user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+
+                -- Failed attempt tracking
+                failed_attempts SMALLINT NOT NULL DEFAULT 0,
+                last_failed_attempt_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+                -- Lockout status
+                locked_at TIMESTAMP WITH TIME ZONE,
+                locked_until TIMESTAMP WITH TIME ZONE,
+                locked_reason VARCHAR(50),  -- '2FA_FAILED', 'PIN_FAILED', 'LOGIN_FAILED'
+
+                -- Audit
+                created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+                -- Constraints
+                CONSTRAINT failed_attempts_range CHECK (failed_attempts >= 0 AND failed_attempts <= 10),
+                CONSTRAINT locked_until_after_locked_at CHECK (
+                    locked_until IS NULL OR locked_at IS NULL OR locked_until > locked_at
+                )
+            );
+
+            -- Indexes for performance
+            CREATE INDEX idx_account_lockouts_locked_until
+                ON account_lockouts(locked_until)
+                WHERE locked_until IS NOT NULL;
+
+            CREATE INDEX idx_account_lockouts_last_failed_attempt
+                ON account_lockouts(last_failed_attempt_at);
+
+            CREATE TABLE lockout_audit_logs (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+                event_type VARCHAR(50) NOT NULL,  -- 'FAILED_ATTEMPT', 'ACCOUNT_LOCKED', 'UNLOCKED'
+                attempt_count SMALLINT,
+                locked_reason VARCHAR(50),
+
+                created_at TIMESTAMP NOT NULL DEFAULT NOW()
+            );
+
+            CREATE INDEX idx_lockout_audit_logs_user_id ON lockout_audit_logs(user_id);
+            CREATE INDEX idx_lockout_audit_logs_created_at ON lockout_audit_logs(created_at);
+
+
+            COMMIT;BEGIN;
+
+            set lock_timeout = '2s';
+            set statement_timeout = '10s';
+
+            CREATE TABLE IF NOT EXISTS user_organizations (
+                user_id UUID REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+                name VARCHAR(255)
+            );
+
+            INSERT INTO user_organizations (user_id, name)
+            SELECT
+                id,
+                company_name
+            FROM users
+            WHERE
+                type = 'company'
+              AND company_name IS NOT NULL
+              AND company_name != ''
+            ON CONFLICT (user_id) DO NOTHING;
+
+
+            CREATE INDEX idx_user_organizations_name ON user_organizations(name);
+
+            ALTER TYPE user_type RENAME VALUE 'company' TO 'organization';
+
+            ALTER TABLE users DROP COLUMN IF EXISTS company_name;
+
+            reset lock_timeout;
+            reset statement_timeout;
+
+            COMMIT;
+            BEGIN;
+
+            DROP INDEX IF EXISTS idx_users_email;
+            DROP INDEX IF EXISTS idx_users_particle_id;
+            DROP INDEX IF EXISTS idx_users_phone_number;
+            DROP INDEX IF EXISTS idx_email;
+            DROP INDEX IF EXISTS idx_wallets_public_address;
+
+            COMMIT;
+            SQL_SCHEMA_EOF
+
+            echo "--- verifying tables ---"
+            sudo docker exec infra-postgres psql -U infra_app -d infrafund -c '\dt'
