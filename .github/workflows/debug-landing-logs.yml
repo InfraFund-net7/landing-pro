@@ -1,0 +1,24 @@
+name: Debug Landing App Logs (temporary)
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH and dump logs
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "--- triggering a waitlist insert to reproduce ---"
+            curl -s -X POST http://127.0.0.1:3000/api/waitlists \
+              -H "Content-Type: application/json" \
+              -H "X-Captcha-Token: debug-token" \
+              -d '{"email":"debug-diagnostic@example.com"}'
+            echo ""
+            echo "--- docker logs landing-app (tail 80) ---"
+            sudo docker logs landing-app --tail 80
