@@ -7,14 +7,19 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: SSH verify payload schema
+      - name: SSH cleanup stray container and check homepage
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "--- payload schema tables ---"
-            sudo docker exec infra-postgres psql -U infra_app -d infrafund -c '\dt payload.*'
-            echo "--- any leftover bootstrap containers ---"
+            echo "--- stopping leftover bootstrap container ---"
+            sudo docker stop vibrant_gagarin || true
             sudo docker ps -a --filter ancestor=node:24-alpine
+
+            echo "--- landing-app logs (tail 40, after payload bootstrap) ---"
+            sudo docker logs landing-app --tail 40
+
+            echo "--- homepage response ---"
+            curl -s -o /dev/null -w "HTTP %{http_code}\n" http://127.0.0.1:3000/
