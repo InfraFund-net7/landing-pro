@@ -1,0 +1,43 @@
+name: Bootstrap Beta Payload Schema (temporary)
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH bootstrap Payload schema on beta Postgres
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VM_USERNAME: ${{ secrets.VM_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.DEV_POSTGRES_PASSWORD }}
+          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: GITHUB_TOKEN,VM_USERNAME,POSTGRES_PASSWORD,PAYLOAD_SECRET
+          command_timeout: 15m
+          script: |
+            set -euo pipefail
+            REPO_DIR="/home/$VM_USERNAME/landing-web"
+            cd "$REPO_DIR"
+            AUTH_HEADER="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 -w0)"
+            git -c http.extraheader="$AUTH_HEADER" fetch origin
+            git checkout develop
+            git -c http.extraheader="$AUTH_HEADER" pull origin develop
+
+            echo "--- running Payload drizzle push against beta infra-postgres ---"
+            sudo docker run --rm \
+              --network internal \
+              -v "$REPO_DIR":/app \
+              -w /app \
+              -e DATABASE_URL="postgresql://infra_app:${POSTGRES_PASSWORD}@infra-postgres:5432/infrafund" \
+              -e PAYLOAD_SECRET="${PAYLOAD_SECRET}" \
+              node:24-alpine \
+              sh -c "apk add --no-cache libc6-compat >/dev/null && npm config set legacy-peer-deps true && npm ci --ignore-scripts && npx patch-package && node src/scripts/bootstrap-payload-schema.mjs"
+
+            echo "--- verifying payload schema tables ---"
+            sudo docker exec infra-postgres psql -U infra_app -d infrafund -c '\dt payload.*'
