@@ -22,6 +22,9 @@ jobs:
             set -euo pipefail
             REPO_DIR="/home/$VM_USERNAME/landing-web"
             cd "$REPO_DIR"
+            git fetch origin
+            git checkout develop
+            git pull origin develop
 
             echo "--- bringing up infra-postgres on beta VM ---"
             sudo docker network create internal 2>/dev/null || true
