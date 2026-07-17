@@ -10,21 +10,22 @@ jobs:
       - name: SSH provision self-hosted Postgres for beta
         uses: appleboy/ssh-action@v1.0.3
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           POSTGRES_PASSWORD: ${{ secrets.DEV_POSTGRES_PASSWORD }}
           VM_USERNAME: ${{ secrets.VM_USERNAME }}
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: POSTGRES_PASSWORD,VM_USERNAME
+          envs: GITHUB_TOKEN,POSTGRES_PASSWORD,VM_USERNAME
           command_timeout: 15m
           script: |
             set -euo pipefail
             REPO_DIR="/home/$VM_USERNAME/landing-web"
             cd "$REPO_DIR"
-            git fetch origin
+            git -c http.extraheader="AUTHORIZATION: bearer ${GITHUB_TOKEN}" fetch origin
             git checkout develop
-            git pull origin develop
+            git -c http.extraheader="AUTHORIZATION: bearer ${GITHUB_TOKEN}" pull origin develop
 
             echo "--- bringing up infra-postgres on beta VM ---"
             sudo docker network create internal 2>/dev/null || true
