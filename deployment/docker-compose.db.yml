@@ -1,0 +1,42 @@
+# Self-hosted Postgres for landing forms + Payload CMS, running on infrafundprod.
+# Brought up independently of docker-compose.deploy.yml so app redeploys never
+# recreate/restart the database. Reachable from other VMs on the InfraFund VNet
+# (see infrafundprod-nsg "Postgres-Internal" rule) at 10.0.0.14:5432 — not exposed
+# publicly.
+#
+# Usage on the VM:
+#   POSTGRES_PASSWORD=*** sudo -E docker compose -f deployment/docker-compose.db.yml up -d
+
+networks:
+  internal:
+    external: true
+    name: internal
+
+volumes:
+  infra-postgres-data:
+
+services:
+  postgres:
+    image: postgres:17
+    container_name: infra-postgres
+    restart: unless-stopped
+    networks:
+      - internal
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: infra_app
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: infrafund
+    volumes:
+      - infra-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U infra_app -d infrafund']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
