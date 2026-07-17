@@ -7,12 +7,12 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: SSH remove dead container
+      - name: SSH check media records
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            sudo docker rm -f vibrant_gagarin || true
-            sudo docker ps -a --filter ancestor=node:24-alpine
+            echo "--- media table ---"
+            sudo docker exec infra-postgres psql -U infra_app -d infrafund -c 'SELECT id, filename, url, mime_type, filesize FROM payload.media;'
