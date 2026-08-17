@@ -6,9 +6,7 @@ import InfraFund from '@/../public/svg/infrafund.svg';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import gsap from 'gsap';
-import { CustomButton } from './ui/custom-button';
 import Waitlistmodal from './waitlistmodal';
-import SurveyOnlyForm from './SurveyOnlyForm';
 import DashLoginButton from './DashLoginButton';
 
 export default function Header() {
@@ -17,7 +15,6 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [createaccount, setCreateAccount] = useState(false);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
@@ -61,17 +58,6 @@ export default function Header() {
       });
     }
   }, [isMenuOpen, mounted]);
-
-  useEffect(() => {
-    if (createaccount) {
-      const originalOverflow = window.getComputedStyle(document.body).overflow;
-      document.body.style.overflow = 'hidden';
-
-      return () => {
-        document.body.style.overflow = originalOverflow;
-      };
-    }
-  }, [createaccount]);
 
   const Navigation = [
     { name: 'Projects', route: '/project' },
@@ -130,17 +116,10 @@ export default function Header() {
             </div>
           </div>
 
-          <div className="hidden lg:flex justify-center items-center gap-6 h-12">
-            <DashLoginButton className="w-[110px] h-full cursor-pointer bg-white flex justify-center items-center text-black rounded-lg border-2 border-gray-400 font-bold">
-              Login
+          <div className="hidden lg:flex justify-center items-center h-12">
+            <DashLoginButton className="px-6 h-full cursor-pointer bg-white flex justify-center items-center text-black rounded-lg font-bold">
+              Connect Wallet
             </DashLoginButton>
-            <CustomButton
-              variant="filled"
-              onClick={() => setCreateAccount(true)}
-              className="w-[184px] h-full text-sm flex justify-center items-center font-bold"
-            >
-              Create Account
-            </CustomButton>
           </div>
 
           <button
@@ -197,23 +176,13 @@ export default function Header() {
 
         <div className="mt-auto flex flex-col gap-3 pt-10">
           <DashLoginButton
-            className="w-full h-10 bg-white text-black rounded-md font-medium"
+            className="w-full h-10 flex justify-center items-center bg-white text-black rounded-md font-medium"
             onClose={() => setIsMenuOpen(false)}
           >
-            Login
+            Connect Wallet
           </DashLoginButton>
-          <button
-            onClick={() => setCreateAccount(true)}
-            className="w-full h-10 bg-[#24FF8E] text-black rounded-md font-medium"
-          >
-            Create Account
-          </button>
         </div>
       </div>
-      <SurveyOnlyForm
-        isModalOpen={createaccount}
-        setIsModalOpen={setCreateAccount}
-      />
       <Waitlistmodal
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
