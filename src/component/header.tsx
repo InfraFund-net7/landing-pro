@@ -6,15 +6,12 @@ import InfraFund from '@/../public/svg/infrafund.svg';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import gsap from 'gsap';
-import Waitlistmodal from './waitlistmodal';
 import DashLoginButton from './DashLoginButton';
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
-  const [showBanner, setShowBanner] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
@@ -70,64 +67,47 @@ export default function Header() {
   return (
     <>
       <header
-        className={`w-full h-fit px-[90px] flex flex-col gap-4 text-sm font-medium 
+        className={`w-full h-fit px-[90px] flex flex-col text-sm font-medium
         transition-all duration-500 ease-in-out max-md:px-6
         ${scrolled ? 'backdrop-blur-md bg-black/40 shadow-md' : 'bg-transparent'}
         fixed top-0 left-0 z-[950]`}
       >
-        {showBanner && (
-          <div className="relative w-full h-11 bg-[#00000080] rounded-b-lg text-white flex justify-center items-center gap-1 sm:gap-1.5 text-[8px] sm:text-sm">
-            InfraFund&apos;s INF token is launching soon. Join the
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="text-[#24FF8E] underline ml-1 cursor-pointer"
-            >
-              Waitlist{''} {''}
-              {''}!
-            </button>
-            <button
-              onClick={() => setShowBanner(false)}
-              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 text-white hover:text-[#24FF8E]"
-            >
-              <X className="w-3 h-3 sm:w-[18px] sm:h-[18px]" />
-            </button>
-          </div>
-        )}
-
-        <div className="w-full h-fit flex justify-between items-center py-2 transition-all duration-500 relative z-[960]">
-          <div className="gap-8 w-fit h-fit flex justify-center items-center">
+        <div className="w-full h-fit grid grid-cols-[1fr_auto_1fr] items-center py-2 transition-all duration-500 relative z-[960]">
+          <div className="w-fit h-fit flex justify-self-start justify-center items-center">
             <Image
               src={InfraFund || '/placeholder.svg'}
               alt="InfraFund"
               className="cursor-pointer w-auto h-auto"
               onClick={() => router.push('/')}
             />
+          </div>
 
-            <div className="hidden lg:flex justify-center items-center gap-4">
-              {Navigation.map((item, index) => (
-                <Link
-                  href={item.route}
-                  className="text-white hover:transition-colors hover:text-[#24FF8E]"
-                  key={index}
-                >
-                  {item.name}
-                </Link>
-              ))}
+          <div className="hidden lg:flex justify-self-center justify-center items-center gap-4">
+            {Navigation.map((item, index) => (
+              <Link
+                href={item.route}
+                className="text-white font-bold hover:transition-colors hover:text-[#24FF8E]"
+                key={index}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+
+          <div className="flex justify-self-end items-center gap-4">
+            <div className="hidden lg:flex justify-center items-center h-12">
+              <DashLoginButton className="px-6 h-full cursor-pointer bg-white flex justify-center items-center text-black rounded-[13px] font-bold">
+                Connect Wallet
+              </DashLoginButton>
             </div>
-          </div>
 
-          <div className="hidden lg:flex justify-center items-center h-12">
-            <DashLoginButton className="px-6 h-full cursor-pointer bg-white flex justify-center items-center text-black rounded-lg font-bold">
-              Connect Wallet
-            </DashLoginButton>
+            <button
+              className="lg:hidden flex justify-center items-center text-white relative z-[970]"
+              onClick={() => setIsMenuOpen(true)}
+            >
+              <Menu size={26} />
+            </button>
           </div>
-
-          <button
-            className="lg:hidden flex justify-center items-center text-white relative z-[970]"
-            onClick={() => setIsMenuOpen(true)}
-          >
-            <Menu size={26} />
-          </button>
         </div>
       </header>
 
@@ -176,17 +156,13 @@ export default function Header() {
 
         <div className="mt-auto flex flex-col gap-3 pt-10">
           <DashLoginButton
-            className="w-full h-10 flex justify-center items-center bg-white text-black rounded-md font-medium"
+            className="w-full h-10 flex justify-center items-center bg-white text-black rounded-[13px] font-bold"
             onClose={() => setIsMenuOpen(false)}
           >
             Connect Wallet
           </DashLoginButton>
         </div>
       </div>
-      <Waitlistmodal
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
-      />
     </>
   );
 }

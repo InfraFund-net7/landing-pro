@@ -189,9 +189,11 @@ export default function HeroSection({
           onMouseLeave={() => setAutoPlay(true)}
           className={`w-full lg:w-[408px] h-[300px] lg:h-[458px] bg-cover bg-center transition-all duration-700 ${activeStep?.border}`}
           style={{
-            backgroundImage: activeStep?.img?.startsWith('/')
-              ? `url(${activeStep.img})`
-              : `url(/image/${activeStep?.img})`,
+            backgroundImage:
+              activeStep?.img?.startsWith('/') ||
+              activeStep?.img?.startsWith('http')
+                ? `url(${activeStep.img})`
+                : `url(/image/${activeStep?.img})`,
           }}
         />
       </div>

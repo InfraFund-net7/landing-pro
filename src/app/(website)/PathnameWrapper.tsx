@@ -47,7 +47,6 @@ export default function HeaderHeroWrapper({
           className="absolute inset-0 bg-[url('/image/hero-updated-design.png')] bg-no-repeat bg-cover"
           style={{
             backgroundPosition: 'center 60%',
-            opacity: 0.85,
           }}
         />
         <div className="relative z-10 flex flex-col w-full">
