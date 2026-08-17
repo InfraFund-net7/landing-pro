@@ -3,7 +3,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Header from '@/component/header';
 import Hero from '@/component/hero';
-import PartnersSection from '@/component/partner';
+import HeroTrustStats from '@/component/HeroTrustStats';
 import { useFadeInScroll } from '@/hooks/useFadeInScroll';
 
 export default function HeaderHeroWrapper({
@@ -42,22 +42,20 @@ export default function HeaderHeroWrapper({
 
   return (
     <>
-      <div className="relative w-full h-screen sm:h-[90vh] md:h-screen overflow-hidden">
+      <div className="relative w-full min-h-screen overflow-hidden">
         <div
-          className="absolute inset-0 bg-[url('/image/hero-second.jpg')] bg-no-repeat bg-cover"
+          className="absolute inset-0 bg-[url('/image/hero-updated-design.png')] bg-no-repeat bg-cover"
           style={{
             backgroundPosition: 'center 60%',
-            opacity: 0.6,
+            opacity: 0.85,
           }}
         />
-        <div className="relative z-10 flex flex-col w-full h-full">
+        <div className="relative z-10 flex flex-col w-full">
           <div className="relative z-50">
             <Header />
           </div>
           <Hero />
-          <div className="relative z-10 border-t border-white w-full h-[100px] sm:h-[120px] md:h-[12%] backdrop-blur-[3px] sm:backdrop-blur-[4px] md:backdrop-blur-[5px]">
-            <PartnersSection />
-          </div>
+          <HeroTrustStats />
         </div>
       </div>
 

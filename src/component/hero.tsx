@@ -1,19 +1,21 @@
 'use client';
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { Play, X } from 'lucide-react';
+import { CustomButton } from './ui/custom-button';
 
 export default function Hero() {
   const [showVideo, setShowVideo] = useState(false);
 
   return (
-    <div className="flex flex-col justify-center items-center w-full h-full relative overflow-hidden">
-      <div className="absolute top-[30%] sm:top-[30%] w-full flex justify-start items-center px-4 sm:px-6 md:px-[90px]">
+    <div className="flex flex-col justify-center items-center w-full h-full relative overflow-hidden pt-[26vh] sm:pt-[28vh] pb-8 gap-10 sm:gap-16">
+      <div className="w-full flex justify-start items-center px-4 sm:px-6 md:px-[90px]">
         <h1 className="text-white font-bold leading-tight text-5xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight">
           Finance the <br /> Future of <br /> Energy
         </h1>
       </div>
 
-      <div className="absolute bottom-6 sm:bottom-10 w-full flex flex-col justify-center items-end px-4 sm:px-6 md:px-[90px]">
+      <div className="w-full flex flex-col justify-center items-end px-4 sm:px-6 md:px-[90px]">
         <div className="w-full max-w-[590px]  flex flex-col gap-6 sm:gap-7 ">
           <h2
             className="text-white text-sm sm:text-[15px] md:text-[17px]"
@@ -25,12 +27,19 @@ export default function Hero() {
           </h2>
 
           <div className="flex flex-col sm:flex-row justify-start items-center gap-3 sm:gap-4 md:justify-end">
-            {/* <CustomButton
-              variant="filled"
-              className="w-full sm:w-[176px] h-[44px] sm:h-[48px] rounded-[4px] flex justify-center items-center text-lg font-bold"
-            >
-              Launch App
-            </CustomButton> */}
+            <Link href="/Investors" className="w-full sm:w-auto">
+              <CustomButton
+                variant="filled"
+                className="w-full sm:w-[176px] h-[44px] sm:h-[48px] !py-0 rounded-[4px] flex justify-center items-center text-base font-bold"
+              >
+                Start Investing
+              </CustomButton>
+            </Link>
+            <Link href="/builders" className="w-full sm:w-auto">
+              <button className="w-full sm:w-[176px] h-[44px] sm:h-[48px] sm:cursor-pointer flex justify-center items-center bg-white text-black rounded-[4px] font-bold">
+                Fund a Project
+              </button>
+            </Link>
             <button
               onClick={() => setShowVideo(true)}
               className="w-full sm:w-[176px] h-[44px] sm:h-[48px] sm:cursor-pointer flex justify-center items-center text-white rounded-[4px] border border-white font-bold gap-2"

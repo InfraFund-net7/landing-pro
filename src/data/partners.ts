@@ -1,4 +1,5 @@
 import Autodesk from '@/../public/svg/collaborate/InfraFund-autodesk-technology-impact.svg';
+import Cambridge from '@/../public/svg/collaborate/InfraFund-CambridgeUniversity.svg';
 import Exeter from '@/../public/svg/collaborate/InfraFund-Exeter-Innovation.svg';
 import ExeterStudent from '@/../public/svg/collaborate/InfraFund-Exeter-Student-Startup.svg';
 import ExeterSustainability from '@/../public/svg/collaborate/InfraFund-Exeter-Sustainability-Awards.svg';
@@ -72,5 +73,10 @@ export const partners = [
     name: 'CompaniesHouse',
     logo: CompaniesHouse,
     alt: 'InfraFund-Companies-House',
+  },
+  {
+    name: 'Cambridge',
+    logo: Cambridge,
+    alt: 'InfraFund-University-of-Cambridge',
   },
 ];

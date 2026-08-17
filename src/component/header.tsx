@@ -75,8 +75,8 @@ export default function Header() {
 
   const Navigation = [
     { name: 'Projects', route: '/project' },
-    { name: 'For Investors', route: '/Investors' },
-    { name: 'For Builders', route: '/builders' },
+    { name: 'Investors', route: '/Investors' },
+    { name: 'Builders', route: '/builders' },
     { name: 'Learn', route: '/blog' },
     { name: 'About Us', route: '/about-us' },
   ];
