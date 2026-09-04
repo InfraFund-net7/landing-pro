@@ -1,10 +1,7 @@
 name: Deploy Landing App to Azure VM
 
-# Trigger on every push to develop, or manually via Actions/gh CLI
+# Manual fallback only — primary deploys go through Vercel. Trigger via Actions/gh CLI.
 on:
-  push:
-    branches:
-      - develop
   workflow_dispatch: {}
 
 jobs:

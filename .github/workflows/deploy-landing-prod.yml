@@ -1,16 +1,11 @@
 name: Deploy Landing App to Production VM
 
-# Only fires after a pull request is merged into main, or manually via Actions/gh CLI.
+# Manual fallback only — primary deploys go through Vercel. Trigger via Actions/gh CLI.
 on:
-  pull_request:
-    types: [closed]
-    branches:
-      - main
   workflow_dispatch: {}
 
 jobs:
   deploy:
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
