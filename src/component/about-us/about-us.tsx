@@ -2,7 +2,6 @@
 import Image from 'next/image';
 import aboutus from '@/../public/svg/about-us-hero.svg';
 import linkedin from '@/../public/svg/linkedin.svg';
-import { contributors } from '@/data/contributors';
 import Timeline from './timeline-about-us';
 import ContributorsSection from './contributors';
 import { description } from '@/constants/aboutusData';
@@ -10,11 +9,26 @@ import { CustomButton } from '../ui/custom-button';
 import FadeInStagger from '../animations/FadeInStagger';
 import { useState } from 'react';
 import ContactUs from '../contactus/contactus';
+import {
+  toDisplayContributors,
+  type AboutUsContributorsContent,
+} from '@/lib/about-us-cms';
+
+type AboutUsProps = {
+  contributorsContent?: AboutUsContributorsContent;
+};
+
 // About us page
-export default function AboutUs() {
+export default function AboutUs({ contributorsContent }: AboutUsProps) {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const openContactModal = () => setIsContactModalOpen(true);
   const closeContactModal = () => setIsContactModalOpen(false);
+  const contributors = toDisplayContributors(contributorsContent);
+  const contributorsTitle =
+    contributorsContent?.title ?? 'InfraFund Contributors';
+  const contributorsSubtitle =
+    contributorsContent?.subtitle ??
+    'A world-class team built to bridge the worlds of traditional infrastructure and decentralized finance';
   return (
     <div
       className="w-full h-fit px-[90px] flex flex-col radial-fix justify-center items-center space-y-16 py-[175px]
@@ -88,11 +102,10 @@ export default function AboutUs() {
           />
           <div className="flex flex-col justify-center items-center gap-6 text-white text-center px-4">
             <h2 className="text-[42px] font-bold max-md:text-3xl">
-              InfraFund Contributors
+              {contributorsTitle}
             </h2>
             <h3 className="text-2xl font-normal max-md:text-base max-md:leading-relaxed">
-              A world-class team built to bridge the worlds of traditional
-              infrastructure and decentralized finance
+              {contributorsSubtitle}
             </h3>
           </div>
 

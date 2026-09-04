@@ -5,6 +5,11 @@ import { getPayload } from 'payload';
 import { cmsMediaFromRelation } from '@/lib/cms-media-url';
 import { shouldFetchBlogFromCms } from '@/lib/cms-runtime';
 import { skipPayloadFetchAtBuild } from '@/lib/skip-payload-fetch-at-build';
+import {
+  authorProfileFromRelation,
+  fetchPublicAuthorProfilesByIds,
+  resolveAuthorUserId,
+} from '@/lib/user-profile.js';
 
 function formatPostDate(value: null | string | Date | undefined): string {
   if (!value) return '';
@@ -75,10 +80,45 @@ export async function fetchCmsPostBySlug(slug: string): Promise<Blog | null> {
         and: [{ slug: { equals: slug } }, { published: { equals: true } }],
       },
       limit: 1,
-      depth: 1,
+      depth: 2,
     });
     const doc = docs[0];
     if (!doc) return null;
+
+    const authorUserId = resolveAuthorUserId(doc.authorUser);
+    const authorProfiles = authorUserId
+      ? await fetchPublicAuthorProfilesByIds([authorUserId])
+      : new Map();
+    const linkedAuthor =
+      (authorUserId && authorProfiles.get(authorUserId)) ||
+      authorProfileFromRelation(doc.authorUser);
+    const authorName = linkedAuthor.name || String(doc.author ?? '');
+    const authorTitle = linkedAuthor.title;
+    const authorAvatar = linkedAuthor.avatar;
+    const authorLinkedInUrl = linkedAuthor.linkedinUrl || undefined;
+    const authorXUrl = linkedAuthor.xUrl || undefined;
+
+    const categories = Array.isArray(doc.categories)
+      ? doc.categories.map(String).filter(Boolean)
+      : [];
+    const legacyCategory = String(doc.category ?? '').trim();
+    const allCategories = [
+      ...new Set(
+        [legacyCategory, ...categories].filter(
+          (value) => value && value.length > 0
+        )
+      ),
+    ];
+
+    const tags = Array.isArray(doc.tags)
+      ? doc.tags
+          .map((entry) =>
+            entry && typeof entry === 'object' && 'tag' in entry
+              ? String(entry.tag ?? '').trim()
+              : ''
+          )
+          .filter(Boolean)
+      : [];
 
     return {
       id: Number(doc.id),
@@ -88,8 +128,14 @@ export async function fetchCmsPostBySlug(slug: string): Promise<Blog | null> {
       mainContent: String(doc.mainContent ?? ''),
       date: formatPostDate(doc.publishedAt ?? undefined) || '—',
       readTime: String(doc.readTime ?? ''),
-      author: String(doc.author ?? ''),
-      category: String(doc.category ?? ''),
+      author: authorName,
+      authorTitle,
+      authorAvatar,
+      authorLinkedInUrl,
+      authorXUrl,
+      category: legacyCategory || allCategories[0] || 'Insights',
+      categories: allCategories,
+      tags,
       image: cmsMediaFromRelation(doc.featuredImage),
     };
   } catch (error) {

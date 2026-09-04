@@ -1,7 +1,8 @@
 /**
  * When to hit Payload/Neon for marketing pages.
  * Blog: on by default when DATABASE_URL/POSTGRES_URL is set (Vercel + local with Neon).
- * Site pages / home: opt-in via CMS_REPLACE_EXISTING_PAGES / CMS_FETCH_HOME_PAGE.
+ * Site pages: opt-in via CMS_REPLACE_EXISTING_PAGES (About Us contributors: on when DB is set).
+ * Home: on when DATABASE_URL/POSTGRES_URL is set (opt-out with CMS_FETCH_HOME_PAGE=0).
  */
 
 function envFlag(name: string): boolean {
@@ -28,8 +29,26 @@ export function shouldFetchSitePagesFromCms(): boolean {
   return isCmsPageReplacementEnabled;
 }
 
+export function shouldFetchAboutUsFromCms(): boolean {
+  if (envDisabled('CMS_FETCH_ABOUT_US')) {
+    return false;
+  }
+  return (
+    isCmsPageReplacementEnabled ||
+    envFlag('CMS_FETCH_ABOUT_US') ||
+    hasPayloadDatabase()
+  );
+}
+
 export function shouldFetchHomePageFromCms(): boolean {
-  return isCmsPageReplacementEnabled || envFlag('CMS_FETCH_HOME_PAGE');
+  if (envDisabled('CMS_FETCH_HOME_PAGE')) {
+    return false;
+  }
+  return (
+    isCmsPageReplacementEnabled ||
+    envFlag('CMS_FETCH_HOME_PAGE') ||
+    hasPayloadDatabase()
+  );
 }
 
 export function shouldFetchBlogFromCms(): boolean {

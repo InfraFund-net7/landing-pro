@@ -186,13 +186,22 @@
     "uselibpqcompat",
     "ILIKE",
     "remoteip",
-    "siteverify"
+    "siteverify",
+    "fintech",
+    "shiki",
+    "Shiki",
+    "oxlint",
+    "cmdk",
+    "Tavily",
+    "LangGraph"
   ],
   "ignorePaths": [
     "node_modules",
     "build",
     ".next",
-    "src/component/ui/custom-button.tsx"
+    "src/component/ui/custom-button.tsx",
+    "src/components/ai-elements/**",
+    "src/components/ui/**"
   ],
   "files": ["**/*.{js,jsx,ts,tsx,md}"]
 }

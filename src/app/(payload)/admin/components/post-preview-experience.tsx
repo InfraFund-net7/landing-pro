@@ -1,0 +1,127 @@
+'use client';
+
+import {
+  clearPostPreviewDraft,
+  writePostPreviewDraft,
+} from '@/lib/post-preview-storage';
+import type { Blog } from '@/data/mockBlog';
+import { ArrowLeft, Eye, FilePenLine } from 'lucide-react';
+import { useEffect, useLayoutEffect, useState } from 'react';
+import styles from './post-preview-experience.module.css';
+
+type PostPreviewExperienceProps = {
+  blog: Blog;
+  slug: string;
+  isPublished: boolean;
+  onClose: () => void;
+};
+
+export default function PostPreviewExperience({
+  blog,
+  slug,
+  isPublished,
+  onClose,
+}: PostPreviewExperienceProps) {
+  const [iframeSrc, setIframeSrc] = useState<string | null>(null);
+
+  useLayoutEffect(() => {
+    writePostPreviewDraft({ blog, slug, isPublished });
+    setIframeSrc('/post-preview');
+  }, [blog, isPublished, slug]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      clearPostPreviewDraft();
+      setIframeSrc(null);
+    };
+  }, [onClose]);
+
+  const previewLabel = isPublished ? 'Live preview' : 'Draft preview';
+
+  return (
+    <div className={styles.root}>
+      <div className={styles.previewChrome}>
+        <header className={styles.toolbar}>
+          <div className={styles.toolbarLeft}>
+            <button
+              type="button"
+              className={styles.backButton}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                onClose();
+              }}
+            >
+              <ArrowLeft size={16} />
+              Back to editor
+            </button>
+          </div>
+
+          <div className={styles.toolbarCenter}>
+            <span className={styles.previewBadge}>
+              <span className={styles.previewDot} aria-hidden />
+              {previewLabel}
+            </span>
+            <span className={styles.slugHint}>
+              Will appear at <code>/blog/{slug || 'your-slug'}</code>
+            </span>
+          </div>
+
+          <div className={styles.toolbarRight}>
+            <div
+              className={styles.viewToggle}
+              role="tablist"
+              aria-label="Editor view"
+            >
+              <button
+                type="button"
+                className={styles.viewToggleButton}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  onClose();
+                }}
+                role="tab"
+                aria-selected={false}
+              >
+                <FilePenLine size={14} />
+                Editor
+              </button>
+              <button
+                type="button"
+                className={`${styles.viewToggleButton} ${styles.viewToggleButtonActive}`}
+                role="tab"
+                aria-selected
+              >
+                <Eye size={14} />
+                Preview
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <p className={styles.previewNotice}>
+          {isPublished
+            ? 'You are previewing unsaved changes. Nothing is published until you click Update.'
+            : 'You are previewing a draft. Comments and the live URL stay hidden until you publish.'}
+        </p>
+      </div>
+
+      {iframeSrc ? (
+        <iframe
+          className={styles.previewFrame}
+          src={iframeSrc}
+          title="Post preview"
+        />
+      ) : null}
+    </div>
+  );
+}

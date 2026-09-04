@@ -28,7 +28,7 @@ export function CustomButton({
   const variantClasses = {
     filled: disabled
       ? disabledClasses
-      : 'bg-primary text-black border-green-400 فثطف hover:bg-primary hover:border-primary active:bg-primary-pressed active:border-primary-pressed cursor-pointer',
+      : 'bg-primary text-black border-green-400 hover:bg-primary hover:border-primary active:bg-primary-pressed active:border-primary-pressed cursor-pointer',
 
     outlined: disabled
       ? `${disabledClasses} border-[#777777]` // می‌تونی border رو شفاف کنی: `border-transparent`

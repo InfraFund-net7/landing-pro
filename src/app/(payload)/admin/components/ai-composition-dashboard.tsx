@@ -1,0 +1,522 @@
+'use client';
+
+import AdminPortalLayout from '@/app/(payload)/admin/components/admin-portal-layout';
+import ComposeSchedulesPanel from '@/app/(payload)/admin/components/compose-schedules-panel';
+import {
+  Artifact,
+  ArtifactContent,
+  ArtifactDescription,
+  ArtifactHeader,
+  ArtifactTitle,
+} from '@/components/ai-elements/artifact';
+import {
+  Conversation,
+  ConversationContent,
+  ConversationScrollButton,
+} from '@/components/ai-elements/conversation';
+import {
+  Message,
+  MessageContent,
+  MessageResponse,
+} from '@/components/ai-elements/message';
+import {
+  Reasoning,
+  ReasoningContent,
+  ReasoningTrigger,
+} from '@/components/ai-elements/reasoning';
+import {
+  Tool,
+  ToolContent,
+  ToolHeader,
+  ToolInput,
+  ToolOutput,
+} from '@/components/ai-elements/tool';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import {
+  extractLatestComposeDraft,
+  markdownToPostHtml,
+  type ComposePostDraft,
+} from '@/lib/compose-post';
+import { calculateReadTimeFromContent } from '@/lib/read-time.js';
+import { useChat } from '@ai-sdk/react';
+import {
+  DefaultChatTransport,
+  isReasoningUIPart,
+  isTextUIPart,
+  isToolUIPart,
+  type UIMessage,
+} from 'ai';
+import {
+  Brain,
+  CalendarClock,
+  MessageSquare,
+  FileText,
+  Loader2,
+  PenLine,
+  Search,
+  Send,
+  Sparkles,
+  Square,
+  Wrench,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
+import styles from '../create-post/ai-composition.module.css';
+
+const suggestions = [
+  'Find an SEO topic about tokenized infrastructure for climate investors',
+  'Research GEO angles for blockchain transparency in public infrastructure',
+  'Draft a 500+ word post on green bond trends with Tavily-backed facts',
+  'Propose a high-intent keyword topic for institutional RWA investing',
+];
+
+type AiCompositionDashboardProps = {
+  userName: string;
+  userInitial: string;
+  isMasterAdmin?: boolean;
+  modelLabel?: string;
+  usesLangGraphAgent?: boolean;
+};
+
+function getTextFromParts(parts: UIMessage['parts']): string {
+  return parts
+    .filter(isTextUIPart)
+    .map((part) => part.text)
+    .join('');
+}
+
+function getReasoningFromParts(parts: UIMessage['parts']): string {
+  return parts
+    .filter(isReasoningUIPart)
+    .map((part) => part.text)
+    .join('\n\n');
+}
+
+export default function AiCompositionDashboard({
+  userName,
+  userInitial,
+  isMasterAdmin = false,
+  modelLabel = 'gpt-4.1-mini',
+  usesLangGraphAgent = false,
+}: AiCompositionDashboardProps) {
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<'compose' | 'schedules'>(
+    'compose'
+  );
+  const [draft, setDraft] = useState<ComposePostDraft | null>(null);
+  const [input, setInput] = useState('');
+  const [saveError, setSaveError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+
+  const { messages, sendMessage, status, stop, error } = useChat({
+    transport: new DefaultChatTransport({
+      api: '/admin/api/compose-chat',
+    }),
+  });
+
+  const isStreaming = status === 'streaming' || status === 'submitted';
+
+  useEffect(() => {
+    const latest = extractLatestComposeDraft(messages);
+    if (latest) {
+      setDraft(latest);
+    }
+  }, [messages]);
+
+  const showArtifact = Boolean(draft);
+
+  const handleSubmit = (event?: { preventDefault?: () => void }) => {
+    event?.preventDefault?.();
+    const text = input.trim();
+    if (!text || isStreaming) return;
+
+    setSaveError('');
+    setInput('');
+    void sendMessage({ text });
+  };
+
+  const handleSuggestion = (suggestion: string) => {
+    if (isStreaming) return;
+    setSaveError('');
+    void sendMessage({ text: suggestion });
+  };
+
+  const handleSaveDraft = async () => {
+    if (!draft) return;
+
+    setIsSaving(true);
+    setSaveError('');
+
+    try {
+      const response = await fetch('/admin/api/compose-draft', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(draft),
+      });
+      const data = (await response.json()) as {
+        message?: string;
+        id?: number;
+      };
+
+      if (!response.ok) {
+        setSaveError(data.message || 'Unable to save draft.');
+        return;
+      }
+
+      if (data.id) {
+        router.push(
+          `/admin/edit-post/${data.id}?success=Draft%20saved%20from%20AI%20composition`
+        );
+      }
+    } catch {
+      setSaveError('Unable to save draft. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const artifactMarkdown = useMemo(() => {
+    if (!draft) return '';
+    const readTime = calculateReadTimeFromContent(
+      markdownToPostHtml(draft.markdown)
+    );
+    const meta = [
+      draft.description ? `> ${draft.description}` : '',
+      draft.categories.length
+        ? `**Categories:** ${draft.categories.join(', ')}`
+        : '',
+      draft.tags.length
+        ? `**Tags:** ${draft.tags.map((t) => `#${t}`).join(' ')}`
+        : '',
+      `**Read time:** ${readTime}`,
+    ]
+      .filter(Boolean)
+      .join('\n\n');
+
+    return meta ? `${meta}\n\n---\n\n${draft.markdown}` : draft.markdown;
+  }, [draft]);
+
+  return (
+    <AdminPortalLayout
+      userName={userName}
+      userInitial={userInitial}
+      isMasterAdmin={isMasterAdmin}
+    >
+      <TooltipProvider>
+        <div className={`dark ${styles.workspace}`}>
+          <header className={styles.header}>
+            <div>
+              <p className={styles.eyebrow}>
+                <Sparkles size={14} />
+                AI Composition
+              </p>
+              <h1 className={styles.title}>Compose your next post</h1>
+              <p className={styles.subtitle}>
+                {usesLangGraphAgent
+                  ? 'LangGraph agent on Azure VM: discovers SEO/GEO topics, searches with Tavily, and builds a persistent 500+ word draft artifact.'
+                  : 'Chat with the editorial agent on the left. Reasoning, tool calls, and the live draft artifact update as the model works.'}
+              </p>
+            </div>
+            <div className={styles.headerActions}>
+              <div className={styles.tabSwitcher}>
+                <button
+                  type="button"
+                  className={`${styles.tabButton} ${activeTab === 'compose' ? styles.tabButtonActive : ''}`}
+                  onClick={() => setActiveTab('compose')}
+                >
+                  <MessageSquare size={14} />
+                  Compose
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.tabButton} ${activeTab === 'schedules' ? styles.tabButtonActive : ''}`}
+                  onClick={() => setActiveTab('schedules')}
+                >
+                  <CalendarClock size={14} />
+                  Schedules
+                </button>
+              </div>
+              <span className={styles.modelBadge}>⚡ {modelLabel}</span>
+              <Link
+                href="/admin/create-post/manual"
+                className={styles.manualLink}
+              >
+                <PenLine size={14} />
+                Manual editor
+              </Link>
+            </div>
+          </header>
+
+          {(error || saveError) && activeTab === 'compose' ? (
+            <div className={styles.flashRow}>
+              {error ? (
+                <p className={styles.flashError}>
+                  {error.message}
+                  {!usesLangGraphAgent ? (
+                    <>
+                      {' '}
+                      Set <code>CONTENT_AGENT_URL</code> (and matching{' '}
+                      <code>CONTENT_AGENT_API_KEY</code> if used on the VM) on
+                      Vercel <strong>Preview</strong>, then redeploy beta. The
+                      badge should show LangGraph + Tavily SEO when it is wired
+                      correctly.
+                    </>
+                  ) : null}
+                </p>
+              ) : null}
+              {saveError ? (
+                <p className={styles.flashError}>{saveError}</p>
+              ) : null}
+            </div>
+          ) : null}
+
+          {activeTab === 'schedules' ? (
+            <ComposeSchedulesPanel />
+          ) : (
+            <div
+              className={`${styles.split} ${showArtifact ? styles.splitWithArtifact : ''}`}
+            >
+              <section className={styles.chatPane}>
+                <Conversation className={styles.conversation}>
+                  <ConversationContent>
+                    {messages.length === 0 ? (
+                      <ComposeWelcomePanel />
+                    ) : (
+                      messages.map((message) => (
+                        <ChatMessage
+                          key={message.id}
+                          message={message}
+                          isStreaming={isStreaming}
+                        />
+                      ))
+                    )}
+                  </ConversationContent>
+                  <ConversationScrollButton />
+                </Conversation>
+
+                {messages.length === 0 ? (
+                  <div className={styles.suggestions}>
+                    {suggestions.map((suggestion) => (
+                      <button
+                        key={suggestion}
+                        type="button"
+                        className={styles.suggestionChip}
+                        onClick={() => handleSuggestion(suggestion)}
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+
+                <form className={styles.promptWrap} onSubmit={handleSubmit}>
+                  <div className={styles.promptComposer}>
+                    <Textarea
+                      value={input}
+                      onChange={(event) => setInput(event.target.value)}
+                      placeholder="Describe the post you want to create..."
+                      disabled={isStreaming}
+                      rows={3}
+                      className={styles.promptTextarea}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' && !event.shiftKey) {
+                          event.preventDefault();
+                          handleSubmit();
+                        }
+                      }}
+                    />
+                    <div className={styles.promptFooter}>
+                      <span className={styles.promptHint}>
+                        Enter to send · Shift+Enter for a new line
+                      </span>
+                      {isStreaming ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className={styles.stopButton}
+                          onClick={stop}
+                        >
+                          <Square className="size-4" />
+                          Stop
+                        </Button>
+                      ) : (
+                        <Button
+                          type="submit"
+                          size="sm"
+                          className={styles.sendButton}
+                          disabled={!input.trim()}
+                        >
+                          <Send className="size-4" />
+                          Send
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </form>
+              </section>
+
+              {showArtifact && draft ? (
+                <section className={styles.artifactPane}>
+                  <Artifact className={styles.artifact}>
+                    <ArtifactHeader>
+                      <div>
+                        <ArtifactTitle>{draft.title}</ArtifactTitle>
+                        <ArtifactDescription>
+                          Live draft artifact — updated when the agent calls{' '}
+                          <code>updatePostDraft</code>
+                        </ArtifactDescription>
+                      </div>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => void handleSaveDraft()}
+                        disabled={isSaving || isStreaming}
+                      >
+                        {isSaving ? (
+                          <Loader2 className="size-4 animate-spin" />
+                        ) : (
+                          <FileText className="size-4" />
+                        )}
+                        Save as draft
+                      </Button>
+                    </ArtifactHeader>
+                    <ArtifactContent className={styles.artifactContent}>
+                      <MessageResponse>{artifactMarkdown}</MessageResponse>
+                    </ArtifactContent>
+                  </Artifact>
+                </section>
+              ) : null}
+            </div>
+          )}
+        </div>
+      </TooltipProvider>
+    </AdminPortalLayout>
+  );
+}
+
+function ComposeWelcomePanel() {
+  return (
+    <div className={styles.welcomePanel}>
+      <div className={styles.welcomeGlow} aria-hidden />
+      <div className={styles.welcomeHeader}>
+        <div className={styles.welcomeIconWrap}>
+          <Sparkles size={22} />
+        </div>
+        <div>
+          <p className={styles.welcomeEyebrow}>SEO / GEO editorial agent</p>
+          <h2 className={styles.welcomeTitle}>Start with a topic or seed</h2>
+          <p className={styles.welcomeDescription}>
+            Ask for an SEO-focused topic, competitor research, or a full draft.
+            The agent uses Tavily search, keeps thread memory, and updates the
+            live draft artifact on the right (minimum 500 words).
+          </p>
+        </div>
+      </div>
+
+      <div className={styles.welcomeSteps}>
+        <article className={styles.welcomeStep}>
+          <Search size={16} />
+          <div>
+            <p className={styles.stepTitle}>1. SEO topic discovery</p>
+            <p className={styles.stepText}>
+              The agent proposes high-intent keywords and GEO-friendly angles.
+            </p>
+          </div>
+        </article>
+        <article className={styles.welcomeStep}>
+          <Wrench size={16} />
+          <div>
+            <p className={styles.stepTitle}>2. Tavily web search</p>
+            <p className={styles.stepText}>
+              Live search gathers facts, competitors, and trends for your brief.
+            </p>
+          </div>
+        </article>
+        <article className={styles.welcomeStep}>
+          <FileText size={16} />
+          <div>
+            <p className={styles.stepTitle}>3. Draft artifact</p>
+            <p className={styles.stepText}>
+              A markdown draft appears on the right, ready to save and edit.
+            </p>
+          </div>
+        </article>
+        <article className={styles.welcomeStep}>
+          <Brain size={16} />
+          <div>
+            <p className={styles.stepTitle}>4. Refine</p>
+            <p className={styles.stepText}>
+              Ask for rewrites, shorter intros, new sections, or tone changes.
+            </p>
+          </div>
+        </article>
+      </div>
+    </div>
+  );
+}
+
+function ChatMessage({
+  message,
+  isStreaming,
+}: {
+  message: UIMessage;
+  isStreaming: boolean;
+}) {
+  const reasoning = getReasoningFromParts(message.parts);
+  const text = getTextFromParts(message.parts);
+  const toolParts = message.parts.filter(isToolUIPart);
+  const messageIsStreaming =
+    isStreaming && message.role === 'assistant' && message.id === undefined;
+
+  return (
+    <Message from={message.role}>
+      <MessageContent>
+        {reasoning ? (
+          <Reasoning
+            isStreaming={
+              isStreaming &&
+              message.role === 'assistant' &&
+              !text &&
+              toolParts.length === 0
+            }
+          >
+            <ReasoningTrigger />
+            <ReasoningContent>{reasoning}</ReasoningContent>
+          </Reasoning>
+        ) : null}
+
+        {toolParts.map((part, index) => (
+          <Tool
+            defaultOpen={part.state === 'output-available'}
+            key={`${part.type}-${index}`}
+          >
+            {part.type === 'dynamic-tool' ? (
+              <ToolHeader
+                type="dynamic-tool"
+                state={part.state}
+                toolName={part.toolName}
+              />
+            ) : (
+              <ToolHeader type={part.type} state={part.state} />
+            )}
+            <ToolContent>
+              <ToolInput input={part.input} />
+              <ToolOutput output={part.output} errorText={part.errorText} />
+            </ToolContent>
+          </Tool>
+        ))}
+
+        {text ? (
+          <MessageResponse isAnimating={messageIsStreaming}>
+            {text}
+          </MessageResponse>
+        ) : null}
+      </MessageContent>
+    </Message>
+  );
+}

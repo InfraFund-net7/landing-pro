@@ -12,7 +12,13 @@ export interface Blog {
   date: string;
   readTime: string;
   author: string;
+  authorTitle?: string;
+  authorAvatar?: string;
+  authorLinkedInUrl?: string;
+  authorXUrl?: string;
   category: string;
+  categories?: string[];
+  tags?: string[];
 }
 
 export const mockBlogs: Blog[] = [

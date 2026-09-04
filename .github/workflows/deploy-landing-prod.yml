@@ -1,16 +1,11 @@
 name: Deploy Landing App to Production VM
 
-# Only fires after a pull request is merged into main, or manually via Actions/gh CLI.
+# Manual fallback only — primary deploys go through Vercel. Trigger via Actions/gh CLI.
 on:
-  pull_request:
-    types: [closed]
-    branches:
-      - main
   workflow_dispatch: {}
 
 jobs:
   deploy:
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
@@ -20,6 +15,7 @@ jobs:
       - name: Execute Remote Deployment via SSH
         uses: appleboy/ssh-action@v1.0.3
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
           NEXT_PUBLIC_API_BASE_URL: ${{ secrets.PROD_API_BASE_URL }}
@@ -37,8 +33,9 @@ jobs:
           host: ${{ secrets.PROD_VM_HOST }}
           username: ${{ secrets.PROD_VM_USERNAME }}
           key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
-          envs: DATABASE_URL,PAYLOAD_SECRET,NEXT_PUBLIC_API_BASE_URL,NEXT_PUBLIC_RECAPTCHA_SITE_KEY,NEXT_PUBLIC_DASH_LOGIN_URL,BLOB_READ_WRITE_TOKEN,INFRA_CONTACT_FORM_SMTP_HOST,INFRA_CONTACT_FORM_SMTP_PORT,INFRA_CONTACT_FORM_SMTP_SENDER,INFRA_CONTACT_FORM_SMTP_USERNAME,INFRA_CONTACT_FORM_SMTP_PASSWORD,INFRA_CONTACT_FORM_SMTP_REQUIRE_TLS,INFRA_CONTACT_FORM_RECEIVER
+          envs: GITHUB_TOKEN,DATABASE_URL,PAYLOAD_SECRET,NEXT_PUBLIC_API_BASE_URL,NEXT_PUBLIC_RECAPTCHA_SITE_KEY,NEXT_PUBLIC_DASH_LOGIN_URL,BLOB_READ_WRITE_TOKEN,INFRA_CONTACT_FORM_SMTP_HOST,INFRA_CONTACT_FORM_SMTP_PORT,INFRA_CONTACT_FORM_SMTP_SENDER,INFRA_CONTACT_FORM_SMTP_USERNAME,INFRA_CONTACT_FORM_SMTP_PASSWORD,INFRA_CONTACT_FORM_SMTP_REQUIRE_TLS,INFRA_CONTACT_FORM_RECEIVER
           script: |
+            set -euo pipefail
             REPO_DIR="/home/${{ secrets.PROD_VM_USERNAME }}/landing-web"
 
             if [ ! -d "$REPO_DIR/.git" ]; then
@@ -46,7 +43,10 @@ jobs:
             fi
             cd "$REPO_DIR"
 
-            git fetch origin
+            # VM has no stored git credentials; authenticate this fetch/reset with the
+            # workflow's short-lived GITHUB_TOKEN so deploys can't silently go stale.
+            AUTH_HEADER="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 -w0)"
+            git -c http.extraheader="$AUTH_HEADER" fetch origin
             git checkout main
             git reset --hard origin/main
 

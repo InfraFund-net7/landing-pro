@@ -3,6 +3,12 @@ import {
   masterAdminOrSelf,
 } from '../access/collection-access.js';
 import { isMasterAdmin, ROLES } from '../access/roles.js';
+import { resolveUsersAuthConfig } from '../lib/payload-auth-cookies.js';
+
+/** @param {{ req: import('payload').PayloadRequest; id?: string | number }} args */
+const profileFieldUpdateAccess = ({ req, id }) =>
+  isMasterAdmin(req.user) ||
+  (req.user?.id != null && id != null && String(req.user.id) === String(id));
 
 /** @type {import('payload').CollectionConfig} */
 export const Users = {
@@ -11,18 +17,17 @@ export const Users = {
     useAsTitle: 'email',
     group: 'Administration',
     description:
-      'Master admins can invite other admins and assign the Content Editor role.',
-    hidden: ({ user }) => !isMasterAdmin(user),
+      'Use the Create user page in the blog admin portal to invite contributors by email.',
+    hidden: () => true,
   },
   // Vercel: skip session rows in DB (updateOne + transactions use WebSocket and timeout).
-  auth: process.env.VERCEL ? { useSessions: false } : true,
+  auth: resolveUsersAuthConfig(),
   access: {
     admin: adminPanelUsers,
     read: masterAdminOrSelf,
     update: masterAdminOrSelf,
     delete: ({ req }) => isMasterAdmin(req.user),
     create: async ({ req }) => {
-      if (isMasterAdmin(req.user)) return true;
       const { totalDocs } = await req.payload.count({
         collection: 'users',
         req,
@@ -35,13 +40,20 @@ export const Users = {
       async ({ user, req }) => {
         if (!user?.id || user.role) return;
 
-        await req.payload.update({
-          collection: 'users',
-          id: user.id,
-          data: { role: ROLES.MASTER_ADMIN },
-          req,
-          overrideAccess: true,
-        });
+        try {
+          await req.payload.update({
+            collection: 'users',
+            id: user.id,
+            data: { role: ROLES.MASTER_ADMIN },
+            req,
+            overrideAccess: true,
+          });
+        } catch (err) {
+          console.warn(
+            '[payload] afterLogin role bootstrap failed:',
+            err instanceof Error ? err.message : err
+          );
+        }
       },
     ],
     beforeChange: [
@@ -67,6 +79,65 @@ export const Users = {
     ],
   },
   fields: [
+    {
+      name: 'fullName',
+      type: 'text',
+      admin: {
+        description: 'Shown on blog posts when you are the author.',
+      },
+      access: {
+        read: () => true,
+        update: profileFieldUpdateAccess,
+      },
+    },
+    {
+      name: 'jobTitle',
+      type: 'text',
+      admin: {
+        description:
+          'Role or title shown under your name on blog posts, e.g. Head of Research and Development.',
+      },
+      access: {
+        read: () => true,
+        update: profileFieldUpdateAccess,
+      },
+    },
+    {
+      name: 'profilePhoto',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description: 'Profile picture shown on blog posts you author.',
+      },
+      access: {
+        read: () => true,
+        update: profileFieldUpdateAccess,
+      },
+    },
+    {
+      name: 'linkedinUrl',
+      type: 'text',
+      admin: {
+        description:
+          'LinkedIn profile URL shown on blog posts you author, e.g. https://www.linkedin.com/in/your-name',
+      },
+      access: {
+        read: () => true,
+        update: profileFieldUpdateAccess,
+      },
+    },
+    {
+      name: 'xUrl',
+      type: 'text',
+      admin: {
+        description:
+          'X profile URL shown on blog posts you author, e.g. https://x.com/your-handle',
+      },
+      access: {
+        read: () => true,
+        update: profileFieldUpdateAccess,
+      },
+    },
     {
       name: 'role',
       type: 'select',

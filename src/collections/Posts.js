@@ -1,12 +1,19 @@
 import { contentCollectionAccess } from '../access/collection-access.js';
+import { calculateReadTimeFromContent } from '../lib/read-time.js';
 
 /** @type {import('payload').CollectionConfig} */
 export const Posts = {
   slug: 'posts',
+  labels: {
+    singular: 'Post',
+    plural: 'All Posts',
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'publishedAt', 'published'],
     group: 'Content',
+    description:
+      'Opens the post management hub with search, filters, and stats.',
   },
   access: contentCollectionAccess,
   hooks: {
@@ -14,6 +21,9 @@ export const Posts = {
       ({ data }) => {
         if (data.published && !data.publishedAt) {
           data.publishedAt = new Date().toISOString();
+        }
+        if (typeof data.mainContent === 'string' && data.mainContent.trim()) {
+          data.readTime = calculateReadTimeFromContent(data.mainContent);
         }
         return data;
       },
@@ -69,11 +79,27 @@ export const Posts = {
       name: 'readTime',
       type: 'text',
       defaultValue: '5 min read',
+      admin: {
+        description:
+          'Auto-calculated from main content word count at 225 words per minute.',
+      },
     },
     {
       name: 'author',
       type: 'text',
       defaultValue: 'Editorial',
+      admin: {
+        description: 'Display name when no linked author profile is set.',
+      },
+    },
+    {
+      name: 'authorUser',
+      type: 'relationship',
+      relationTo: 'users',
+      admin: {
+        description: 'Links to a CMS user profile for name, title, and photo.',
+        position: 'sidebar',
+      },
     },
     {
       name: 'category',
@@ -82,16 +108,11 @@ export const Posts = {
     },
     {
       name: 'categories',
-      type: 'select',
+      type: 'text',
       hasMany: true,
-      options: [
-        { label: 'All', value: 'all' },
-        { label: 'Blockchain', value: 'blockchain' },
-        { label: 'Infrastructure', value: 'infrastructure' },
-        { label: 'Tokenization', value: 'tokenization' },
-        { label: 'Impact', value: 'impact' },
-        { label: 'Research', value: 'research' },
-      ],
+      admin: {
+        description: 'One or more categories (any label the editor chooses).',
+      },
     },
     {
       name: 'tags',

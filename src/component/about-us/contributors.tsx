@@ -3,6 +3,7 @@
 import Image, { type StaticImageData } from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 import { Modal } from '../ui/modal';
+import { contributorImageProps } from '@/lib/cms-next-image';
 // Contributors section
 
 interface Contributor {
@@ -61,7 +62,12 @@ export default function ContributorsSection({ contributors, linkedin }: Props) {
     <section className="w-full px-4 py-8">
       <div className="hidden sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         {contributors.map((item, index) => (
-          <ContributorCard key={index} item={item} linkedin={linkedin} />
+          <ContributorCard
+            key={item.name}
+            item={item}
+            linkedin={linkedin}
+            priority={index < 10}
+          />
         ))}
       </div>
       <div
@@ -75,7 +81,12 @@ export default function ContributorsSection({ contributors, linkedin }: Props) {
               className="flex-shrink-0 w-full snap-center grid grid-cols-2 gap-4"
             >
               {group.map((item, index) => (
-                <ContributorCard key={index} item={item} linkedin={linkedin} />
+                <ContributorCard
+                  key={item.name}
+                  item={item}
+                  linkedin={linkedin}
+                  priority={groupIndex === 0 && index < 4}
+                />
               ))}
             </div>
           ))}
@@ -104,11 +115,14 @@ export default function ContributorsSection({ contributors, linkedin }: Props) {
 const ContributorCard = ({
   item,
   linkedin,
+  priority = false,
 }: {
   item: Contributor;
   linkedin: string;
+  priority?: boolean;
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const photo = contributorImageProps(item.img || '/placeholder.svg');
 
   return (
     <>
@@ -122,9 +136,11 @@ const ContributorCard = ({
           }}
         >
           <Image
-            src={item.img || '/placeholder.svg'}
+            {...photo}
             width={190}
             height={190}
+            sizes="(max-width: 640px) 50vw, 190px"
+            priority={priority}
             className="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300 ease-in-out"
             alt={item.name}
           />
@@ -147,20 +163,22 @@ const ContributorCard = ({
 
         <div className="text-center w-full min-h-[60px] flex flex-col justify-start">
           <div className="flex justify-center items-center gap-2">
-            <a
-              href={item.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Open ${item.name} on LinkedIn`}
-              className="flex-shrink-0"
-            >
-              <Image
-                src={linkedin || '/placeholder.svg'}
-                alt="linkedin"
-                width={20}
-                height={20}
-              />
-            </a>
+            {item.linkedin?.trim() ? (
+              <a
+                href={item.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Open ${item.name} on LinkedIn`}
+                className="flex-shrink-0"
+              >
+                <Image
+                  src={linkedin || '/placeholder.svg'}
+                  alt="linkedin"
+                  width={20}
+                  height={20}
+                />
+              </a>
+            ) : null}
             <h3 className="text-sm sm:text-base text-white font-normal truncate max-w-[120px] sm:max-w-[160px] text-foreground">
               {item.name}
             </h3>
@@ -180,9 +198,10 @@ const ContributorCard = ({
         <div className="flex flex-col items-center gap-4 mt-4">
           <div className="relative w-32 h-32 rounded-2xl overflow-hidden">
             <Image
-              src={item.img || '/placeholder.svg'}
+              {...photo}
               width={128}
               height={128}
+              sizes="128px"
               className="w-full h-full object-contain"
               alt={item.name}
             />
@@ -196,20 +215,22 @@ const ContributorCard = ({
             {item.description}
           </p>
 
-          <a
-            href={item.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm hover:underline text-[#24FF8E]"
-          >
-            <Image
-              src={linkedin || '/placeholder.svg'}
-              alt="linkedin"
-              width={20}
-              height={20}
-            />
-            View LinkedIn Profile
-          </a>
+          {item.linkedin?.trim() ? (
+            <a
+              href={item.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm hover:underline text-[#24FF8E]"
+            >
+              <Image
+                src={linkedin || '/placeholder.svg'}
+                alt="linkedin"
+                width={20}
+                height={20}
+              />
+              View LinkedIn Profile
+            </a>
+          ) : null}
         </div>
       </Modal>
     </>

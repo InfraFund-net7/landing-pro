@@ -6,40 +6,28 @@ export default function Hero() {
   const [showVideo, setShowVideo] = useState(false);
 
   return (
-    <div className="flex flex-col justify-center items-center w-full h-full relative overflow-hidden">
-      <div className="absolute top-[30%] sm:top-[30%] w-full flex justify-start items-center px-4 sm:px-6 md:px-[90px]">
-        <h1 className="text-white font-bold leading-tight text-5xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight">
-          Finance the <br /> Future of <br /> Energy
-        </h1>
-      </div>
+    <div className="flex flex-col justify-center items-center w-full h-full relative overflow-hidden pt-[24vh] sm:pt-[26vh] pb-8 px-4 sm:px-6 md:px-[90px] gap-6 sm:gap-8">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] max-w-[900px] h-[320px] rounded-full bg-black/45 blur-3xl"
+      />
 
-      <div className="absolute bottom-6 sm:bottom-10 w-full flex flex-col justify-center items-end px-4 sm:px-6 md:px-[90px]">
-        <div className="w-full max-w-[590px]  flex flex-col gap-6 sm:gap-7 ">
-          <h2
-            className="text-white text-sm sm:text-[15px] md:text-[17px]"
-            style={{ hyphens: 'auto', textAlign: 'justify' }}
-          >
-            We are the operating system for tokenizing real-world green{' '}
-            infrastructure, connecting global capital directly to the projects{' '}
-            building our NetZero future.
-          </h2>
+      <h1 className="relative text-white text-center font-bold leading-tight text-5xl sm:text-6xl md:text-7xl tracking-tight">
+        Powering the Future...
+      </h1>
 
-          <div className="flex flex-col sm:flex-row justify-start items-center gap-3 sm:gap-4 md:justify-end">
-            {/* <CustomButton
-              variant="filled"
-              className="w-full sm:w-[176px] h-[44px] sm:h-[48px] rounded-[4px] flex justify-center items-center text-lg font-bold"
-            >
-              Launch App
-            </CustomButton> */}
-            <button
-              onClick={() => setShowVideo(true)}
-              className="w-full sm:w-[176px] h-[44px] sm:h-[48px] sm:cursor-pointer flex justify-center items-center text-white rounded-[4px] border border-white font-bold gap-2"
-            >
-              Watch Video <Play size={18} />
-            </button>
-          </div>
-        </div>
-      </div>
+      <h2 className="relative text-white text-center text-sm sm:text-base md:text-lg max-w-2xl">
+        We are the operating system for tokenizing real-world green
+        infrastructure, connecting global capital directly to the projects
+        building our NetZero future.
+      </h2>
+
+      <button
+        onClick={() => setShowVideo(true)}
+        className="relative w-full sm:w-[176px] h-[44px] sm:h-[48px] sm:cursor-pointer flex justify-center items-center text-white rounded-[13px] border border-white font-bold gap-2"
+      >
+        Watch Video <Play size={18} />
+      </button>
 
       {showVideo && (
         <div className="fixed inset-0 bg-black/80 flex justify-center items-center z-50">

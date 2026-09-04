@@ -1,5 +1,6 @@
 import { siteContentReadAccess } from '../access/collection-access.js';
 import { isMasterAdmin } from '../access/roles.js';
+import { revalidateMarketingPath } from '../lib/revalidate-marketing-path.js';
 
 /** @type {import('payload').GlobalConfig} */
 export const HomePage = {
@@ -8,6 +9,13 @@ export const HomePage = {
   admin: {
     group: 'Website',
     hidden: ({ user }) => !isMasterAdmin(user),
+  },
+  hooks: {
+    afterChange: [
+      () => {
+        void revalidateMarketingPath('/');
+      },
+    ],
   },
   fields: [
     {

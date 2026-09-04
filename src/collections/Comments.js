@@ -8,6 +8,9 @@ export const Comments = {
     useAsTitle: 'authorName',
     defaultColumns: ['authorName', 'status', 'post', 'createdAt'],
     group: 'Content',
+    hidden: true,
+    description:
+      'Moderation and replies live in the admin sidebar under Comments (/admin/comment-management).',
   },
   access: {
     read: ({ req }) => {
@@ -26,8 +29,15 @@ export const Comments = {
   hooks: {
     beforeChange: [
       ({ data, req, operation }) => {
-        if (operation === 'create' && !req.user) {
-          data.status = 'pending';
+        if (operation === 'create') {
+          if (req.user && canManageContent(req.user)) {
+            data.status = 'approved';
+            if (!data.authorUser) {
+              data.authorUser = req.user.id;
+            }
+          } else if (!req.user) {
+            data.status = 'pending';
+          }
         }
         return data;
       },
@@ -49,6 +59,16 @@ export const Comments = {
     {
       name: 'authorEmail',
       type: 'email',
+    },
+    {
+      name: 'authorUser',
+      type: 'relationship',
+      relationTo: 'users',
+      admin: {
+        description:
+          'CMS team member profile for editorial replies and auto-published admin comments.',
+        position: 'sidebar',
+      },
     },
     {
       name: 'content',

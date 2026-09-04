@@ -6,6 +6,7 @@ import { buildConfig } from 'payload';
 import { fileURLToPath } from 'url';
 import sharp from 'sharp';
 import { Comments } from './collections/Comments.js';
+import { ComposeSchedules } from './collections/ComposeSchedules.js';
 import { Media } from './collections/Media.js';
 import { Posts } from './collections/Posts.js';
 import { SitePages } from './collections/SitePages.js';
@@ -159,6 +160,44 @@ function resolveServerURL() {
 
 const serverURL = resolveServerURL();
 
+/** Add origin plus www / apex variant (production is often opened on both). */
+function addCsrfOrigin(origins, raw) {
+  if (!raw?.trim()) return;
+  try {
+    const u = new URL(raw.trim());
+    if (!u.hostname) return;
+    origins.add(u.origin);
+    if (u.hostname.startsWith('www.')) {
+      origins.add(`${u.protocol}//${u.hostname.slice(4)}`);
+    } else {
+      origins.add(`${u.protocol}//www.${u.hostname}`);
+    }
+  } catch {
+    // ignore invalid URLs
+  }
+}
+
+/** Origins allowed to send Payload JWT cookies (browser fetch includes Origin). */
+function resolveCsrfOrigins() {
+  const origins = new Set();
+  addCsrfOrigin(origins, serverURL);
+  addCsrfOrigin(origins, process.env.NEXT_PUBLIC_SITE_URL);
+
+  if (!isProd) {
+    for (const port of [3000, 3001]) {
+      origins.add(`http://localhost:${port}`);
+      origins.add(`http://127.0.0.1:${port}`);
+    }
+  }
+
+  const vercelUrl = process.env.VERCEL_URL?.trim();
+  if (vercelUrl) {
+    addCsrfOrigin(origins, `https://${vercelUrl}`);
+  }
+
+  return [...origins];
+}
+
 const email = platformSmtpEmailAdapter();
 
 const blobToken = process.env.BLOB_READ_WRITE_TOKEN?.trim();
@@ -235,8 +274,9 @@ export default buildConfig({
     graphQLPlayground: '/cms/graphql-playground',
   },
   ...(serverURL ? { serverURL } : {}),
+  csrf: resolveCsrfOrigins(),
   ...(email ? { email } : {}),
-  collections: [Users, Media, Posts, Comments, SitePages],
+  collections: [Users, Media, Posts, Comments, ComposeSchedules, SitePages],
   globals: [HomePage],
   editor: lexicalEditor(),
   secret,

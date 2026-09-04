@@ -4,9 +4,21 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "installCommand": "npm ci",
+  "crons": [
+    {
+      "path": "/api/cron/compose-schedules",
+      "schedule": "0 9 * * *"
+    }
+  ],
   "functions": {
     "src/app/(payload)/**/*": {
       "maxDuration": 60
+    },
+    "src/app/(payload)/admin/api/compose-chat/**/*": {
+      "maxDuration": 300
+    },
+    "src/app/api/cron/**/*": {
+      "maxDuration": 300
     }
   }
 }

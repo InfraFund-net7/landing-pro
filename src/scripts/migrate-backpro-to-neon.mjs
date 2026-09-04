@@ -13,6 +13,7 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { isNeonDatabaseUrl } from '../lib/postgres-pool-config.js';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const backproMigrationsDir = path.resolve(
@@ -70,8 +71,11 @@ console.log(
   new URL(sourceUrl).pathname
 );
 
-console.log('\n1/3 Neon prelude (uuidv7 shim)…');
-psql(targetUrl, ['-f', path.join(dirname, 'sql', 'backpro-neon-prelude.sql')]);
+const preludeFile = isNeonDatabaseUrl(targetUrl)
+  ? 'backpro-neon-prelude.sql'
+  : 'backpro-selfhosted-prelude.sql';
+console.log(`\n1/3 Prelude (uuidv7 shim) — ${preludeFile}…`);
+psql(targetUrl, ['-f', path.join(dirname, 'sql', preludeFile)]);
 
 console.log('\n2/3 Backpro schema migrations…');
 for (const file of sortedUpMigrations()) {

@@ -20,15 +20,15 @@ Every push to the linked branch triggers a Vercel deployment.
 
 ## Performance (marketing pages)
 
-Marketing routes use **ISR** (`revalidate: 60`) and **do not** query Neon unless you opt in:
+Marketing routes use **ISR** (`revalidate: 60`). Home and blog load from Payload when `DATABASE_URL` is set; site pages stay handcrafted unless opted in:
 
 | Variable | When set to `1` |
 |----------|------------------|
 | `CMS_REPLACE_EXISTING_PAGES` | Fetch **site-pages** from CMS and allow replacement UI |
-| `CMS_FETCH_HOME_PAGE` | Fetch **home-page** global from CMS (otherwise handcrafted fallbacks) |
+| `CMS_FETCH_HOME_PAGE=0` | Disable **home-page** global from Payload (use handcrafted fallbacks) |
 | (blog) | Posts load from Payload when `DATABASE_URL` is set; `CMS_USE_MOCK_BLOG=1` forces mock data |
 
-Leave all unset on Preview/Production for fastest loads. Enable after you seed content in Payload.
+Saving the **Home Page** global revalidates `/` immediately. Other marketing pages may take up to 60s unless you add similar hooks.
 
 `/admin` always uses the database.
 
@@ -63,7 +63,7 @@ Also set manually (not from Neon): `PAYLOAD_PUBLIC_SERVER_URL`, `INFRA_CONTACT_F
 |----------|--------|
 | `DATABASE_URL` or `POSTGRES_URL` | Neon **pooled** URL (`-pooler` host), `?sslmode=verify-full` |
 | `PAYLOAD_SECRET` | ≥32 chars |
-| `PAYLOAD_PUBLIC_SERVER_URL` | `https://infrafund.net` |
+| `PAYLOAD_PUBLIC_SERVER_URL` | `https://infrafund.net` (www and non-www are both allowed for CSRF after deploy) |
 | `INFRA_CONTACT_FORM_SMTP_HOST` | Same as backpro (e.g. Office365 / SendGrid SMTP host) |
 | `INFRA_CONTACT_FORM_SMTP_PORT` | Usually `587` or `465` |
 | `INFRA_CONTACT_FORM_SMTP_SENDER` | From address (must be allowed by your SMTP provider) |
@@ -76,6 +76,9 @@ Also set manually (not from Neon): `PAYLOAD_PUBLIC_SERVER_URL`, `INFRA_CONTACT_F
 | `NEXT_PUBLIC_DASH_LOGIN_URL` | `https://dashboard.infrafund.net/login` |
 | `SKIP_PAYLOAD_FETCH_AT_BUILD` | `1` (optional; build skips CMS without it too) |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob (CMS media uploads) |
+| `BLOG_SUMMARIZE_AZURE_API_KEY` | Azure OpenAI key for post **Summarize** in the manual editor |
+| `BLOG_SUMMARIZE_AZURE_BASE_URL` | Optional; defaults to `https://blog-post-news-resource.openai.azure.com/openai/v1` |
+| `BLOG_SUMMARIZE_MODEL` | Optional; defaults to `gpt-5.4-mini` |
 
 ### Preview (`develop`, `beta.infrafund.net`)
 
@@ -91,8 +94,33 @@ Also set manually (not from Neon): `PAYLOAD_PUBLIC_SERVER_URL`, `INFRA_CONTACT_F
 | `NEXT_PUBLIC_DASH_LOGIN_URL` | Dev dashboard login |
 | `SKIP_PAYLOAD_FETCH_AT_BUILD` | `1` (optional) |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob (CMS media uploads) |
+| `BLOG_SUMMARIZE_AZURE_API_KEY` | Azure OpenAI key for post **Summarize** in the manual editor |
+| `BLOG_SUMMARIZE_AZURE_BASE_URL` | Optional; defaults to `https://blog-post-news-resource.openai.azure.com/openai/v1` |
+| `BLOG_SUMMARIZE_MODEL` | Optional; defaults to `gpt-5.4-mini` |
+| `CONTENT_AGENT_URL` | `http://<azure-vm-public-ip>:8080` — LangGraph agent on the VM (see below) |
+| `CONTENT_AGENT_API_KEY` | Optional; must match `CONTENT_AGENT_API_KEY` in `ai-agent/.env` on the VM if set |
+| `AI_GATEWAY_API_KEY` | Fallback when `CONTENT_AGENT_URL` is unset (Vercel AI Gateway) |
+| `COMPOSE_MODEL` | Optional; defaults to `openai/gpt-4.1-mini` for gateway fallback |
 
-Optional CMS: `CMS_REPLACE_EXISTING_PAGES`, `CMS_FETCH_HOME_PAGE`. Blog uses Payload automatically when `DATABASE_URL` is set.
+### LangGraph content agent (AI Composition on `/admin/create-post`)
+
+Beta uses the **LangGraph + Tavily** agent only when **`CONTENT_AGENT_URL`** is set on **Preview**. GitHub secrets for the VM deploy (`VM_HOST`, `OPENAI_API_KEY`, `TAVILY_API_KEY`) do **not** apply to Vercel — you must add Preview env vars separately.
+
+1. Confirm the agent is healthy on the VM:
+   ```bash
+   curl http://<VM_HOST>:8080/health
+   ```
+   Expect `{"status":"ok","agent":"langgraph-seo-geo"}`.
+2. Azure NSG: allow inbound **TCP 8080** from the internet (Vercel serverless calls the VM from outside your network).
+3. Vercel → **landing-pro** → **Settings** → **Environment Variables** → add for **Preview only**:
+   - `CONTENT_AGENT_URL` = `http://<VM_HOST>:8080` (same host as GitHub secret `VM_HOST`, no trailing slash)
+   - `CONTENT_AGENT_API_KEY` = same value as on the VM, if you enabled bearer auth
+4. **Redeploy** Preview (`develop` / `beta.infrafund.net`). Hard-refresh `/admin/create-post`.
+5. Verify: the model badge shows **LangGraph + Tavily SEO** (not `gpt-4.1-mini`). If it still shows `gpt-4.1-mini`, `CONTENT_AGENT_URL` is missing or the deployment predates the env change.
+
+Agent code deploys from branch **`infrafund-agents`** (GitHub Actions → Azure VM). CMS proxy code is on **`develop`** (Vercel Preview).
+
+Optional CMS: `CMS_REPLACE_EXISTING_PAGES`. Home page uses Payload when `DATABASE_URL` is set.
 
 ### Seed CMS content (once per Neon branch)
 
@@ -194,7 +222,8 @@ If this shows your email but beta still opens create-first-user, redeploy latest
 - **Logs show `neon warmup: SELECT 1 ok` then `pg-tcp` timeout:** HTTPS to Neon works; **TCP from Vercel to Neon pooler does not**. Runtime must use `driver=neon-fetch` (`poolQueryViaFetch`). Redeploy latest `develop`.
 - **`POST 500` on `/cms/api/users/first-register`:** Do not create the first user on Vercel. Run `npm run db:create-payload-admin` locally (direct Neon URL), then use `/admin/login`.
 - **`/admin/login` redirects to create-first-user`:** No row in `payload.users` on the DB Preview uses — run `db:create-payload-master-admin` with pooled `POSTGRES_URL`. Check **`payload`** schema, not `public.users`.
-- **`/admin` ↔ `/admin/login` infinite loop after successful login:** Caused by `/admin` always redirecting to login when users exist (fixed — `/admin` only redirects to create-first-user when the DB has no users). Redeploy and clear cookies for the site.
+- **`/admin` ↔ `/admin/login` infinite loop after successful login:** Clear site cookies, then redeploy. Common causes: (1) **www vs apex** — use one hostname consistently or redeploy with shared cookie domain (`.infrafund.net`); (2) **missing DB columns** after author profile deploy — run `npm run db:migrate:user-profile` against the same Neon URL Vercel uses; (3) **missing `linkedin_url` / `x_url`** after editor social links deploy — run `npm run db:migrate:user-social-urls`; (4) stale cookies after `PAYLOAD_SECRET` change.
+- **Blog listing empty (“No published posts yet”) while posts exist in admin:** Payload queries fail when Neon is missing columns the app expects. After the editor social-links deploy, run `npm run db:migrate:user-social-urls` with the **Preview** pooled `POSTGRES_URL`, then wait up to 60s (ISR) or hard-refresh `/blog`.
 - **`/admin` shows Next.js `404` after login on Vercel:** Payload `RootPage` calls `notFound()` for logged-in users when the dashboard view does not resolve (common with Neon on Vercel). Latest `develop` bypasses `RootPage` at `/admin` and renders the dashboard directly when `hasUser=true`; unauthenticated users go to `/admin/login`.
 - **`POST /cms/api/users/login` 401, message “email or password incorrect”, stack at `checkLoginPermission` (~line 23):** Usually **no row returned for that email** (not always a wrong password). Confirm the user exists on the **Preview** Neon branch (`npm run db:verify-payload-users` with pooled `POSTGRES_URL`). Redeploy latest `develop` (Neon HTTP user lookup patch for login). If it still fails, reset password with `db:create-payload-master-admin` against Neon **direct** URL, then test login with **pooled** URL.
 - **`cannot begin transaction: timeout exceeded when trying to connect` on login:** Password check passed; Payload then opened a **WebSocket** DB transaction (fails from Vercel). Redeploy latest `develop` (skips `beginTransaction` on Vercel + `useSessions: false` for admin users). JWT login still works without per-device session rows in Postgres.

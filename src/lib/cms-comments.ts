@@ -1,18 +1,22 @@
 import config from '@payload-config';
-import { getPayload } from 'payload';
+import { getPayload, type TypedUser } from 'payload';
+import {
+  type AdminComment,
+  type BlogComment,
+  type CommentStatus,
+} from '@/lib/cms-comment-types';
 import { shouldFetchBlogFromCms } from '@/lib/cms-runtime';
 import { skipPayloadFetchAtBuild } from '@/lib/skip-payload-fetch-at-build';
+import {
+  authorProfileFromRelation,
+  fetchPublicAuthorProfilesByIds,
+  getUserDisplayName,
+  resolveAuthorUserId,
+} from '@/lib/user-profile.js';
 
-export type CommentStatus = 'approved' | 'pending' | 'spam' | 'unapproved';
+export type { BlogComment } from '@/lib/cms-comment-types';
 
-export type BlogComment = {
-  id: number;
-  authorName: string;
-  content: string;
-  createdAt: string;
-  isEditorialReply: boolean;
-  replies: BlogComment[];
-};
+type CommentAuthorUser = null | number | Record<string, unknown>;
 
 type CommentRecord = {
   id: number;
@@ -20,6 +24,7 @@ type CommentRecord = {
   content: string;
   createdAt: string;
   isEditorialReply?: boolean | null;
+  authorUser?: CommentAuthorUser;
   parent?: null | number | { id: number };
 };
 
@@ -41,7 +46,10 @@ type PayloadWithComments = {
       status?: CommentStatus;
       parent?: number;
       isEditorialReply?: boolean;
+      authorUser?: number;
     };
+    user?: TypedUser;
+    overrideAccess?: boolean;
   }) => Promise<unknown>;
   update: (args: {
     collection: 'comments';
@@ -65,23 +73,38 @@ function formatCommentDate(value: string): string {
   return date.toISOString().slice(0, 10);
 }
 
-function toBlogComment(doc: CommentRecord): BlogComment {
+function toBlogComment(
+  doc: CommentRecord,
+  authorProfiles?: Map<number, { name: string; title: string; avatar: string }>
+): BlogComment {
+  const authorUserId = resolveAuthorUserId(doc.authorUser);
+  const profile =
+    (authorUserId && authorProfiles?.get(authorUserId)) ||
+    authorProfileFromRelation(doc.authorUser);
+  const isTeamMember = Boolean(doc.isEditorialReply || doc.authorUser);
+
   return {
     id: doc.id,
-    authorName: doc.authorName,
+    authorName: profile.name || doc.authorName,
+    authorTitle: profile.title || undefined,
+    authorAvatar: profile.avatar || undefined,
     content: doc.content,
     createdAt: formatCommentDate(doc.createdAt),
     isEditorialReply: Boolean(doc.isEditorialReply),
+    isTeamMember,
     replies: [],
   };
 }
 
-function buildCommentTree(docs: CommentRecord[]): BlogComment[] {
+function buildCommentTree(
+  docs: CommentRecord[],
+  authorProfiles?: Map<number, { name: string; title: string; avatar: string }>
+): BlogComment[] {
   const byId = new Map<number, BlogComment>();
   const roots: BlogComment[] = [];
 
   for (const doc of docs) {
-    byId.set(doc.id, toBlogComment(doc));
+    byId.set(doc.id, toBlogComment(doc, authorProfiles));
   }
 
   for (const doc of docs) {
@@ -119,74 +142,67 @@ export async function fetchApprovedCommentsForPost(
       },
       sort: 'createdAt',
       limit: 200,
-      depth: 0,
+      depth: 2,
     });
 
-    return buildCommentTree(docs);
+    const authorUserIds = docs
+      .map((doc) => resolveAuthorUserId(doc.authorUser))
+      .filter((id): id is number => id != null);
+    const authorProfiles = await fetchPublicAuthorProfilesByIds(authorUserIds);
+
+    return buildCommentTree(docs, authorProfiles);
   } catch {
     return [];
   }
 }
-
-export type AdminComment = {
-  id: number;
-  authorName: string;
-  content: string;
-  status: CommentStatus;
-  createdAt: string;
-  postId: number;
-  postTitle: string;
-  postSlug: string;
-  parentId: number | null;
-  isEditorialReply: boolean;
-};
 
 type AdminCommentRecord = CommentRecord & {
   status: CommentStatus;
   post: number | { id: number; title?: string; slug?: string };
 };
 
-export async function fetchCommentsForAdmin(
-  status?: CommentStatus | 'all'
-): Promise<AdminComment[]> {
+function mapAdminComment(doc: AdminCommentRecord): AdminComment {
+  const post =
+    typeof doc.post === 'object' && doc.post
+      ? doc.post
+      : { id: Number(doc.post), title: 'Post', slug: '' };
+
+  return {
+    id: doc.id,
+    authorName: doc.authorName,
+    content: doc.content,
+    status: doc.status,
+    createdAt: formatCommentDate(doc.createdAt),
+    postId: post.id,
+    postTitle: String(post.title ?? 'Post'),
+    postSlug: String(post.slug ?? ''),
+    parentId: parentId(doc.parent),
+    isEditorialReply: Boolean(doc.isEditorialReply),
+  };
+}
+
+async function fetchAllAdminCommentRecords(): Promise<AdminCommentRecord[]> {
   if (!shouldFetchBlogFromCms()) return [];
   if (skipPayloadFetchAtBuild()) return [];
 
   try {
     const payload = await getPayloadWithComments();
-    const where =
-      status && status !== 'all' ? { status: { equals: status } } : undefined;
-
     const { docs } = await payload.find({
       collection: 'comments',
-      where,
       sort: '-createdAt',
       limit: 200,
       depth: 1,
     });
 
-    return (docs as AdminCommentRecord[]).map((doc) => {
-      const post =
-        typeof doc.post === 'object' && doc.post
-          ? doc.post
-          : { id: Number(doc.post), title: 'Post', slug: '' };
-
-      return {
-        id: doc.id,
-        authorName: doc.authorName,
-        content: doc.content,
-        status: doc.status,
-        createdAt: formatCommentDate(doc.createdAt),
-        postId: post.id,
-        postTitle: String(post.title ?? 'Post'),
-        postSlug: String(post.slug ?? ''),
-        parentId: parentId(doc.parent),
-        isEditorialReply: Boolean(doc.isEditorialReply),
-      };
-    });
+    return docs as AdminCommentRecord[];
   } catch {
     return [];
   }
+}
+
+export async function fetchAllCommentsForAdmin(): Promise<AdminComment[]> {
+  const docs = await fetchAllAdminCommentRecords();
+  return docs.map(mapAdminComment);
 }
 
 export async function createBlogComment(input: {
@@ -194,37 +210,63 @@ export async function createBlogComment(input: {
   authorName: string;
   authorEmail?: string;
   content: string;
-}): Promise<void> {
+  adminUser?: TypedUser | null;
+}): Promise<{ publishedImmediately: boolean; comment: BlogComment | null }> {
   const payload = await getPayloadWithComments();
+  const adminUser = input.adminUser ?? null;
+  const isAdmin = Boolean(adminUser);
 
-  await payload.create({
+  const created = (await payload.create({
     collection: 'comments',
     data: {
       post: input.postId,
-      authorName: input.authorName,
+      authorName: isAdmin ? getUserDisplayName(adminUser) : input.authorName,
       authorEmail: input.authorEmail,
       content: input.content,
-      status: 'pending',
+      status: isAdmin ? 'approved' : 'pending',
+      ...(isAdmin && adminUser?.id ? { authorUser: Number(adminUser.id) } : {}),
     },
-  });
+    ...(isAdmin && adminUser ? { user: adminUser, overrideAccess: true } : {}),
+  })) as CommentRecord;
+
+  return {
+    publishedImmediately: isAdmin,
+    comment: isAdmin ? toBlogComment(created) : null,
+  };
 }
 
 export async function createEditorialReply(input: {
   postId: number;
   parentId: number;
   content: string;
-}): Promise<void> {
+  authorName: string;
+  authorUserId?: number;
+  postTitle?: string;
+  postSlug?: string;
+}): Promise<AdminComment> {
   const payload = await getPayloadWithComments();
 
-  await payload.create({
+  const created = (await payload.create({
     collection: 'comments',
     data: {
       post: input.postId,
-      authorName: 'Editorial',
+      authorName: input.authorName,
       content: input.content,
       status: 'approved',
       parent: input.parentId,
       isEditorialReply: true,
+      ...(input.authorUserId ? { authorUser: input.authorUserId } : {}),
+    },
+  })) as AdminCommentRecord;
+
+  return mapAdminComment({
+    ...created,
+    status: 'approved',
+    isEditorialReply: true,
+    post: {
+      id: input.postId,
+      title: input.postTitle ?? 'Post',
+      slug: input.postSlug ?? '',
     },
   });
 }

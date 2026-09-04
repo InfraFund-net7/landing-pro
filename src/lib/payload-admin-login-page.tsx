@@ -15,6 +15,7 @@ import { applyLocaleFiltering, formatAdminURL } from 'payload/shared';
 import * as qs from 'qs-esm';
 import React from 'react';
 import { probeNeonHasPayloadUser } from './neon-user-probe.js';
+import { resolveAdminRedirectPath } from './admin-default-route.js';
 import { markVercelKnownHasUser } from './payload-vercel-known-user.js';
 
 type AdminPageProps = {
@@ -31,7 +32,9 @@ async function renderLoginView(props: AdminPageProps) {
   const params = await props.params;
   const segments = ['login'];
   const searchParams = await props.searchParams;
+  const signedOut = searchParams?.signedOut === '1';
   const adminRoute = cfg.routes.admin;
+
   const currentRoute = formatAdminURL({
     adminRoute,
     path: `/${segments.join('/')}`,
@@ -54,8 +57,12 @@ async function renderLoginView(props: AdminPageProps) {
     },
   });
 
-  if (req.user) {
-    redirect(adminRoute);
+  if (req.user && !signedOut) {
+    const redirectParam =
+      typeof searchParams?.redirect === 'string'
+        ? searchParams.redirect
+        : undefined;
+    redirect(resolveAdminRedirectPath(req.user, redirectParam));
   }
 
   const viewActions = [...(cfg?.admin?.components?.actions || [])];

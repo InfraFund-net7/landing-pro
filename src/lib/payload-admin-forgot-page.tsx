@@ -15,6 +15,7 @@ import { applyLocaleFiltering, formatAdminURL } from 'payload/shared';
 import * as qs from 'qs-esm';
 import React from 'react';
 import { probeNeonHasPayloadUser } from './neon-user-probe.js';
+import { getDefaultAdminLandingPath } from './admin-default-route.js';
 import { markVercelKnownHasUser } from './payload-vercel-known-user.js';
 
 type AdminPageProps = {
@@ -55,7 +56,7 @@ async function renderForgotView(props: AdminPageProps) {
   });
 
   if (req.user) {
-    redirect(adminRoute);
+    redirect(getDefaultAdminLandingPath(req.user));
   }
 
   const clientConfig = getClientConfig({

@@ -1,16 +1,30 @@
 'use client';
 
-import AdminSignOutLink from '@/app/(payload)/admin/components/admin-sign-out-link';
-import type { AdminComment, CommentStatus } from '@/lib/cms-comments';
+import AdminPortalLayout from '@/app/(payload)/admin/components/admin-portal-layout';
+import {
+  buildAdminCommentTree,
+  type AdminComment,
+  type AdminCommentNode,
+  type CommentStatus,
+  type EditorReplyProfile,
+} from '@/lib/cms-comment-types';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import styles from './comment-management.module.css';
 
 type CommentManagementPanelProps = {
   comments: AdminComment[];
   filter: CommentStatus | 'all';
-  success?: string;
-  error?: string;
-  manageAction: (formData: FormData) => void | Promise<void>;
+  pendingCount: number;
+  editorProfile: EditorReplyProfile;
+  userName: string;
+  userInitial: string;
+  isMasterAdmin?: boolean;
+  flashSuccess?: string;
+  flashError?: string;
+  focusCommentId?: number | null;
+  postSlug?: string;
 };
 
 const filters: Array<{ value: CommentStatus | 'all'; label: string }> = [
@@ -21,516 +35,610 @@ const filters: Array<{ value: CommentStatus | 'all'; label: string }> = [
   { value: 'spam', label: 'Spam' },
 ];
 
+type CommentAction = 'approve' | 'unapprove' | 'spam' | 'delete' | 'reply';
+
 export default function CommentManagementPanel({
-  comments,
+  comments: initialComments,
   filter,
-  success,
-  error,
-  manageAction,
+  pendingCount,
+  editorProfile,
+  userName,
+  userInitial,
+  isMasterAdmin = false,
+  flashSuccess,
+  flashError,
+  focusCommentId = null,
+  postSlug,
 }: CommentManagementPanelProps) {
-  const [deleteTarget, setDeleteTarget] = useState<AdminComment | null>(null);
+  const router = useRouter();
+  const [comments, setComments] = useState(initialComments);
+  const [search, setSearch] = useState('');
   const [replyTarget, setReplyTarget] = useState<number | null>(null);
+  const [focusedCommentId, setFocusedCommentId] = useState<number | null>(
+    focusCommentId
+  );
+  const [deleteTarget, setDeleteTarget] = useState<AdminComment | null>(null);
+  const [busyId, setBusyId] = useState<number | null>(null);
+  const [message, setMessage] = useState(flashSuccess ?? '');
+  const [error, setError] = useState(flashError ?? '');
+
+  useEffect(() => {
+    setComments(initialComments);
+  }, [initialComments]);
+
+  useEffect(() => {
+    if (flashSuccess) setMessage(flashSuccess);
+    if (flashError) setError(flashError);
+  }, [flashSuccess, flashError]);
+
+  useEffect(() => {
+    if (!focusCommentId) return;
+
+    setFocusedCommentId(focusCommentId);
+    setReplyTarget(focusCommentId);
+
+    const scrollTarget = document.getElementById(`comment-${focusCommentId}`);
+    scrollTarget?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [focusCommentId]);
+
+  const scopedComments = useMemo(() => {
+    if (!postSlug) return comments;
+
+    const normalizedPost = postSlug.toLowerCase();
+    return comments.filter(
+      (comment) => comment.postSlug.toLowerCase() === normalizedPost
+    );
+  }, [comments, postSlug]);
+
+  const filteredComments = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return scopedComments;
+
+    return scopedComments.filter((comment) => {
+      const haystack = [
+        comment.authorName,
+        comment.content,
+        comment.postTitle,
+        comment.postSlug,
+      ]
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(query);
+    });
+  }, [scopedComments, search]);
+
+  const threads = useMemo(
+    () => buildAdminCommentTree(filteredComments, filter),
+    [filteredComments, filter]
+  );
+
+  const refreshComments = useCallback(async () => {
+    const response = await fetch('/admin/api/comments', {
+      credentials: 'same-origin',
+    });
+    const data = (await response.json()) as {
+      comments?: AdminComment[];
+      message?: string;
+    };
+
+    if (!response.ok || !data.comments) {
+      throw new Error(data.message || 'Unable to refresh comments.');
+    }
+
+    setComments(data.comments);
+    router.refresh();
+  }, [router]);
+
+  const runAction = useCallback(
+    async (
+      action: CommentAction,
+      comment: AdminComment,
+      extra?: { content?: string }
+    ) => {
+      setBusyId(comment.id);
+      setMessage('');
+      setError('');
+
+      try {
+        const response = await fetch('/admin/api/comments', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action,
+            commentId: comment.id,
+            postId: comment.postId,
+            postTitle: comment.postTitle,
+            postSlug: comment.postSlug,
+            content: extra?.content,
+          }),
+        });
+
+        const data = (await response.json()) as { message?: string };
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Unable to complete that action.');
+        }
+
+        if (action === 'reply') {
+          setReplyTarget(null);
+        }
+
+        if (action === 'delete') {
+          setDeleteTarget(null);
+        }
+
+        setMessage(data.message || 'Updated.');
+        await refreshComments();
+      } catch (actionError) {
+        setError(
+          actionError instanceof Error
+            ? actionError.message
+            : 'Unable to complete that action.'
+        );
+      } finally {
+        setBusyId(null);
+      }
+    },
+    [refreshComments]
+  );
 
   return (
-    <main
-      style={{
-        minHeight: '100vh',
-        background:
-          'radial-gradient(70% 80% at 50% 0%, #102247 0%, #080F1D 55%, #070B13 100%)',
-        color: '#E6EEFF',
-        padding: '24px',
-      }}
+    <AdminPortalLayout
+      userName={userName}
+      userInitial={userInitial}
+      isMasterAdmin={isMasterAdmin}
     >
-      <div
-        style={{
-          maxWidth: '1180px',
-          margin: '0 auto',
-          background: 'rgba(10, 18, 34, 0.95)',
-          border: '1px solid #1E2B47',
-          borderRadius: '14px',
-          boxShadow: '0 10px 35px rgba(0,0,0,0.4)',
-          padding: '20px 20px 26px',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 12,
-            marginBottom: 20,
-          }}
-        >
-          <h1 style={{ fontSize: 28, margin: 0, fontWeight: 700 }}>
-            Comment Management
-          </h1>
-          <Link
-            href="/admin/collections/posts"
-            style={{
-              color: '#A7B7D9',
-              textDecoration: 'none',
-              fontSize: 13,
-              border: '1px solid #2A3B61',
-              borderRadius: 8,
-              padding: '8px 10px',
-            }}
-          >
-            View Posts
-          </Link>
-          <AdminSignOutLink />
+      <div className={styles.header}>
+        <div className={styles.titleBlock}>
+          <h1>Comments</h1>
+          <p>
+            Review reader comments and reply inline. Replies publish immediately
+            on the live blog post under your name.
+          </p>
         </div>
+        <div className={styles.stats}>
+          <span className={styles.statPill}>
+            Pending review: <strong>{pendingCount}</strong>
+          </span>
+          <span className={styles.statPill}>
+            Threads: <strong>{threads.length}</strong>
+          </span>
+        </div>
+      </div>
 
-        {error ? <Alert tone="error" message={error} /> : null}
-        {success ? <Alert tone="success" message={success} /> : null}
+      {error ? (
+        <p className={`${styles.alert} ${styles.alertError}`}>{error}</p>
+      ) : null}
+      {message ? (
+        <p className={`${styles.alert} ${styles.alertSuccess}`}>{message}</p>
+      ) : null}
 
-        <div
-          style={{
-            display: 'flex',
-            gap: 8,
-            flexWrap: 'wrap',
-            marginBottom: 18,
-          }}
-        >
-          {filters.map((item) => (
-            <Link
-              key={item.value}
-              href={`/admin/comment-management?filter=${item.value}`}
-              style={{
-                textDecoration: 'none',
-                borderRadius: 999,
-                padding: '8px 14px',
-                fontSize: 13,
-                border:
-                  filter === item.value
-                    ? '1px solid #3B82F6'
-                    : '1px solid #2A3B61',
-                background:
-                  filter === item.value
-                    ? 'rgba(59,130,246,0.15)'
-                    : 'transparent',
-                color: filter === item.value ? '#BFDBFE' : '#A7B7D9',
-              }}
-            >
-              {item.label}
-            </Link>
+      {postSlug ? (
+        <div className={styles.postScopeBanner}>
+          <span>
+            Showing comments for post <strong>{postSlug}</strong>
+          </span>
+          <Link
+            href="/admin/comment-management"
+            className={styles.postScopeLink}
+          >
+            View all posts
+          </Link>
+        </div>
+      ) : null}
+
+      <div className={styles.toolbar}>
+        {filters.map((item) => (
+          <Link
+            key={item.value}
+            href={`/admin/comment-management?filter=${item.value}`}
+            className={
+              filter === item.value
+                ? styles.filterChipActive
+                : styles.filterChip
+            }
+          >
+            {item.label}
+            {item.value === 'pending' && pendingCount > 0
+              ? ` (${pendingCount})`
+              : ''}
+          </Link>
+        ))}
+        <input
+          type="search"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Search author, comment, or post..."
+          className={styles.searchInput}
+          aria-label="Search comments"
+        />
+      </div>
+
+      {threads.length === 0 ? (
+        <div className={styles.emptyState}>
+          No comments match this view. Try another filter or search term.
+        </div>
+      ) : (
+        <div className={styles.threadList}>
+          {threads.map((thread) => (
+            <ThreadCard
+              key={thread.id}
+              thread={thread}
+              editorProfile={editorProfile}
+              replyTarget={replyTarget}
+              setReplyTarget={setReplyTarget}
+              setDeleteTarget={setDeleteTarget}
+              busyId={busyId}
+              onAction={runAction}
+              focusedCommentId={focusedCommentId}
+            />
           ))}
         </div>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '180px 1fr 220px 120px',
-            gap: 12,
-            padding: '0 12px 10px',
-            color: '#7D8FB3',
-            fontSize: 12,
-            textTransform: 'uppercase',
-            letterSpacing: '0.04em',
-          }}
-        >
-          <span>Author</span>
-          <span>Comment</span>
-          <span>In Response To</span>
-          <span>Date</span>
-        </div>
-
-        {comments.length === 0 ? (
-          <p style={{ margin: '12px', color: '#A7B7D9', fontSize: 14 }}>
-            No comments found for this filter.
-          </p>
-        ) : (
-          <div style={{ display: 'grid', gap: 12 }}>
-            {comments.map((comment) => (
-              <CommentRow
-                key={comment.id}
-                comment={comment}
-                replyTarget={replyTarget}
-                setReplyTarget={setReplyTarget}
-                setDeleteTarget={setDeleteTarget}
-                manageAction={manageAction}
-                filter={filter}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+      )}
 
       {deleteTarget ? (
         <DeleteModal
           comment={deleteTarget}
+          busy={busyId === deleteTarget.id}
           onClose={() => setDeleteTarget(null)}
-          manageAction={manageAction}
-          filter={filter}
+          onConfirm={() => runAction('delete', deleteTarget)}
         />
       ) : null}
-    </main>
+    </AdminPortalLayout>
   );
 }
 
-function CommentRow({
-  comment,
+function ThreadCard({
+  thread,
+  editorProfile,
   replyTarget,
   setReplyTarget,
   setDeleteTarget,
-  manageAction,
-  filter,
+  busyId,
+  onAction,
+  focusedCommentId,
 }: {
-  comment: AdminComment;
+  thread: AdminCommentNode;
+  editorProfile: EditorReplyProfile;
   replyTarget: number | null;
   setReplyTarget: (value: number | null) => void;
   setDeleteTarget: (value: AdminComment | null) => void;
-  manageAction: (formData: FormData) => void | Promise<void>;
-  filter: CommentStatus | 'all';
+  busyId: number | null;
+  onAction: (
+    action: CommentAction,
+    comment: AdminComment,
+    extra?: { content?: string }
+  ) => Promise<void>;
+  focusedCommentId: number | null;
 }) {
   return (
+    <article className={styles.threadCard}>
+      <div className={styles.threadHeader}>
+        <div>
+          {thread.postSlug ? (
+            <Link
+              href={`/blog/${thread.postSlug}`}
+              className={styles.postLink}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {thread.postTitle}
+            </Link>
+          ) : (
+            <span className={styles.postLink}>{thread.postTitle}</span>
+          )}
+          <div className={styles.postMeta}>Live blog post</div>
+        </div>
+      </div>
+
+      <div className={styles.commentStack}>
+        <CommentNodeView
+          node={thread}
+          depth={0}
+          editorProfile={editorProfile}
+          replyTarget={replyTarget}
+          setReplyTarget={setReplyTarget}
+          setDeleteTarget={setDeleteTarget}
+          busyId={busyId}
+          onAction={onAction}
+          focusedCommentId={focusedCommentId}
+        />
+      </div>
+    </article>
+  );
+}
+
+function CommentNodeView({
+  node,
+  depth,
+  editorProfile,
+  replyTarget,
+  setReplyTarget,
+  setDeleteTarget,
+  busyId,
+  onAction,
+  focusedCommentId,
+}: {
+  node: AdminCommentNode;
+  depth: number;
+  editorProfile: EditorReplyProfile;
+  replyTarget: number | null;
+  setReplyTarget: (value: number | null) => void;
+  setDeleteTarget: (value: AdminComment | null) => void;
+  busyId: number | null;
+  onAction: (
+    action: CommentAction,
+    comment: AdminComment,
+    extra?: { content?: string }
+  ) => Promise<void>;
+  focusedCommentId: number | null;
+}) {
+  const isReplyOpen = replyTarget === node.id;
+  const isBusy = busyId === node.id;
+  const canReply = !node.isEditorialReply;
+  const isFocused = focusedCommentId === node.id;
+
+  return (
     <div
-      style={{
-        border: '1px solid #1E2B47',
-        borderRadius: 12,
-        background: '#0B1220',
-        padding: '14px 12px',
-      }}
+      id={`comment-${node.id}`}
+      className={`${styles.commentNode} ${depth > 0 ? styles.commentNodeNested : ''}`}
     >
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '180px 1fr 220px 120px',
-          gap: 12,
-          alignItems: 'start',
-        }}
+        className={`${styles.commentRow} ${
+          node.status === 'pending' ? styles.pendingHighlight : ''
+        } ${isFocused ? styles.commentFocus : ''}`}
       >
-        <div>
-          <p style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>
-            {comment.authorName}
-          </p>
-          <StatusBadge status={comment.status} />
-        </div>
+        <CommentAvatar
+          name={node.authorName}
+          isEditorial={node.isEditorialReply}
+          avatar={node.isEditorialReply ? editorProfile.avatar : ''}
+        />
 
-        <div>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6 }}>
-            {comment.content}
-          </p>
-          <div
-            style={{
-              display: 'flex',
-              gap: 12,
-              marginTop: 10,
-              fontSize: 13,
-              flexWrap: 'wrap',
-            }}
-          >
-            <ActionForm
-              label="Approve"
-              color="#7DFFB0"
-              action="approve"
-              commentId={comment.id}
-              manageAction={manageAction}
-              filter={filter}
-            />
+        <div className={styles.commentBody}>
+          <div className={styles.commentMeta}>
+            <p className={styles.authorName}>{node.authorName}</p>
+            {node.isEditorialReply ? (
+              <span className={styles.editorialBadge}>InfraFund reply</span>
+            ) : null}
+            <StatusBadge status={node.status} />
+            <span className={styles.commentDate}>{node.createdAt}</span>
+          </div>
+
+          <p className={styles.commentText}>{node.content}</p>
+
+          <div className={styles.actions}>
+            {node.status === 'pending' ? (
+              <button
+                type="button"
+                className={styles.actionBtnPrimary}
+                disabled={isBusy}
+                onClick={() => onAction('approve', node)}
+              >
+                Approve
+              </button>
+            ) : null}
+
+            {canReply ? (
+              <button
+                type="button"
+                className={styles.actionBtnPrimary}
+                disabled={isBusy}
+                onClick={() => setReplyTarget(isReplyOpen ? null : node.id)}
+              >
+                Reply
+              </button>
+            ) : null}
+
+            {node.status === 'approved' ? (
+              <button
+                type="button"
+                className={styles.actionBtnMuted}
+                disabled={isBusy}
+                onClick={() => onAction('unapprove', node)}
+              >
+                Hide
+              </button>
+            ) : null}
+
             <button
               type="button"
-              onClick={() =>
-                setReplyTarget(replyTarget === comment.id ? null : comment.id)
-              }
-              style={actionButtonStyle('#93C5FD')}
+              className={styles.actionBtnMuted}
+              disabled={isBusy}
+              onClick={() => onAction('spam', node)}
             >
-              Reply
+              Spam
             </button>
+
             <button
               type="button"
-              onClick={() => setDeleteTarget(comment)}
-              style={actionButtonStyle('#FCA5A5')}
+              className={styles.actionBtnDanger}
+              disabled={isBusy}
+              onClick={() => setDeleteTarget(node)}
             >
               Delete
             </button>
-            <ActionForm
-              label="Spam"
-              color="#FCD34D"
-              action="spam"
-              commentId={comment.id}
-              manageAction={manageAction}
-              filter={filter}
-            />
-            <ActionForm
-              label="Unapprove"
-              color="#FDBA74"
-              action="unapprove"
-              commentId={comment.id}
-              manageAction={manageAction}
-              filter={filter}
-            />
           </div>
 
-          {replyTarget === comment.id ? (
-            <form
-              action={manageAction}
-              style={{ marginTop: 14, display: 'grid', gap: 10 }}
-            >
-              <input type="hidden" name="intent" value="reply" />
-              <input type="hidden" name="commentId" value={comment.id} />
-              <input type="hidden" name="postId" value={comment.postId} />
-              <input type="hidden" name="filter" value={filter} />
-              <textarea
-                name="reply"
-                rows={4}
-                required
-                placeholder="Write your reply..."
-                style={{
-                  width: '100%',
-                  background: '#0D1425',
-                  color: '#E6EEFF',
-                  border: '1px solid #1E2B47',
-                  borderRadius: 8,
-                  padding: '12px 14px',
-                  fontSize: 14,
-                  outline: 'none',
-                  resize: 'vertical',
-                }}
-              />
-              <button
-                type="submit"
-                style={{
-                  justifySelf: 'start',
-                  border: '1px solid #1E8F57',
-                  borderRadius: 8,
-                  background: '#23DB7B',
-                  color: '#032514',
-                  fontWeight: 700,
-                  padding: '10px 14px',
-                  fontSize: 13,
-                  cursor: 'pointer',
-                }}
-              >
-                Submit Reply
-              </button>
-            </form>
+          {isReplyOpen ? (
+            <ReplyComposer
+              target={node}
+              editorProfile={editorProfile}
+              busy={isBusy}
+              onCancel={() => setReplyTarget(null)}
+              onSubmit={(content) => onAction('reply', node, { content })}
+            />
           ) : null}
         </div>
-
-        <div>
-          {comment.postSlug ? (
-            <Link
-              href={`/blog/${comment.postSlug}`}
-              style={{
-                color: '#93C5FD',
-                fontSize: 13,
-                textDecoration: 'none',
-              }}
-            >
-              {comment.postTitle}
-            </Link>
-          ) : (
-            <span style={{ color: '#A7B7D9', fontSize: 13 }}>
-              {comment.postTitle}
-            </span>
-          )}
-        </div>
-
-        <span style={{ color: '#A7B7D9', fontSize: 13 }}>
-          {comment.createdAt}
-        </span>
       </div>
+
+      {node.replies.map((reply) => (
+        <CommentNodeView
+          key={reply.id}
+          node={reply}
+          depth={depth + 1}
+          editorProfile={editorProfile}
+          replyTarget={replyTarget}
+          setReplyTarget={setReplyTarget}
+          setDeleteTarget={setDeleteTarget}
+          busyId={busyId}
+          onAction={onAction}
+          focusedCommentId={focusedCommentId}
+        />
+      ))}
     </div>
   );
 }
 
-function ActionForm({
-  label,
-  color,
-  action,
-  commentId,
-  manageAction,
-  filter,
+function CommentAvatar({
+  name,
+  isEditorial,
+  avatar,
 }: {
-  label: string;
-  color: string;
-  action: 'approve' | 'spam' | 'unapprove';
-  commentId: number;
-  manageAction: (formData: FormData) => void | Promise<void>;
-  filter: CommentStatus | 'all';
+  name: string;
+  isEditorial: boolean;
+  avatar: string;
 }) {
+  if (isEditorial && avatar) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={avatar} alt="" className={styles.avatarImage} />
+    );
+  }
+
   return (
-    <form action={manageAction}>
-      <input type="hidden" name="intent" value={action} />
-      <input type="hidden" name="commentId" value={commentId} />
-      <input type="hidden" name="filter" value={filter} />
-      <button type="submit" style={actionButtonStyle(color)}>
-        {label}
-      </button>
-    </form>
+    <div className={styles.avatar} aria-hidden>
+      {name.charAt(0).toUpperCase()}
+    </div>
   );
 }
 
-function actionButtonStyle(color: string) {
-  return {
-    border: 'none',
-    background: 'transparent',
-    color,
-    padding: 0,
-    fontSize: 13,
-    cursor: 'pointer',
-  } as const;
+function ReplyComposer({
+  target,
+  editorProfile,
+  busy,
+  onCancel,
+  onSubmit,
+}: {
+  target: AdminComment;
+  editorProfile: EditorReplyProfile;
+  busy: boolean;
+  onCancel: () => void;
+  onSubmit: (content: string) => Promise<void>;
+}) {
+  const [content, setContent] = useState('');
+
+  return (
+    <div className={styles.replyComposer}>
+      <div className={styles.replyContext}>
+        <CommentAvatar
+          name={editorProfile.name}
+          isEditorial
+          avatar={editorProfile.avatar}
+        />
+        <span>
+          Replying to <strong>{target.authorName}</strong> as{' '}
+          <strong>{editorProfile.name}</strong>
+          {editorProfile.title ? ` · ${editorProfile.title}` : ''}
+        </span>
+      </div>
+
+      <textarea
+        value={content}
+        onChange={(event) => setContent(event.target.value)}
+        onKeyDown={(event) => {
+          if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+            event.preventDefault();
+            if (content.trim() && !busy) {
+              void onSubmit(content.trim());
+              setContent('');
+            }
+          }
+        }}
+        rows={4}
+        className={styles.replyTextarea}
+        placeholder={`Reply to ${target.authorName}...`}
+        autoFocus
+      />
+
+      <p className={styles.replyHint}>
+        Press Cmd+Enter to publish. Your reply appears on the live post
+        immediately.
+      </p>
+
+      <div className={styles.replyActions}>
+        <button
+          type="button"
+          className={styles.actionBtnMuted}
+          disabled={busy}
+          onClick={onCancel}
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          className={styles.actionBtnPrimary}
+          disabled={busy || !content.trim()}
+          onClick={() => {
+            void onSubmit(content.trim());
+            setContent('');
+          }}
+        >
+          {busy ? 'Publishing...' : 'Post reply'}
+        </button>
+      </div>
+    </div>
+  );
 }
 
 function StatusBadge({ status }: { status: CommentStatus }) {
-  const colors: Record<CommentStatus, string> = {
-    pending: '#FCD34D',
-    approved: '#7DFFB0',
-    unapproved: '#FDBA74',
-    spam: '#FCA5A5',
-  };
+  const className = {
+    pending: styles.statusPending,
+    approved: styles.statusApproved,
+    unapproved: styles.statusUnapproved,
+    spam: styles.statusSpam,
+  }[status];
 
-  return (
-    <span
-      style={{
-        color: colors[status],
-        fontSize: 12,
-        textTransform: 'capitalize',
-      }}
-    >
-      {status}
-    </span>
-  );
-}
-
-function Alert({
-  tone,
-  message,
-}: {
-  tone: 'error' | 'success';
-  message: string;
-}) {
-  const styles =
-    tone === 'error'
-      ? {
-          background: '#3D1320',
-          color: '#FECACA',
-          border: '1px solid #7F1D1D',
-        }
-      : {
-          background: '#0F2C22',
-          color: '#C8FACC',
-          border: '1px solid #166534',
-        };
-
-  return (
-    <p
-      style={{
-        margin: '0 0 14px',
-        borderRadius: 8,
-        padding: '10px 12px',
-        fontSize: 13,
-        ...styles,
-      }}
-    >
-      {message}
-    </p>
-  );
+  return <span className={`${styles.statusBadge} ${className}`}>{status}</span>;
 }
 
 function DeleteModal({
-  comment,
+  busy,
   onClose,
-  manageAction,
-  filter,
+  onConfirm,
 }: {
   comment: AdminComment;
+  busy: boolean;
   onClose: () => void;
-  manageAction: (formData: FormData) => void | Promise<void>;
-  filter: CommentStatus | 'all';
+  onConfirm: () => Promise<void>;
 }) {
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(3, 8, 18, 0.72)',
-        display: 'grid',
-        placeItems: 'center',
-        padding: 24,
-        zIndex: 50,
-      }}
-    >
-      <div
-        style={{
-          width: '100%',
-          maxWidth: 420,
-          background: '#0B1220',
-          border: '1px solid #1E2B47',
-          borderRadius: 14,
-          padding: 20,
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 12,
-          }}
-        >
-          <h2 style={{ margin: 0, fontSize: 20 }}>Confirm Deletion</h2>
+    <div className={styles.modalBackdrop} role="presentation">
+      <div className={styles.modal} role="dialog" aria-modal="true">
+        <h2 className={styles.modalTitle}>Delete comment?</h2>
+        <p className={styles.modalText}>
+          This removes the comment from moderation and the live blog. This
+          cannot be undone.
+        </p>
+        <div className={styles.modalActions}>
           <button
             type="button"
+            className={styles.actionBtnMuted}
+            disabled={busy}
             onClick={onClose}
-            style={{
-              border: 'none',
-              background: 'transparent',
-              color: '#A7B7D9',
-              fontSize: 18,
-              cursor: 'pointer',
-            }}
           >
-            ×
+            Cancel
+          </button>
+          <button
+            type="button"
+            className={styles.actionBtnDanger}
+            disabled={busy}
+            onClick={() => void onConfirm()}
+          >
+            {busy ? 'Deleting...' : 'Delete comment'}
           </button>
         </div>
-        <p style={{ margin: '0 0 18px', color: '#A7B7D9', fontSize: 14 }}>
-          Are you sure you want to delete this item? This action cannot be
-          undone.
-        </p>
-        <form action={manageAction}>
-          <input type="hidden" name="intent" value="delete" />
-          <input type="hidden" name="commentId" value={comment.id} />
-          <input type="hidden" name="filter" value={filter} />
-          <DeleteActions onClose={onClose} />
-        </form>
       </div>
-    </div>
-  );
-}
-
-function DeleteActions({ onClose }: { onClose: () => void }) {
-  return (
-    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-      <button
-        type="button"
-        onClick={onClose}
-        style={{
-          border: '1px solid #2A3B61',
-          borderRadius: 8,
-          background: 'transparent',
-          color: '#A7B7D9',
-          padding: '10px 14px',
-          fontSize: 13,
-          cursor: 'pointer',
-        }}
-      >
-        Cancel
-      </button>
-      <button
-        type="submit"
-        style={{
-          border: '1px solid #7F1D1D',
-          borderRadius: 8,
-          background: '#B91C1C',
-          color: '#FEE2E2',
-          padding: '10px 14px',
-          fontSize: 13,
-          cursor: 'pointer',
-        }}
-      >
-        Yes, Delete
-      </button>
     </div>
   );
 }
